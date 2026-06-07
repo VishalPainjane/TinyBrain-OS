@@ -2,7 +2,7 @@
 
 **Version:** V0.4 Runtime
 **Sprint:** Runtime Foundation
-**Task:** 010-scheduler
+**Task:** 011-kv-manager
 
 **Forbidden:** llama.cpp (until v0.6), agents, Kubernetes
 

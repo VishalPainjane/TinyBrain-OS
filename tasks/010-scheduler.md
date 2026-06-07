@@ -2,7 +2,7 @@
 
 ## Status
 
-Not Started
+Complete
 
 ## Goal
 
@@ -27,11 +27,11 @@ Accepted decision: start FIFO, migrate to MLFQ at v0.7. Scheduler schedules VRAM
 
 ## Acceptance Criteria
 
-- [ ] Enqueue adds process to queue
-- [ ] Schedule dequeues highest-priority (FIFO for v1) process
-- [ ] Preempt marks process PREEMPTED in process table
-- [ ] Zero imports of runtime implementation packages that pull inference
-- [ ] Tests demonstrate two-process queue ordering
+- [x] Enqueue adds process to queue
+- [x] Schedule dequeues highest-priority (FIFO for v1) process and returns selected process
+- [x] Preempt marks process PREEMPTED in process table
+- [x] Scheduling policy only — no runtime, loader, or registry imports
+- [x] Tests demonstrate two-process queue ordering
 
 ## Out Of Scope
 

@@ -67,5 +67,14 @@ Append-only history. Never delete entries.
 **Outcome:** Success — Stub loader with lifecycle states, warm/prefetch/evict, LRU eviction shell
 **Files:** internal/loader/types.go, internal/loader/loader.go, internal/loader/loader_test.go
 
+## 010-scheduler
+
+**Completed:** 2026-06-07
+**Commit:** `339666d`
+**Outcome:** Success — FIFO scheduler skeleton, queue policy, state transitions (runtime orchestration deferred)
+**Files:** internal/scheduler/queue.go, internal/scheduler/scheduler.go, internal/scheduler/scheduler_test.go
+
+**Note:** Schedule signature drift recorded in [task-010-schedule-signature-drift.md](../decisions/task-010-schedule-signature-drift.md).
+
 ---
 **Layer:** planning
