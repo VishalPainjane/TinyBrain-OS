@@ -2,17 +2,17 @@
 
 ## Sprint
 
-**Name:** Month 1 Foundation (closed)
-**Goal:** Kernel, events, registry, hardware profiling — shipped at tag `v0.3`
-**Version:** V0.3
+**Name:** Runtime Foundation
+**Goal:** Establish runtime shell and model loader primitives (Month 2)
+**Version:** V0.4
 
 ## Current Task
 
-(none — Month 1 reconciliation complete)
+008-runtime
 
 ## In Progress
 
-(none)
+- [ ] 008-runtime
 
 ## Blocked
 
@@ -30,20 +30,27 @@
 
 ## Next
 
-- 008-runtime (Month 2 — opens after `v0.3` tag)
+- 009-model-loader
 
 ## Definition Of Done
 
-Month 1 foundation commit on `main`, documentation matches implementation, `go test ./...` green, tag `v0.3` applied.
+- All acceptance criteria in active task met
+- `go test ./...` passes
+- Task moved to [completed.md](completed.md) with commit hash
+- [docs/current.md](../../docs/current.md) synced
 
 ## Forbidden Work
 
-Until Month 2 sprint is opened: no new implementation beyond reconciliation.
+- `internal/scheduler/`
+- llama.cpp / inference bindings (until task 009+)
+- `internal/agents/`
+- Kubernetes
 
 ## Active References
 
-- Release: [planning/releases/v0.3.md](../releases/v0.3.md)
-- Month plan: [planning/roadmap/months/month-01.md](../roadmap/months/month-01.md)
+- Spec: [docs/specs/v0.4-runtime.md](../../docs/specs/v0.4-runtime.md)
+- Contract: [docs/contracts/runtime.md](../../docs/contracts/runtime.md)
+- Month 1 release: tag `v0.3`
 
 ---
 **Layer:** planning

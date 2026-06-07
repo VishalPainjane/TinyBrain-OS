@@ -4,7 +4,7 @@ CEO-level view. No technical details, packages, or interfaces — those live in 
 
 ## Current Version
 
-**V0.3 Hardware** — Month 1 foundation complete (tag `v0.3`). Month 2 opens next.
+**V0.4 Runtime** — Month 1 shipped at tag `v0.3`; Month 2 active.
 
 ## Target Version
 

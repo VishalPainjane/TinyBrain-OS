@@ -1,9 +1,9 @@
 # Current
 
-**Version:** V0.3 Hardware (Month 1 foundation complete)
-**Sprint:** Month 1 Foundation (closed)
-**Task:** —
+**Version:** V0.4 Runtime
+**Sprint:** Runtime Foundation
+**Task:** 008-runtime
 
-**Forbidden:** runtime, scheduler, llama.cpp, agents (Month 2 not started)
+**Forbidden:** scheduler, llama.cpp (until loader task), agents, Kubernetes
 
 → Full sprint: [planning/execution/current-sprint.md](../planning/execution/current-sprint.md)
