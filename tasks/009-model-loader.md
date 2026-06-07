@@ -2,7 +2,7 @@
 
 ## Status
 
-Not Started
+Complete
 
 ## Goal
 
@@ -27,10 +27,10 @@ Model loader sits behind runtime. Uses mmap for GGUF (future v0.6). Scheduler ne
 
 ## Acceptance Criteria
 
-- [ ] Load transitions NOT_LOADED → ACTIVE
-- [ ] Unload transitions ACTIVE → UNLOADED
-- [ ] Duplicate load prevented
-- [ ] Tests use stub files or mock paths
+- [x] Load transitions NOT_LOADED → ACTIVE
+- [x] Unload transitions ACTIVE → UNLOADED
+- [x] Duplicate load prevented
+- [x] Tests use stub files or mock paths
 
 ## Out Of Scope
 

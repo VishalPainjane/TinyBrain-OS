@@ -60,5 +60,12 @@ Append-only history. Never delete entries.
 **Outcome:** Success — ModelRuntime shell with StubProvider, lifecycle events, swap demo test
 **Files:** internal/runtime/types.go, internal/runtime/interface.go, internal/runtime/runtime.go, internal/runtime/stub_provider.go, internal/runtime/runtime_test.go
 
+## 009-model-loader
+
+**Completed:** 2026-06-07
+**Commit:** PENDING
+**Outcome:** Success — Stub loader with lifecycle states, warm/prefetch/evict, LRU eviction shell
+**Files:** internal/loader/types.go, internal/loader/loader.go, internal/loader/loader_test.go
+
 ---
 **Layer:** planning
