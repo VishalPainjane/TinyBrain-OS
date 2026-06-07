@@ -63,7 +63,7 @@ Append-only history. Never delete entries.
 ## 009-model-loader
 
 **Completed:** 2026-06-07
-**Commit:** PENDING
+**Commit:** `514ff9f`
 **Outcome:** Success — Stub loader with lifecycle states, warm/prefetch/evict, LRU eviction shell
 **Files:** internal/loader/types.go, internal/loader/loader.go, internal/loader/loader_test.go
 
