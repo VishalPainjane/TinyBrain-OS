@@ -2,7 +2,7 @@
 
 **Version:** V0.4 Runtime
 **Sprint:** Runtime Foundation
-**Task:** 008-runtime
+**Task:** 009-model-loader
 
 **Forbidden:** scheduler, llama.cpp (until loader task), agents, Kubernetes
 

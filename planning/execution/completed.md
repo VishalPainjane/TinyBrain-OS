@@ -53,5 +53,12 @@ Append-only history. Never delete entries.
 
 **Note:** Tasks 002–007 share the Month 1 foundation commit (tag `v0.3`). No per-task historical commits — honest single release.
 
+## 008-runtime
+
+**Completed:** 2026-06-07
+**Commit:** `6b5d142`
+**Outcome:** Success — ModelRuntime shell with StubProvider, lifecycle events, swap demo test
+**Files:** internal/runtime/types.go, internal/runtime/interface.go, internal/runtime/runtime.go, internal/runtime/stub_provider.go, internal/runtime/runtime_test.go
+
 ---
 **Layer:** planning

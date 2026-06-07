@@ -8,11 +8,11 @@
 
 ## Current Task
 
-008-runtime
+009-model-loader
 
 ## In Progress
 
-- [ ] 008-runtime
+- [ ] 009-model-loader
 
 ## Blocked
 
@@ -27,10 +27,11 @@
 - [x] 005-agent-registry
 - [x] 006-model-registry
 - [x] 007-hardware-profiler
+- [x] 008-runtime
 
 ## Next
 
-- 009-model-loader
+- 010-scheduler
 
 ## Definition Of Done
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-Not Started
+Complete
 
 ## Goal
 
@@ -21,17 +21,18 @@ Runtime is the moat — agents are replaceable. Scheduler delegates all model op
 
 ## Files
 
-- `internal/runtime/runtime.go`
+- `internal/runtime/types.go`
 - `internal/runtime/interface.go`
+- `internal/runtime/runtime.go`
 - `internal/runtime/stub_provider.go`
 - `internal/runtime/runtime_test.go`
 
 ## Acceptance Criteria
 
-- [ ] Load/unload stub model succeeds
-- [ ] Generate returns structured stub response
-- [ ] No llama.cpp imports in runtime package
-- [ ] Scheduler package can import runtime interface without inference imports
+- [x] Load/unload stub model succeeds
+- [x] Generate returns structured stub response
+- [x] No llama.cpp imports in runtime package
+- [x] Scheduler package can import runtime interface without inference imports
 
 ## Out Of Scope
 
