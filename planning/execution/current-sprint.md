@@ -8,11 +8,11 @@
 
 ## Current Task
 
-009-model-loader
+010-scheduler
 
 ## In Progress
 
-- [ ] 009-model-loader
+- [ ] 010-scheduler
 
 ## Blocked
 
@@ -28,10 +28,11 @@
 - [x] 006-model-registry
 - [x] 007-hardware-profiler
 - [x] 008-runtime
+- [x] 009-model-loader
 
 ## Next
 
-- 010-scheduler
+- 011-kv-manager
 
 ## Definition Of Done
 
@@ -42,8 +43,7 @@
 
 ## Forbidden Work
 
-- `internal/scheduler/`
-- llama.cpp / inference bindings (until task 009+)
+- llama.cpp / inference bindings (until v0.6)
 - `internal/agents/`
 - Kubernetes
 
