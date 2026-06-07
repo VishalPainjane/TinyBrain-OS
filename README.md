@@ -38,7 +38,7 @@ Full architecture: [docs/architecture/overview.md](docs/architecture/overview.md
 
 ## Quick Start
 
-**Current state:** Month 1 foundation shipped at tag `v0.3`. Month 2 (runtime) in progress.
+**Current state:** v0.4 Runtime shipped at tag `v0.4`. Month 2 active — v0.5 model registry next.
 
 ```bash
 go test ./...
@@ -53,7 +53,7 @@ brain-top
 
 ## Current Version
 
-**V0.4 Runtime** — [docs/current.md](docs/current.md) | Sprint: [planning/execution/current-sprint.md](planning/execution/current-sprint.md)
+**V0.5 Model Registry** — [docs/current.md](docs/current.md) | Sprint: [planning/execution/current-sprint.md](planning/execution/current-sprint.md)
 
 ## Roadmap
 
@@ -62,8 +62,8 @@ brain-top
 | v0.1 | Kernel — process model + table | Shipped |
 | v0.2 | Registry — agent/model definitions + events | Shipped |
 | v0.3 | Hardware profiler | Shipped |
-| v0.4 | Runtime shell + stub provider | In Progress |
-| v0.5 | Persistent model registry | Planned |
+| v0.4 | Runtime shell + stub provider | Shipped |
+| v0.5 | Persistent model registry | In Progress |
 | v0.6 | llama.cpp inference | Planned |
 | v0.7 | MLFQ scheduler | Planned |
 | v0.8 | Plugin agents | Planned |

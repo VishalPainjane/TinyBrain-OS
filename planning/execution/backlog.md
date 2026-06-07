@@ -4,7 +4,6 @@ Tasks not yet started or scheduled for future months. Active week plan: [roadmap
 
 | Priority | Task | Target month | Reason | Dependencies |
 |----------|------|--------------|--------|--------------|
-| HIGH | 010-scheduler | 3 | FIFO then MLFQ (v0.7) | 008-runtime, 004-event-bus |
 | MEDIUM | 011-kv-manager | 3 | KV save/load events | v0.4 runtime |
 | MEDIUM | 012-swap-manager | 3 | VRAM→RAM tier movement | 011-kv-manager |
 | MEDIUM | 013-brain-top | 3 / 6 | Prototype Week 12; polish Week 22 | 010-scheduler |
@@ -16,7 +15,7 @@ Tasks not yet started or scheduled for future months. Active week plan: [roadmap
 | LOW | 018-benchmark-suite | 6 | Swarm vs monolith report | v0.8 agents |
 
 **Completed Month 1:** 001–007  
-**Completed Month 2 (in progress):** 008–009
+**Completed Month 2 (in progress):** 008–010
 
 ---
 **Layer:** planning

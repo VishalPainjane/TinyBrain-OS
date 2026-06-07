@@ -4,7 +4,7 @@ CEO-level view. No technical details, packages, or interfaces — those live in 
 
 ## Current Version
 
-**V0.4 Runtime** — Month 1 shipped at tag `v0.3`; Month 2 active.
+**V0.5 Model Registry** — v0.4 Runtime shipped (tag `v0.4`); Month 2 active.
 
 ## Target Version
 
@@ -14,12 +14,12 @@ CEO-level view. No technical details, packages, or interfaces — those live in 
 
 | # | Milestone | Outcome | Status |
 |---|-----------|---------|--------|
-| M1 | Single model runtime | Prove load/unload one model under resource budget | Planned (Month 2) |
-| M2 | Model switching | Dynamic swap between models | Planned (Month 2) |
+| M1 | Single model runtime | Prove load/unload one model under resource budget | **Partial** (stub runtime + loader; real inference v0.6) |
+| M2 | Model switching | Dynamic swap between models | **Partial** (stub swap shipped; real GGUF swap v0.6) |
 | M3 | Registry + events | Plugin definitions and decoupled event core | Partial (events + registry shipped) |
 | M4 | Hardware profiling | Adaptive behavior per detected profile | **Complete** |
-| M5 | Runtime + inference | Real GGUF inference via provider adapter | Planned (Month 2) |
-| M6 | Scheduler | Priority queues, preemption, VRAM-aware scheduling | Planned (Month 3) |
+| M5 | Runtime + inference | Real GGUF inference via provider adapter | **Partial** (runtime shell shipped v0.4; inference v0.6) |
+| M6 | Scheduler | Priority queues, preemption, VRAM-aware scheduling | **Partial** (FIFO skeleton shipped; MLFQ v0.7) |
 | M7 | Plugin agents | User-defined agent fleet via registry | Planned (Month 4) |
 | M8 | brain-top TUI | Live runtime visibility (htop for AI) | Planned |
 | M9 | Kubernetes operator | CRDs and controllers for Agent, Task, KVCache, SwapPolicy | Planned (Month 5) |
@@ -55,7 +55,8 @@ Week-by-week breakdown (Week 1–24). CEO summary stays here; execution detail l
 
 | Topic | Detail |
 |-------|--------|
-| M1 / M2 | Achieved Week 8 (v0.6 inference), not Month 1 |
+| M1 / M2 | Stub load/swap at v0.4; full GGUF achievement still Week 8 (v0.6) |
+| v0.4 | Runtime shell shipped at tag `v0.4` |
 | M3 | Events + registry shipped Month 1; full pipeline Week 15 |
 | M4 | Hardware profiling shipped Month 1 |
 | brain-top | Prototype Week 12 (Month 3); production Week 22 (Month 6) |

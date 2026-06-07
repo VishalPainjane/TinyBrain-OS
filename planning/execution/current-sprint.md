@@ -4,7 +4,7 @@
 
 **Name:** Runtime Foundation
 **Goal:** Establish runtime shell and model loader primitives (Month 2)
-**Version:** V0.4
+**Version:** V0.5
 
 ## Current Task
 
@@ -50,9 +50,9 @@
 
 ## Active References
 
-- Spec: [docs/specs/v0.4-runtime.md](../../docs/specs/v0.4-runtime.md)
-- Contract: [docs/contracts/runtime.md](../../docs/contracts/runtime.md)
-- Month 1 release: tag `v0.3`
+- Spec: [docs/specs/v0.5-model-registry.md](../../docs/specs/v0.5-model-registry.md)
+- Contract: [docs/contracts/registry.md](../../docs/contracts/registry.md)
+- Prior release: tag `v0.4`
 
 ---
 **Layer:** planning

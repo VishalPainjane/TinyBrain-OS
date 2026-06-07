@@ -8,11 +8,11 @@
 
 ## Success criteria (month end)
 
-- [ ] v0.4 Runtime shipped (stub InferenceProvider)
+- [x] v0.4 Runtime shipped (stub InferenceProvider)
 - [ ] v0.5 Model Registry shipped (persistent metadata)
 - [ ] v0.6 Inference shipped (llama.cpp adapter)
 - [ ] M1 and M2 demonstrated with real GGUF Q4_K_M models
-- [ ] INV-001 and INV-008 verified (scheduler still has zero inference imports)
+- [x] INV-001 and INV-008 verified (scheduler still has zero inference imports)
 - [ ] Assumptions updated: mmap on Windows, 4GB VRAM budget
 
 ---
