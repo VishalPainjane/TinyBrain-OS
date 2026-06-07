@@ -1,0 +1,135 @@
+---
+description: TinyBrain OS development SOP — behavioral rules for AI and human contributors
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# TinyBrain OS Development SOP
+
+You are contributing to TinyBrain OS. Treat [AGENTS.md](../../AGENTS.md), [docs/current.md](../../docs/current.md), and the active task as source of truth.
+
+## Development Rules
+
+1. Never modify architecture unless explicitly requested.
+2. Never implement future versions.
+3. Never work outside the active sprint.
+4. Never work outside the active task.
+5. Never create new folders, packages, abstractions, or services unless required by the active task.
+6. Never implement roadmap items scheduled for future versions.
+7. Never generate placeholder systems for future features.
+8. Never introduce runtime, scheduler, inference, memory, telemetry, Kubernetes, agents, swapping, or model-loading logic unless the active task explicitly requires it.
+9. Prefer the simplest implementation that satisfies task requirements.
+10. All code must compile.
+11. All code must be tested.
+12. Every exported type and function must have comments.
+13. Follow Go idioms.
+14. Favor composition over inheritance-like patterns.
+15. Keep files small and focused.
+
+## Architectural Invariants
+
+- Agents are plugins.
+- Hardware determines model selection.
+- Scheduler never depends on runtime implementation.
+- Runtime never depends on inference engines.
+- Runtime never depends on UI.
+- Registry owns discovery.
+- Event bus owns communication.
+- Process table owns process state.
+- Code-first truth always wins.
+
+## Task Execution Protocol
+
+Before coding:
+
+1. Explain understanding of the task.
+2. List files that will be modified.
+3. List acceptance criteria.
+4. Identify potential architecture violations.
+
+## Implementation Protocol
+
+- Follow task requirements exactly.
+- Do not expand scope.
+- Do not refactor unrelated files.
+- Do not redesign architecture.
+- Do not optimize prematurely.
+
+## Testing Protocol
+
+- Add unit tests.
+- Verify acceptance criteria.
+- Verify existing tests still pass.
+- Explain what was tested.
+
+## Review Protocol
+
+After implementation provide: Summary, Files Changed, Acceptance Criteria Check, Risks, Out-of-Scope Work.
+
+## Documentation Sync
+
+On task completion, suggest updates for planning/execution/completed.md, architecture-evolution/current-state.md, docs/current.md. Do not modify automatically unless requested.
+
+## Security Rules
+
+- Never store secrets in code.
+- Never hardcode API keys.
+- Never commit credentials.
+- Use environment variables.
+- Assume the repository is public.
+
+See also [security.mdc](security.mdc).
+
+## Dependency Rules
+
+Before adding a dependency:
+
+1. Justify why the standard library is insufficient.
+2. Explain maintenance cost.
+3. Explain alternative options.
+4. Obtain approval.
+
+No dependency may be added silently.
+
+## Refactoring Rules
+
+**Allowed:** active task files, directly related code.
+
+**Forbidden:** repository-wide refactors, renaming unrelated packages, architecture rewrites, style-only refactors.
+
+## Documentation Rules
+
+Documentation reflects reality. Never document unimplemented features as complete. Specs describe intended behavior. Code describes implemented behavior. current.md describes actual status.
+
+## Scope Protection
+
+When implementing a task:
+
+- If a future problem is discovered — document it; do not solve it now.
+- If a future abstraction seems useful — document it; do not build it now.
+- If future architecture changes seem beneficial — create an RFC; do not implement.
+
+## Definition of Done
+
+A task is complete only if:
+
+- Acceptance criteria pass.
+- Tests pass.
+- No architecture violations.
+- No TODO placeholders.
+- No unimplemented stubs.
+- No dead code.
+- Documentation impact identified.
+
+## Git and GitHub Rules
+
+Branch, commit, PR, tag, and release rules live in [github-workflow.mdc](github-workflow.mdc). Follow that file for all Git operations.
+
+## Architecture Protection
+
+Do not create new top-level packages, services, abstractions, or subsystems without explicit approval. Prefer extending existing systems.
+
+## Anti-Hallucination Protocol
+
+If required information is missing — STOP. Do not invent interfaces, APIs, contracts, behaviors, or data structures. List missing information and request clarification.

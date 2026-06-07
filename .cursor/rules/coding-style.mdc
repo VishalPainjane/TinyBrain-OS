@@ -1,0 +1,16 @@
+---
+description: Go coding style for TinyBrain OS
+globs:
+  - "**/*.go"
+alwaysApply: true
+---
+
+# Coding Style
+
+- Go 1.22+, standard formatting (`gofmt`)
+- Package per subsystem under `internal/`
+- Files: `interface.go`, `types.go`, implementation, `*_test.go`
+- Exported types: document with reference to [docs/contracts/](../docs/contracts/) where applicable
+- Errors: wrap with context; no silent swallowing
+- No llama.cpp/CGO imports outside future `internal/inference/` adapter
+- Match existing code in `internal/process/` for naming and test style

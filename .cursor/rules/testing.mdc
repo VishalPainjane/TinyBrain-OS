@@ -1,0 +1,14 @@
+---
+description: Testing rules for TinyBrain OS
+globs:
+  - "**/*_test.go"
+alwaysApply: true
+---
+
+# Testing
+
+- Table-driven tests preferred
+- Test file naming: `{package}_test.go` or `{file}_test.go`
+- Run `go test ./...` before completing any task
+- Test boundary violations: scheduler must not import inference packages
+- ProcessState tests in `internal/process/state_test.go` are the reference pattern

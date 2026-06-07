@@ -1,0 +1,19 @@
+---
+description: TinyBrain OS architectural boundaries and doc layers
+globs:
+  - "**/*.go"
+  - "**/*.md"
+alwaysApply: true
+---
+
+# Architecture Rules
+
+Start every session: [planning/README.md](../planning/README.md) → [docs/current.md](../docs/current.md).
+
+- Follow [docs/constitution.md](../docs/constitution.md) and [docs/architecture/invariants.md](../docs/architecture/invariants.md)
+- Use terms from [docs/glossary.md](../docs/glossary.md) only
+- Respect forbidden packages in docs/current.md
+- Never mix doc layers (law / architecture / contract / spec / task / planning)
+- New markdown docs: copy from [docs/templates/](../docs/templates/)
+- Code-first: docs reflect implemented state, not planned state
+- No hardcoded agent types (Planner/Coder/etc.) in internal/ core packages

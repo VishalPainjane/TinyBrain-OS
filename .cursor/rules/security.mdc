@@ -1,0 +1,16 @@
+---
+description: Security rules for TinyBrain OS — always enforced
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# Security Rules
+
+- Never store secrets in code.
+- Never hardcode API keys, tokens, or passwords.
+- Never commit credentials, `.env` files with secrets, or private keys.
+- Use environment variables for sensitive configuration.
+- Assume the repository is public at all times.
+- Never log secrets or PII in telemetry or debug output.
+- Review third-party dependencies before adding (see development-sop.mdc Dependency Rules).

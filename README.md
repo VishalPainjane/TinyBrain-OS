@@ -1,63 +1,76 @@
 # TinyBrain OS
 
-## What is TinyBrain?
+## Vision
 
-TinyBrain OS is a local-first, resource-aware runtime for orchestrating specialized LLM agents on constrained hardware. It treats agents like operating-system processes and focuses on scheduling, memory management, model loading, and structured inter-agent communication rather than a conventional chatbot workflow.
+TinyBrain OS is a hardware-aware AI runtime kernel for dynamically orchestrating specialized agents on constrained local hardware. Instead of one monolithic model handling every task, TinyBrain treats agents as scheduled processes — loaded when needed, swapped when idle, and coordinated under strict VRAM and RAM budgets.
 
-## Why does it exist?
+Local AI fails on consumer hardware when treated as a single-model problem. TinyBrain exists to make it practical: dynamic capability allocation, not static model-centric workflows.
 
-Most AI systems assume large cloud hardware or a single monolithic model. TinyBrain exists to explore a different idea: smaller specialized models can be orchestrated intelligently to behave like a lightweight operating system for AI work. The goal is to run useful agent workflows on consumer hardware while staying offline-capable and resource-efficient.
+See also: [planning/roadmap/master-roadmap.md](planning/roadmap/master-roadmap.md)
 
-## High-level architecture
+## Architecture Diagram
 
-```
+```text
 User
   ↓
-Proxy Router
+API
   ↓
-Orchestrator
+Router
   ↓
-Scheduler (MLFQ)
+Scheduler
   ↓
-Agent Runtime
+Runtime
   ↓
-Local Models (GGUF / llama.cpp)
+InferenceProvider
+  ↓
+Models (GGUF / llama.cpp)
 ```
 
 Core principles:
-- Local-first and edge-first
-- Dynamic model swapping instead of keeping everything loaded
-- Structured JSON IPC between agents
-- Preemption and priority-based scheduling
-- KV cache persistence as a first-class runtime primitive
-- Memory mapping and VRAM/RAM/NVMe tiering for constrained devices
 
-## Current roadmap
+- Local-first, hardware-aware
+- Agents are plugins (registry-defined, not hardcoded)
+- Structured JSON IPC between components
+- Scheduler independent from inference engine
+- Dynamic model swapping under resource budget
 
-**Day 1**
-- Write the project README
-- Lock the core thesis and scope
+Full architecture: [docs/architecture/overview.md](docs/architecture/overview.md)
 
-**MVP**
-- Single model load/unload flow
-- Basic model registry
-- Minimal runtime wrapper around `llama.cpp`
+## Quick Start
 
-**Next**
-- Planner + Coder agent loop
-- Scheduler with priority queues
-- Process table and live state tracking
+**Current state (V0.3 — Month 1 foundation):** kernel, events, registry, and hardware profiling. Shipped together at tag `v0.3`.
 
-**Later**
-- KV cache save/restore
-- brain-top TUI
-- Kubernetes operator and CRDs
-- Benchmarks and observability
+```bash
+go test ./...
+```
 
-## Current status
+Future commands (not yet implemented):
 
-TinyBrain OS is in the design and planning phase. The core architecture, agent roles, runtime direction, and scheduling philosophy are defined, but the implementation is still intentionally small for the first milestone. The immediate goal is to build a clean foundation before adding more agents, more tooling, or more infrastructure.
+```bash
+tinybrain run "your task"
+brain-top
+```
+
+## Current Version
+
+**V0.3 Hardware** — [docs/current.md](docs/current.md) | Sprint: [planning/execution/current-sprint.md](planning/execution/current-sprint.md)
+
+## Roadmap
+
+| Version | Goal | Status |
+|---------|------|--------|
+| v0.1 | Kernel — process model + table | Shipped |
+| v0.2 | Registry — agent/model definitions + events | Shipped |
+| v0.3 | Hardware profiler | Shipped |
+| v0.4 | Runtime shell + stub provider | Planned (Month 2) |
+| v0.5 | Persistent model registry | Planned |
+| v0.6 | llama.cpp inference | Planned |
+| v0.7 | MLFQ scheduler | Planned |
+| v0.8 | Plugin agents | Planned |
+| v1.0 | Integrated runtime + brain-top | Planned |
+
+Details: [docs/specs/](docs/specs/) and [planning/roadmap/master-roadmap.md](planning/roadmap/master-roadmap.md)
 
 ---
 
-*TinyBrain OS is being built as a systems project, not a chatbot project.*
+*TinyBrain OS is a systems project — a local operating system for AI agents, not a chatbot wrapper.*

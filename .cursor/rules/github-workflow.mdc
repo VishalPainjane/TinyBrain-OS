@@ -1,0 +1,296 @@
+---
+description: TinyBrain OS GitHub development governance — Git history is part of the architecture
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# TinyBrain OS GitHub Development Governance
+
+## Purpose
+
+GitHub is not a backup system.
+
+GitHub is the official development history of TinyBrain OS.
+
+- Documentation explains intent.
+- Code implements behavior.
+- Git history explains execution.
+
+All three must remain synchronized.
+
+## Repository Philosophy
+
+The repository must always be in a state where:
+
+- A new developer can understand progress.
+- An AI agent can resume development.
+- A reviewer can understand decisions.
+- A future version can be built safely.
+
+GitHub history is considered part of the architecture.
+
+Never delete: ADRs, RFCs, release notes, completed tasks, retrospectives.
+
+## Branch Strategy
+
+**Protected branch:** `main`
+
+**Rules:**
+
+- `main` must always compile.
+- `main` must always pass tests.
+- `main` must always be releasable.
+- No experimental work on `main`.
+- No direct commits to `main`.
+
+Development happens in feature branches.
+
+## Branch Naming Convention
+
+**Format:** `feature/task-XXX-name`
+
+**Examples:**
+
+- `feature/task-002-process-table`
+- `feature/task-003-event-types`
+- `feature/task-004-event-bus`
+- `feature/task-005-agent-registry`
+
+**Bug fixes:** `fix/process-table-race`
+
+**Documentation:** `docs/v0.4-runtime-spec`
+
+**Research:** `research/mlfq-notes`
+
+**Forbidden:** `new-branch`, `testing`, `changes`, `temp`, `work`
+
+## Commit Rules
+
+One task = one commit.
+
+One commit must represent one logical unit of work.
+
+**Commit types:** `feat(...)`, `fix(...)`, `refactor(...)`, `test(...)`, `docs(...)`, `chore(...)`
+
+**Examples:**
+
+- `feat(process): implement process table`
+- `feat(events): add typed event definitions`
+- `test(process): add process table tests`
+- `docs(specs): update v0.1 acceptance criteria`
+
+**Forbidden:** `update`, `changes`, `work`, `final`, `done`, `misc`
+
+## Pull Request Rules
+
+Every pull request must contain:
+
+- Task
+- Summary
+- Files Changed
+- Acceptance Criteria
+- Tests
+- Risks
+- Out Of Scope
+
+**Before merge:**
+
+- Tests pass.
+- CI passes.
+- Acceptance criteria satisfied.
+- No architecture violations.
+- No scope expansion.
+
+## Version Tags
+
+Task completion is not a release.
+
+Version completion is a release.
+
+Create tags only after version completion.
+
+**Examples:** `v0.1`, `v0.2`, `v0.3`, `v0.4`
+
+**Tag requirements:**
+
+- Tests pass.
+- Documentation updated.
+- Release notes written.
+- Version acceptance criteria satisfied.
+
+## Release Notes
+
+After every version, create or update [planning/releases/](../../planning/releases/vX.Y.md).
+
+**Structure:**
+
+- Goals
+- Implemented Features
+- Deferred Features
+- Known Issues
+- Lessons Learned
+- Architecture Impact
+- Future Work
+
+See also [planning/roadmap/update-checklist.md](../../planning/roadmap/update-checklist.md).
+
+## Documentation Synchronization
+
+**After every completed task, update:**
+
+- [planning/execution/completed.md](../../planning/execution/completed.md)
+- [planning/execution/current-sprint.md](../../planning/execution/current-sprint.md)
+- [planning/execution/backlog.md](../../planning/execution/backlog.md)
+- [docs/current.md](../../docs/current.md)
+
+If documentation does not match implementation: **implementation wins**. Documentation must be corrected.
+
+**After every completed version, also update:** [planning/roadmap/master-roadmap.md](../../planning/roadmap/master-roadmap.md), [planning/releases/](../../planning/releases/), [docs/specs/](../../docs/specs/).
+
+## Architecture Change Workflow
+
+Architectural changes require:
+
+1. ADR creation in [docs/adr/](../../docs/adr/)
+2. Contract update in [docs/contracts/](../../docs/contracts/)
+3. Architecture document update in [docs/architecture/](../../docs/architecture/)
+4. Approval
+
+No architectural changes may be merged without these steps.
+
+## RFC Workflow
+
+Future ideas must never be implemented directly. Future ideas become RFCs.
+
+**Location:** [docs/rfc/](../../docs/rfc/)
+
+**Examples:**
+
+- `RFC-001-KV-Hibernation.md`
+- `RFC-002-Advanced-Scheduler.md`
+- `RFC-003-Kubernetes-Operator.md`
+
+**Workflow:** Idea → RFC → Review → Roadmap → Implementation
+
+**Never:** Idea → Implementation
+
+## Recovery Workflow
+
+Before every development session, read:
+
+1. [AGENTS.md](../../AGENTS.md)
+2. [docs/current.md](../../docs/current.md)
+3. [planning/execution/current-sprint.md](../../planning/execution/current-sprint.md)
+4. Active task in [tasks/](../../tasks/)
+5. Relevant [docs/contracts/](../../docs/contracts/)
+6. Relevant [docs/specs/](../../docs/specs/)
+
+Only after reading these files may implementation begin.
+
+This guarantees development continuity after days, weeks, or months away from the project.
+
+## Milestone Workflow
+
+After every milestone, create [planning/milestones/milestone-X.md](../../planning/milestones/).
+
+**Contents:**
+
+- Goal
+- Actual Outcome
+- Demo
+- Issues
+- Lessons Learned
+- Next Steps
+
+## CI/CD Rules
+
+All merges require `go test ./...` to pass.
+
+Failing CI blocks merge. No exceptions.
+
+Enforced by [.github/workflows/ci.yml](../../.github/workflows/ci.yml).
+
+## Rewrite Protection
+
+Working software has priority over architectural perfection.
+
+Do not rewrite a subsystem unless:
+
+1. Limitation is documented.
+2. Benefit is measurable.
+3. Migration path exists.
+4. ADR exists.
+5. Rewrite cost is justified.
+
+MVP code is not automatically bad code.
+
+## Security Rules
+
+Never commit: API keys, credentials, secrets, tokens, local configuration.
+
+Use `.env.example`. Never `.env`.
+
+Assume the repository is public.
+
+See also [security.mdc](security.mdc).
+
+## Agentic Development Rules
+
+AI agents are contributors — not architects.
+
+**AI agents may:**
+
+- Implement tasks
+- Write tests
+- Refactor scoped code
+- Improve documentation
+
+**AI agents may not** (without explicit approval):
+
+- Change architecture
+- Create new subsystems
+- Expand scope
+- Invent contracts
+- Introduce dependencies
+
+## Anti-Hallucination Protocol
+
+If required information is missing — **STOP**.
+
+Do not invent: APIs, interfaces, contracts, behaviors, data structures.
+
+Instead:
+
+1. List missing information.
+2. Request clarification.
+3. Wait for instruction.
+
+## Source of Truth Hierarchy
+
+When conflicts exist:
+
+1. Constitution
+2. ADRs
+3. Contracts
+4. Specs
+5. Tasks
+6. Code
+7. Documentation
+
+`current.md` reflects actual repository status.
+
+Code is implementation truth. Documentation must follow reality.
+
+## TinyBrain Development Principle
+
+- Small tasks.
+- Small commits.
+- Small releases.
+- No architecture drift.
+- No scope creep.
+- No speculative engineering.
+
+Build only the current version.
+
+Everything else belongs in roadmap, ADRs, or RFCs.

@@ -1,0 +1,19 @@
+---
+description: Immutable pre-task gate for TinyBrain OS development
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# Development Workflow
+
+Before every task:
+
+1. Read [AGENTS.md](../../AGENTS.md)
+2. Read [docs/current.md](../../docs/current.md)
+3. Read [planning/execution/current-sprint.md](../../planning/execution/current-sprint.md)
+4. Read the active task in [tasks/](../../tasks/)
+5. Read the related [docs/contracts/](../../docs/contracts/)
+6. Read the related [docs/specs/](../../docs/specs/)
+
+Only then begin implementation.
