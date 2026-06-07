@@ -8,11 +8,11 @@
 
 ## Current Task
 
-010-scheduler
+011-kv-manager
 
 ## In Progress
 
-- [ ] 010-scheduler
+- [ ] 011-kv-manager
 
 ## Blocked
 
@@ -29,10 +29,11 @@
 - [x] 007-hardware-profiler
 - [x] 008-runtime
 - [x] 009-model-loader
+- [x] 010-scheduler
 
 ## Next
 
-- 011-kv-manager
+- 012-swap-manager
 
 ## Definition Of Done
 
