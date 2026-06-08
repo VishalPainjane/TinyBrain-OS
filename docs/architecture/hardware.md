@@ -58,6 +58,11 @@ Model inference; agent execution.
 
 ADR-001
 
+## Related Architecture
+
+[cross-platform.md](cross-platform.md) — OS and inference backend portability rules  
+[inference-backend-matrix.md](inference-backend-matrix.md) — per-backend capability and CI truth
+
 ---
 **Layer:** architecture
 **Source:** detail.md Part 1, Day 6 hardware-profiles.md

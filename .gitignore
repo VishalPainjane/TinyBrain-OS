@@ -1,0 +1,5 @@
+# llama.cpp submodule build artifacts
+third_party/llama.cpp/build/
+
+# Local GGUF test artifacts (optional)
+*.gguf
