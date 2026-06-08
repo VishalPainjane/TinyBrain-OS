@@ -9,7 +9,7 @@
 ## Success criteria (month end)
 
 - [x] v0.4 Runtime shipped (stub InferenceProvider)
-- [ ] v0.5 Model Registry shipped (persistent metadata)
+- [x] v0.5 Model Registry shipped (persistent metadata)
 - [ ] v0.6 Inference shipped (llama.cpp adapter)
 - [ ] M1 and M2 demonstrated with real GGUF Q4_K_M models
 - [x] INV-001 and INV-008 verified (scheduler still has zero inference imports)
@@ -43,7 +43,7 @@
 
 **Goal:** Loader lifecycle + persistent model registry; ship v0.5.
 
-**Tasks:** [009-model-loader](../../tasks/009-model-loader.md), extend [006-model-registry](../../tasks/006-model-registry.md)
+**Tasks:** [006-registry-persistence](../../tasks/006-registry-persistence.md) (009-model-loader complete)
 
 **Version progress:** v0.5 → 100%
 

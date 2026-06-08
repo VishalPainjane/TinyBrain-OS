@@ -1,10 +1,11 @@
 # Backlog
 
-Tasks not yet started or scheduled for future months. Active week plan: [roadmap/months/](../roadmap/months/).
+Tasks not yet started or scheduled for future months. Active week plan: [roadmap/months/](../roadmap/months/). **Active sprint task is not listed here** — see [current-sprint.md](current-sprint.md).
 
 | Priority | Task | Target month | Reason | Dependencies |
 |----------|------|--------------|--------|--------------|
-| MEDIUM | 011-kv-manager | 3 | KV save/load events | v0.4 runtime |
+| HIGH | v0.6 inference (extend 009) | 2 | llama.cpp adapter, M1/M2 demo | 006-registry-persistence, v0.5 ship |
+| MEDIUM | 011-kv-manager | 3 | KV save/load events | v0.7 MLFQ in progress |
 | MEDIUM | 012-swap-manager | 3 | VRAM→RAM tier movement | 011-kv-manager |
 | MEDIUM | 013-brain-top | 3 / 6 | Prototype Week 12; polish Week 22 | 010-scheduler |
 | MEDIUM | 014-agent-plugin | 4 | v0.8 agent contract | 008-runtime, 005 |
@@ -15,8 +16,11 @@ Tasks not yet started or scheduled for future months. Active week plan: [roadmap
 | LOW | 018-benchmark-suite | 6 | Swarm vs monolith report | v0.8 agents |
 
 **Completed Month 1:** 001–007  
-**Completed Month 2 (in progress):** 008–010
+**Completed Month 2 (adjacent):** 008–010  
+**Active (sprint):** [006-registry-persistence](../../tasks/006-registry-persistence.md) — v0.5
+
+**Note:** 011-kv-manager was incorrectly listed as V0.5 active task; realigned 2026-06-08 per planning assessment.
 
 ---
 **Layer:** planning
-**Last updated:** 2026-06-07
+**Last updated:** 2026-06-08

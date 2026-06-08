@@ -1,0 +1,8 @@
+models:
+  - id: tinyllama-q4
+    path: /models/tinyllama-q4.gguf
+    size_bytes: 637534208
+    memory_budget: 2147483648
+    quantization: Q4_K_M
+    capabilities:
+      - chat

@@ -38,6 +38,7 @@ Models are described by path, size, memory budget, and capabilities. Hardware pr
 ## Related
 
 - Spec: [docs/specs/v0.2-registry.md](../docs/specs/v0.2-registry.md), [v0.5-model-registry.md](../docs/specs/v0.5-model-registry.md)
+- Follow-on: [006-registry-persistence.md](006-registry-persistence.md) (v0.5 persistence)
 - ADR-001
 
 ---

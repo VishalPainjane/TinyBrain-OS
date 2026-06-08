@@ -2,17 +2,17 @@
 
 ## Sprint
 
-**Name:** Runtime Foundation
-**Goal:** Establish runtime shell and model loader primitives (Month 2)
-**Version:** V0.5
+**Name:** Runtime and Inference
+**Goal:** Ship v0.6 llama.cpp adapter (Month 2 Weeks 7–8)
+**Version:** V0.6
 
 ## Current Task
 
-011-kv-manager
+009-model-loader (v0.6 inference extension)
 
 ## In Progress
 
-- [ ] 011-kv-manager
+(none)
 
 ## Blocked
 
@@ -26,6 +26,7 @@
 - [x] 004-event-bus
 - [x] 005-agent-registry
 - [x] 006-model-registry
+- [x] 006-registry-persistence
 - [x] 007-hardware-profiler
 - [x] 008-runtime
 - [x] 009-model-loader
@@ -33,7 +34,8 @@
 
 ## Next
 
-- 012-swap-manager
+- v0.6 inference — extend [009-model-loader](../../tasks/009-model-loader.md)
+- Month 3: [011-kv-manager](../../tasks/011-kv-manager.md) (after v0.7 MLFQ)
 
 ## Definition Of Done
 
@@ -44,16 +46,16 @@
 
 ## Forbidden Work
 
-- llama.cpp / inference bindings (until v0.6)
 - `internal/agents/`
 - Kubernetes
+- [011-kv-manager](../../tasks/011-kv-manager.md) and [012-swap-manager](../../tasks/012-swap-manager.md) (Month 3)
 
 ## Active References
 
-- Spec: [docs/specs/v0.5-model-registry.md](../../docs/specs/v0.5-model-registry.md)
-- Contract: [docs/contracts/registry.md](../../docs/contracts/registry.md)
-- Prior release: tag `v0.4`
+- Spec: [docs/specs/v0.6-inference.md](../../docs/specs/v0.6-inference.md)
+- Contract: [docs/contracts/runtime.md](../../docs/contracts/runtime.md)
+- Prior release: tag `v0.5` — [planning/releases/v0.5.md](../releases/v0.5.md)
 
 ---
 **Layer:** planning
-**Last updated:** 2026-06-07
+**Last updated:** 2026-06-08
