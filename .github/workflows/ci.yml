@@ -21,6 +21,7 @@ jobs:
 
   inference-cgo:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,17 +31,25 @@ jobs:
           go-version: "1.22"
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential cmake
-      - name: Build llama.cpp (CPU)
+      - name: Build llama.cpp (CPU, libraries only)
         run: |
           cmake -S third_party/llama.cpp -B third_party/llama.cpp/build \
             -DCMAKE_BUILD_TYPE=Release \
             -DLLAMA_BUILD_TESTS=OFF \
+            -DLLAMA_BUILD_TOOLS=OFF \
+            -DLLAMA_BUILD_EXAMPLES=OFF \
+            -DLLAMA_BUILD_SERVER=OFF \
+            -DLLAMA_BUILD_APP=OFF \
+            -DLLAMA_BUILD_UI=OFF \
+            -DLLAMA_BUILD_COMMON=OFF \
             -DLLAMA_CURL=OFF \
             -DGGML_CUDA=OFF \
             -DGGML_METAL=OFF \
             -DGGML_VULKAN=OFF \
-            -DGGML_HIP=OFF
-          cmake --build third_party/llama.cpp/build -j
+            -DGGML_HIP=OFF \
+            -DGGML_CCACHE=OFF
+          cmake --build third_party/llama.cpp/build --target llama -j"$(nproc)"
+          test -f third_party/llama.cpp/build/bin/libllama.so
       - name: Test inference package (CGO CPU)
         env:
           CGO_ENABLED: "1"
