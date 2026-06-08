@@ -8,8 +8,8 @@ Spec-level completion. Update when tasks complete or acceptance criteria are met
 | V0.2 Registry | 100% | Shipped | 1 | — |
 | V0.3 Hardware | 100% | Shipped | 1 | — |
 | V0.4 Runtime | 100% | Shipped | 2 | — |
-| V0.5 Model Registry | 0% | In Progress | 2 | 006 (persistence) |
-| V0.6 Inference | 0% | Not Started | 2 | llama.cpp adapter |
+| V0.5 Model Registry | 100% | Shipped | 2 | — |
+| V0.6 Inference | 35% | In Progress | 2 | 009b Generate, runtime integration |
 | V0.7 Scheduler | 0% | Not Started | 3 | MLFQ (010 FIFO skeleton shipped) |
 | V0.8 Agents | 0% | Not Started | 4 | 014, integration |
 | V1.0 | 0% | Not Started | 6 | full integration |
@@ -18,6 +18,10 @@ Spec-level completion. Update when tasks complete or acceptance criteria are met
 
 **v0.4 shipped:** Runtime shell (008); stub loader (009) and FIFO scheduler skeleton (010) completed same sprint but outside v0.4 spec scope.
 
+**v0.5 shipped:** tag `v0.5` — persistent model registry (006-registry-persistence).
+
+**v0.6 in progress:** 009a merged (~35%); 009b Generate active.
+
 **Note:** Tool registry (v0.2 spec) deferred — no Month 1 task.
 
 **Monthly plans:** [roadmap/months/](../roadmap/months/)
@@ -25,4 +29,4 @@ Spec-level completion. Update when tasks complete or acceptance criteria are met
 ---
 **Layer:** planning
 **Related:** [../../docs/specs/](../../docs/specs/), [../releases/](../releases/)
-**Last updated:** 2026-06-07
+**Last updated:** 2026-06-08

@@ -83,5 +83,14 @@ Append-only history. Never delete entries.
 **Outcome:** Success — bbolt `ModelStore`, `models.yaml` seed-on-empty, restart persistence tests pass
 **Files:** internal/registry/models.go, internal/registry/models_store.go, internal/registry/models_memory.go, internal/registry/models_bolt.go, internal/registry/models_yaml.go, internal/registry/models_bolt_test.go, testdata/models.yaml
 
+## 009a-llama-cgo-load
+
+**Completed:** 2026-06-08
+**Commit:** `f67c491` (merge PR #2)
+**Outcome:** Success — llama.cpp CPU CGO LoadModel/UnloadModel via `LlamaProvider`; submodule pinned `b9553` @ `9e3b928fd8c9d14dbf15a8768b9fdd7e5c721d66`; `inference-cgo` CI green
+**Files:** internal/inference/llama/, third_party/llama.cpp, .gitmodules, .github/workflows/ci.yml, tests/import_boundary_test.go, tests/deps.go, .gitignore, README.md (build docs)
+
+**Note:** Generate, runtime wiring, and CUDA execution deferred to 009b+.
+
 ---
 **Layer:** planning

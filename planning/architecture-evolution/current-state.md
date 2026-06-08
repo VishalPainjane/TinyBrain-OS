@@ -2,7 +2,7 @@
 
 Code-first snapshot. Update after every completed task.
 
-**Last verified:** 2026-06-07
+**Last verified:** 2026-06-08
 
 ## Implemented
 
@@ -13,20 +13,23 @@ Code-first snapshot. Update after every completed task.
 | Event types (13 core events) | `internal/events/types.go` | Complete, tested |
 | Event bus (channel pub/sub) | `internal/events/bus.go` | Complete, tested |
 | Agent registry | `internal/registry/agents.go` | Complete, tested |
-| Model registry | `internal/registry/models.go` | Complete, tested |
+| Model registry (in-memory + bbolt) | `internal/registry/models*.go` | Complete, tested |
 | Hardware probe + profiles | `internal/hardware/` | Complete, tested |
+| Runtime shell + StubProvider | `internal/runtime/` | Complete, tested |
+| Model loader (stub lifecycle) | `internal/loader/` | Complete, tested |
+| FIFO scheduler skeleton | `internal/scheduler/` | Complete, tested |
+| llama.cpp adapter (CPU load/unload) | `internal/inference/llama/` | Partial (009a) — Generate stub; not wired to runtime |
 
 ## In Progress
 
 | Component | Task | Status |
 |-----------|------|--------|
-| Runtime shell | 008-runtime | Not started (Month 2) |
+| llama.cpp Generate | 009b | Not started |
 
 ## Not Implemented
 
-- Model loader, persistence
-- Scheduler
-- Inference provider / llama.cpp adapter
+- Runtime ↔ LlamaProvider integration
+- CUDA / Metal / ROCm / Vulkan inference backends
 - Agent plugins, tool registry
 - Telemetry, brain-top TUI
 - KV manager, swap manager
@@ -34,15 +37,17 @@ Code-first snapshot. Update after every completed task.
 
 ## Active Packages
 
-`internal/process/`, `internal/events/`, `internal/registry/`, `internal/hardware/`
+`internal/process/`, `internal/events/`, `internal/registry/`, `internal/hardware/`, `internal/runtime/`, `internal/loader/`, `internal/scheduler/`, `internal/inference/llama/`
 
 ## Tests
 
-`go test ./...` — passing (process, events, registry, hardware)
+`go test ./...` — passing (`CGO_ENABLED=0`, default CI)  
+`inference-cgo` CI job — passing (scoped llama build + CGO tests)  
+`tests/import_boundary_test.go` — scheduler must not import inference
 
 ## Governance
 
-Repository rules frozen in `.cursor/rules/` (7 files). CI via `.github/workflows/ci.yml`.
+Repository rules frozen in `.cursor/rules/` (7 files). CI via `.github/workflows/ci.yml` (`test` + `inference-cgo`).
 
 ---
 **Layer:** planning

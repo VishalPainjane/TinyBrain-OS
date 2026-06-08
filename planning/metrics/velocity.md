@@ -11,7 +11,12 @@ Task delivery: estimate vs actual. Add a row when a task starts; fill actual whe
 | 005-agent-registry | 1 day | 0.5 day | -0.5 day |
 | 006-model-registry | 1 day | 0.5 day | -0.5 day |
 | 007-hardware-profiler | 1 day | 1 day | 0 |
+| 008-runtime | 1 day | 1 day | 0 |
+| 009-model-loader | 1 day | 1 day | 0 |
+| 010-scheduler | 1 day | 1 day | 0 |
+| 006-registry-persistence | 2 days | 2 days | 0 |
+| 009a-llama-cgo-load | 3 days | 3 days | 0 |
 
 ---
 **Layer:** planning
-**Last updated:** 2026-06-07
+**Last updated:** 2026-06-08
