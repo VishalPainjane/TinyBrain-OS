@@ -24,16 +24,16 @@ Capabilities apply to the **llama.cpp adapter** unless noted. Feature parity acr
 
 | Capability | CPU | CUDA | ROCm/HIP | Metal | Vulkan |
 |------------|-----|------|----------|-------|--------|
-| LoadModel | Planned (009a) | Planned (009a config) | Planned | Planned | Planned |
-| UnloadModel | Planned (009a) | Planned (009a config) | Planned | Planned | Planned |
+| LoadModel | **Partial** (009a) | Planned (009a config) | Planned | Planned | Planned |
+| UnloadModel | **Partial** (009a) | Planned (009a config) | Planned | Planned | Planned |
 | Generate | Planned (009b) | Planned (009b) | Planned | Planned | Planned |
 | SaveContext | Stub (009a) | Stub (009a) | Stub | Stub | Stub |
 | RestoreContext | Stub (009a) | Stub (009a) | Stub | Stub | Stub |
 | Quantization (GGUF Q4_K_M) | Planned | Planned | Planned | Planned | Planned |
 | Quantization (other GGUF) | Planned | Planned | Planned | Planned | Planned |
 | Multi-GPU | No | No | No | No | No |
-| mmap load | Planned (009a) | Planned (009a) | Planned | Planned | Planned |
-| CI coverage | Planned (009a) | Planned (post-009a) | No | No | No |
+| mmap load | **Partial** (009a) | Planned (009a) | Planned | Planned | Planned |
+| CI coverage | **Partial** (009a) | Planned (post-009a) | No | No | No |
 | Warm / Prefetch / Evict | N/A (loader) | N/A | N/A | N/A | N/A |
 | Concurrent models ACTIVE | No | No | No | No | No |
 | Backend fallback to CPU | Planned | Planned | Planned | Planned | Planned |
@@ -61,9 +61,9 @@ Capabilities apply to the **llama.cpp adapter** unless noted. Feature parity acr
 
 | OS | Status |
 |----|--------|
-| Linux | Planned (009a) — CI target |
-| Windows | Planned (009a) — dev verification |
-| macOS | Planned (009a) — manual verification |
+| Linux | **Partial** (009a) — `inference-cgo` CI green |
+| Windows | **Partial** (009a) — manual dev verification |
+| macOS | Planned — manual verification |
 
 ### Supported hardware
 
@@ -88,9 +88,9 @@ Capabilities apply to the **llama.cpp adapter** unless noted. Feature parity acr
 
 | Test type | Status |
 |-----------|--------|
-| Unit (`CGO_ENABLED=0` stub path) | Planned (009a) |
-| CGO compile (Linux CI) | Planned (009a gate) |
-| Integration (real GGUF) | Planned — tag `integration`, env `TB_TEST_GGUF_PATH` |
+| Unit (`CGO_ENABLED=0` stub path) | **Yes** |
+| CGO compile (Linux CI) | **Yes** — `inference-cgo` job |
+| Integration (real GGUF) | **Partial** — tag `integration`, env `TB_TEST_GGUF_PATH`; optional CI |
 | Windows automated | No — manual |
 | macOS automated | No — manual |
 
@@ -276,4 +276,4 @@ Track intentional differences — do not imply equal support.
 ---
 **Layer:** architecture  
 **Last updated:** 2026-06-08  
-**Matrix version:** 1.0 (pre-009a — all llama backends unimplemented)
+**Matrix version:** 1.1 (post-009a — CPU load/unload partial; Generate deferred to 009b)

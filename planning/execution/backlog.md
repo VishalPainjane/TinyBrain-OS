@@ -4,7 +4,8 @@ Tasks not yet started or scheduled for future months. Active week plan: [roadmap
 
 | Priority | Task | Target month | Reason | Dependencies |
 |----------|------|--------------|--------|--------------|
-| HIGH | v0.6 inference (extend 009) | 2 | llama.cpp adapter, M1/M2 demo | 006-registry-persistence, v0.5 ship |
+| HIGH | 009b — CPU Generate | 2 | v0.6 primary acceptance criterion | 009a (merged) |
+| HIGH | 009c — runtime/loader integration | 2 | M1/M2 demo; lifecycle orchestration | 009b |
 | MEDIUM | 011-kv-manager | 3 | KV save/load events | v0.7 MLFQ in progress |
 | MEDIUM | 012-swap-manager | 3 | VRAM→RAM tier movement | 011-kv-manager |
 | MEDIUM | 013-brain-top | 3 / 6 | Prototype Week 12; polish Week 22 | 010-scheduler |
@@ -16,8 +17,8 @@ Tasks not yet started or scheduled for future months. Active week plan: [roadmap
 | LOW | 018-benchmark-suite | 6 | Swarm vs monolith report | v0.8 agents |
 
 **Completed Month 1:** 001–007  
-**Completed Month 2 (adjacent):** 008–010  
-**Active (sprint):** [006-registry-persistence](../../tasks/006-registry-persistence.md) — v0.5
+**Completed Month 2 (adjacent):** 008–010, 006-registry-persistence, 009a-llama-cgo-load  
+**Active (sprint):** 009b — see [current-sprint.md](current-sprint.md)
 
 **Note:** 011-kv-manager was incorrectly listed as V0.5 active task; realigned 2026-06-08 per planning assessment.
 

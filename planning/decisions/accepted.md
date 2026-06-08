@@ -24,6 +24,7 @@ Tactical decisions already made. Promote to [docs/adr/](../../docs/adr/) when pe
 | ModelResolver port for inference | Inference must not import registry; adapter at composition boundary | 2026-06-08 | [009a-registry-resolver.md](009a-registry-resolver.md) |
 | Inference lifecycle canonical doc | Single state ownership across runtime, loader, inference | 2026-06-08 | [docs/architecture/inference-lifecycle.md](../../docs/architecture/inference-lifecycle.md) |
 | Backend build tags mutually exclusive | One backend per binary; see 009a-build-tags.md | 2026-06-08 | [009a-build-tags.md](009a-build-tags.md) |
+| llama.cpp git submodule | Pinned upstream tag `b9553` @ `9e3b928fd8c9d14dbf15a8768b9fdd7e5c721d66` in `third_party/llama.cpp`; scoped CI library-only build | 2026-06-08 | [009a-llama-cpp-dependency.md](009a-llama-cpp-dependency.md) |
 
 ---
 **Layer:** planning
