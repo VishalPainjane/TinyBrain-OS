@@ -37,8 +37,8 @@ How to evolve MVP code without throwaway rewrites. Each path documents today →
 
 ## Path 3: In-Memory Registry → Persistent
 
-**Today:** Map-based in-memory registry (v0.2)
-**Future:** BoltDB or SQLite persistence (v0.5 — TBD)
+**Today:** `ModelStore` with `InMemoryStore` and `BboltStore` (v0.5 task 006-registry-persistence)
+**Future:** agent/tool persistence (deferred)
 
 | Step | Action |
 |------|--------|

@@ -76,5 +76,12 @@ Append-only history. Never delete entries.
 
 **Note:** Schedule signature drift recorded in [task-010-schedule-signature-drift.md](../decisions/task-010-schedule-signature-drift.md).
 
+## 006-registry-persistence
+
+**Completed:** 2026-06-08
+**Commit:** `7de7c70` (tag `v0.5`)
+**Outcome:** Success — bbolt `ModelStore`, `models.yaml` seed-on-empty, restart persistence tests pass
+**Files:** internal/registry/models.go, internal/registry/models_store.go, internal/registry/models_memory.go, internal/registry/models_bolt.go, internal/registry/models_yaml.go, internal/registry/models_bolt_test.go, testdata/models.yaml
+
 ---
 **Layer:** planning

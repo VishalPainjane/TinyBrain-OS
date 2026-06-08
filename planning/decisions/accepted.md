@@ -16,6 +16,9 @@ Tactical decisions already made. Promote to [docs/adr/](../../docs/adr/) when pe
 | Repository governance frozen in .cursor/rules/ | AGENTS.md + 7 rule files + CI as institutional memory | 2026-06-07 | All agents follow github-workflow.mdc |
 | EventBus unsubscribe via returned func | Equivalent to Unsubscribe; avoids subscription ID registry in v1 | 2026-06-07 | `Subscribe(eventType, handler) (unsubscribe func())` |
 | Month 1 git history as single foundation release | Honest audit trail; no fabricated per-task commits | 2026-06-07 | Tag `v0.3` represents v0.1+v0.2+v0.3 |
+| v0.5 model registry persistence uses bbolt | Key-value access matches map semantics; pure Go; migration Path 3 | 2026-06-08 | `go.etcd.io/bbolt` in `internal/registry/` only |
+| models.yaml seeds bbolt store only when empty | Bootstrap on first run; no hot reload in v0.5 | 2026-06-08 | `NewBboltModelRegistry(dbPath, seedPath)` |
+| ModelStore interface with InMemoryStore + BboltStore | Adapter swap; gob encode in BboltStore (no separate JSON persistence layer) | 2026-06-08 | `ModelRegistry` delegates to `ModelStore` |
 
 ---
 **Layer:** planning

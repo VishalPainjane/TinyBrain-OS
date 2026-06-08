@@ -54,7 +54,7 @@ Executing agents, loading models, scheduling.
 
 ## Future Plans
 
-Hugging Face integration; persistent storage (BoltDB/SQLite — TBD v0.5); validation of definition schemas.
+Hugging Face integration; agent/tool persistence (models persisted v0.5 via bbolt); validation of definition schemas.
 
 ## Non-Goals
 
