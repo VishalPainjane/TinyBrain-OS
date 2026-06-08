@@ -10,6 +10,9 @@
 | Documentation drift from code | Medium | Medium | Code-first rule; completed.md + retrospectives |
 | Windows CGO toolchain friction for llama.cpp | Medium | Medium | Document build requirements; test early at v0.6 |
 | BoltDB vs SQLite undecided delays v0.5 | Low | Low | Mark TBD in v0.5 spec; in-memory registry first |
+| 009a CUDA-only CGO flags break macOS/ROCm builds | Medium | High | Split `load_cuda.go` with build tag; CPU baseline in `load_cpu.go`; see [cross-platform.md](../../docs/architecture/cross-platform.md) |
+| Windows CGO + mmap unverified in CI | Medium | Medium | Manual dev verification; document in 009a dependency gate |
+| Vulkan/Metal/ROCm deferred past 009a | Low | Medium | Backend-specific files + config; no core package changes |
 
 ---
 **Layer:** planning

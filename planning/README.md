@@ -46,6 +46,8 @@ Every AI agent starts here, then reads in this order:
 | What idea was rejected? | [decisions/rejected.md](decisions/rejected.md) |
 | What do we assume but haven't proven? | [assumptions.md](assumptions.md) |
 | What exists in code today? | [architecture-evolution/current-state.md](architecture-evolution/current-state.md) |
+| What does each inference backend support? | [../docs/architecture/inference-backend-matrix.md](../docs/architecture/inference-backend-matrix.md) |
+| Who owns model lifecycle states? | [../docs/architecture/inference-lifecycle.md](../docs/architecture/inference-lifecycle.md) |
 | What is the long-term direction? | [roadmap/master-roadmap.md](roadmap/master-roadmap.md) |
 | What happens this month or week? | [roadmap/months/month-0N.md](roadmap/months/) |
 | What do I update when something finishes? | [roadmap/update-checklist.md](roadmap/update-checklist.md) |

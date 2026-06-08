@@ -38,11 +38,35 @@ Full architecture: [docs/architecture/overview.md](docs/architecture/overview.md
 
 ## Quick Start
 
-**Current state:** v0.4 Runtime shipped at tag `v0.4`. Month 2 active — v0.5 model registry next.
+**Current state:** v0.5 shipped at tag `v0.5`. v0.6 inference (009a CPU load) in progress.
 
 ```bash
 go test ./...
 ```
+
+Default CI uses `CGO_ENABLED=0` (stub inference path). For llama.cpp CPU load:
+
+```bash
+git submodule update --init --recursive third_party/llama.cpp
+cmake -S third_party/llama.cpp -B third_party/llama.cpp/build -DCMAKE_BUILD_TYPE=Release -DLLAMA_BUILD_TESTS=OFF -DLLAMA_CURL=OFF
+cmake --build third_party/llama.cpp/build -j
+CGO_ENABLED=1 go test ./internal/inference/llama/...
+```
+
+Optional integration test with a real GGUF file:
+
+```bash
+export TB_TEST_GGUF_PATH=/path/to/model.gguf
+CGO_ENABLED=1 go test -tags integration ./internal/inference/llama/...
+```
+
+### Build requirements (CPU backend)
+
+| OS | Toolchain |
+|----|-----------|
+| Linux | `build-essential`, `cmake`, `CGO_ENABLED=1` |
+| Windows | MSVC Build Tools, `cmake`, `CGO_ENABLED=1` |
+| macOS | Xcode CLT, `cmake`, `CGO_ENABLED=1` |
 
 Future commands (not yet implemented):
 

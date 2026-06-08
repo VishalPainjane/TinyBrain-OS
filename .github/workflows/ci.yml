@@ -15,4 +15,34 @@ jobs:
         with:
           go-version: "1.22"
       - name: Run tests
+        env:
+          CGO_ENABLED: "0"
         run: go test ./...
+
+  inference-cgo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential cmake
+      - name: Build llama.cpp (CPU)
+        run: |
+          cmake -S third_party/llama.cpp -B third_party/llama.cpp/build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DLLAMA_BUILD_TESTS=OFF \
+            -DLLAMA_CURL=OFF \
+            -DGGML_CUDA=OFF \
+            -DGGML_METAL=OFF \
+            -DGGML_VULKAN=OFF \
+            -DGGML_HIP=OFF
+          cmake --build third_party/llama.cpp/build -j
+      - name: Test inference package (CGO CPU)
+        env:
+          CGO_ENABLED: "1"
+          LD_LIBRARY_PATH: ${{ github.workspace }}/third_party/llama.cpp/build/bin
+        run: go test ./internal/inference/llama/...
