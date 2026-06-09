@@ -3,8 +3,11 @@
 package llama
 
 /*
+#cgo CFLAGS: -I${SRCDIR}/../../../third_party/llama.cpp/include -I${SRCDIR}/../../../third_party/llama.cpp/ggml/include
 #cgo linux LDFLAGS: -L${SRCDIR}/../../../third_party/llama.cpp/build-cuda/bin -lllama -lggml -lggml-cuda -lggml-cpu -lggml-base -lstdc++ -lm -lpthread -ldl -lgomp -lcudart -lcublas
 #cgo windows LDFLAGS: -L${SRCDIR}/../../../third_party/llama.cpp/build-cuda/bin -lllama -lggml -lggml-cuda -lggml-cpu -lggml-base -lstdc++ -lm -lcudart -lcublas
+#include "llama.h"
+#include <stdlib.h>
 */
 import "C"
 
