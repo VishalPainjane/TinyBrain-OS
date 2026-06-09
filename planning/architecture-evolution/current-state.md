@@ -20,6 +20,7 @@ Code-first snapshot. Update after every completed task.
 | Model loader (stub lifecycle) | `internal/loader/` | Complete, tested |
 | FIFO scheduler skeleton | `internal/scheduler/` | Complete, tested |
 | llama.cpp adapter (CPU load/unload/generate) | `internal/inference/llama/` | Complete CPU path; wired via runtime (009c) |
+| llama.cpp CUDA offload (`-tags cuda`, `NGLayers`) | `internal/inference/llama/` | **Partial** (009d merged `ab06c60`); manual GPU checklist open |
 
 ## In Progress
 
@@ -27,7 +28,7 @@ Code-first snapshot. Update after every completed task.
 
 ## Not Implemented
 
-- CUDA / Metal / ROCm / Vulkan inference backends
+- Metal / ROCm / Vulkan inference backends (CUDA adapter shipped 009d; runtime GPU proof manual)
 - Agent plugins, tool registry
 - Telemetry, brain-top TUI
 - KV manager, swap manager
@@ -47,7 +48,7 @@ Integration (`-tags integration`, `TB_TEST_GGUF_PATH`) — inference + runtime E
 
 ## Governance
 
-Repository rules frozen in `.cursor/rules/` (7 files). CI via `.github/workflows/ci.yml` (`test` + `inference-cgo`).
+Repository rules frozen in `.cursor/rules/` (7 files). CI via `.github/workflows/ci.yml` (`test`, `inference-cgo`, `inference-integration`, `inference-integration-runtime`).
 
 ---
 **Layer:** planning

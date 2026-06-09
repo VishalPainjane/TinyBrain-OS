@@ -3,12 +3,12 @@
 ## Sprint
 
 **Name:** Runtime and Inference
-**Goal:** Ship v0.6 llama.cpp adapter (Month 2 Weeks 7–8)
+**Goal:** Ship v0.6 llama.cpp adapter (Month 2 Weeks 7–8) — **complete (untagged)**
 **Version:** V0.6
 
 ## Current Task
 
-(none — 009c complete; GPU offload next)
+(none — v0.6 inference scope complete)
 
 ## In Progress
 
@@ -34,11 +34,12 @@
 - [x] 009a-llama-cgo-load
 - [x] 009b-cpu-generate
 - [x] 009c-runtime-integration
+- [x] 009d-gpu-offload-cuda
 
 ## Next
 
-- **GPU offload (CUDA)** — remaining v0.6 scope
-- Month 3: [011-kv-manager](../../tasks/011-kv-manager.md) (after v0.7 MLFQ)
+- Cut tag `v0.6` when release notes and manual CUDA sign-off (optional for tag) are accepted
+- Month 3 / v0.7 scheduler (MLFQ) — see [master-roadmap.md](../roadmap/master-roadmap.md)
 
 ## Definition Of Done
 
@@ -57,6 +58,7 @@
 
 - Spec: [docs/specs/v0.6-inference.md](../../docs/specs/v0.6-inference.md)
 - Contract: [docs/contracts/runtime.md](../../docs/contracts/runtime.md)
+- Release: [planning/releases/v0.6.md](../releases/v0.6.md) (untagged)
 - Prior release: tag `v0.5` — [planning/releases/v0.5.md](../releases/v0.5.md)
 
 ---

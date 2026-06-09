@@ -4,7 +4,7 @@ CEO-level view. No technical details, packages, or interfaces — those live in 
 
 ## Current Version
 
-**V0.5 Model Registry** — v0.4 Runtime shipped (tag `v0.4`); Month 2 active.
+**V0.6 Inference** — implementation complete (tag `v0.6` not yet cut); v0.5 shipped at tag `v0.5`.
 
 ## Target Version
 
@@ -14,11 +14,11 @@ CEO-level view. No technical details, packages, or interfaces — those live in 
 
 | # | Milestone | Outcome | Status |
 |---|-----------|---------|--------|
-| M1 | Single model runtime | Prove load/unload one model under resource budget | **Partial** (stub runtime + loader; real inference v0.6) |
-| M2 | Model switching | Dynamic swap between models | **Partial** (stub swap shipped; real GGUF swap v0.6) |
+| M1 | Single model runtime | Prove load/unload one model under resource budget | **Complete** (v0.6 real GGUF load via `ModelRuntime`) |
+| M2 | Model switching | Dynamic swap between models | **Partial** (loader warm/evict; full swap policy v0.7+) |
 | M3 | Registry + events | Plugin definitions and decoupled event core | Partial (events + registry shipped) |
 | M4 | Hardware profiling | Adaptive behavior per detected profile | **Complete** |
-| M5 | Runtime + inference | Real GGUF inference via provider adapter | **Partial** (runtime shell shipped v0.4; inference v0.6) |
+| M5 | Runtime + inference | Real GGUF inference via provider adapter | **Complete** (v0.6 CPU CI + CUDA adapter 009d) |
 | M6 | Scheduler | Priority queues, preemption, VRAM-aware scheduling | **Partial** (FIFO skeleton shipped; MLFQ v0.7) |
 | M7 | Plugin agents | User-defined agent fleet via registry | Planned (Month 4) |
 | M8 | brain-top TUI | Live runtime visibility (htop for AI) | Planned |
@@ -55,7 +55,7 @@ Week-by-week breakdown (Week 1–24). CEO summary stays here; execution detail l
 
 | Topic | Detail |
 |-------|--------|
-| M1 / M2 | Stub load/swap at v0.4; full GGUF achievement still Week 8 (v0.6) |
+| M1 / M5 | v0.6 inference shipped (009a–009d); M2 swap policy remains partial |
 | v0.4 | Runtime shell shipped at tag `v0.4` |
 | M3 | Events + registry shipped Month 1; full pipeline Week 15 |
 | M4 | Hardware profiling shipped Month 1 |

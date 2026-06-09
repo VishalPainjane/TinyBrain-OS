@@ -110,5 +110,24 @@ Append-only history. Never delete entries.
 
 **Note:** CUDA/GPU deferred. SaveContext/RestoreContext remain stubs (011). CI E2E requires `TB_TEST_GGUF_PATH` on Linux.
 
+## STAB-002-ci-observability
+
+**Completed:** 2026-06-09
+**Commit:** `30c0a39` (merge PR #8); initial instrumentation `0399025` (merge PR #7)
+**Verified:** `main` CI run [27206160391](https://github.com/VishalPainjane/TinyBrain-OS/actions/runs/27206160391)
+**Outcome:** Success — per-job Step Summary metrics; per-job `ci-metrics-*` artifacts; merged `ci-run-record-{run_id}` artifact on each `main` push; non-blocking `ci-metrics-collect` (no git writes to protected `main`); runtime M2 diagnostics parity; `ci-runs.jsonl` removed in favor of artifact-only history
+**Files:** `.github/workflows/ci.yml`, `.github/scripts/ci-emit-metrics.sh`, `.github/scripts/ci-collect-run-metrics.py`, `planning/metrics/ci-{schema,baseline}.md`, `testdata/ci/README.md`, `tasks/stab-002-ci-observability.md`, `planning/decisions/ci-observability-architecture-review.md` (v2 delta)
+
+**Note:** STAB-001 (real inference CI gate) shipped in PR #6 (`e293b98`). STAB-002 builds on four merge-blocking jobs without changing gate logic.
+
+## 009d-gpu-offload-cuda
+
+**Completed:** 2026-06-10
+**Commit:** `ab06c60` (merge PR #9); `10dd8e5` feat, `4a6cd47` CGO preamble fix
+**Outcome:** Success — CUDA GPU offload via `-tags cuda`; `LlamaConfig.NGLayers`; CGO split (`bindings_common` / `bindings_cpu` / `bindings_cuda`); `ConfigFromProbe`; guarded `cuda_integration_test.go`; CPU `inference-cgo` + integration jobs green on PR #9
+**Files:** `internal/inference/llama/` (load_cuda.go, generate_cuda.go, bindings_*.go, config_probe.go, config_test.go, cuda_integration_test.go), `tasks/009d-gpu-offload-cuda.md`, `planning/decisions/009d-architecture-review.md`, `planning/decisions/009d-manual-gpu-checklist.md`
+
+**Note:** Runtime/scheduler/loader/registry unchanged. CUDA matrix **Partial** until manual GPU checklist signed. No bundled CUDA runtime libs.
+
 ---
 **Layer:** planning

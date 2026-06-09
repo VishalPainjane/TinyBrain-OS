@@ -15,8 +15,10 @@ Tasks not yet started or scheduled for future months. Active week plan: [roadmap
 | LOW | 018-benchmark-suite | 6 | Swarm vs monolith report | v0.8 agents |
 
 **Completed Month 1:** 001–007  
-**Completed Month 2 (adjacent):** 008–010, 006-registry-persistence, 009a-llama-cgo-load, 009b-cpu-generate, 009c-runtime-integration  
-**Next (sprint):** GPU offload (CUDA) — see [current-sprint.md](current-sprint.md)
+
+**Completed Month 2 (adjacent):** 008–010, 006-registry-persistence, 009a–009d, STAB-001, STAB-002  
+
+**Next (sprint):** v0.6 tag prep — see [current-sprint.md](current-sprint.md)
 
 **Note:** 011-kv-manager was incorrectly listed as V0.5 active task; realigned 2026-06-08 per planning assessment.
 

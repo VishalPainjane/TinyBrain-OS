@@ -24,16 +24,16 @@ Capabilities apply to the **llama.cpp adapter** unless noted. Feature parity acr
 
 | Capability | CPU | CUDA | ROCm/HIP | Metal | Vulkan |
 |------------|-----|------|----------|-------|--------|
-| LoadModel | **Partial** (009a) | Planned (009a config) | Planned | Planned | Planned |
-| UnloadModel | **Partial** (009a) | Planned (009a config) | Planned | Planned | Planned |
-| Generate | **Partial** (009b) | Planned (009b) | Planned | Planned | Planned |
+| LoadModel | **Partial** (009a) | **Partial** (009d) | Planned | Planned | Planned |
+| UnloadModel | **Partial** (009a) | **Partial** (009d) | Planned | Planned | Planned |
+| Generate | **Partial** (009b) | **Partial** (009d) | Planned | Planned | Planned |
 | SaveContext | Stub (009a) | Stub (009a) | Stub | Stub | Stub |
 | RestoreContext | Stub (009a) | Stub (009a) | Stub | Stub | Stub |
 | Quantization (GGUF Q4_K_M) | Planned | Planned | Planned | Planned | Planned |
 | Quantization (other GGUF) | Planned | Planned | Planned | Planned | Planned |
 | Multi-GPU | No | No | No | No | No |
-| mmap load | **Partial** (009a) | Planned (009a) | Planned | Planned | Planned |
-| CI coverage | **Partial** (009a) | Planned (post-009a) | No | No | No |
+| mmap load | **Partial** (009a) | **Partial** (009d) | Planned | Planned | Planned |
+| CI coverage | **Partial** (009a) | **Partial** (009d) | No | No | No |
 | Warm / Prefetch / Evict | N/A (loader) | N/A | N/A | N/A | N/A |
 | Concurrent models ACTIVE | No | No | No | No | No |
 | Backend fallback to CPU | Planned | Planned | Planned | Planned | Planned |
@@ -102,8 +102,8 @@ Capabilities apply to the **llama.cpp adapter** unless noted. Feature parity acr
 
 | OS | Status |
 |----|--------|
-| Linux | Planned — primary GPU CI candidate (future) |
-| Windows | Planned — dev machine |
+| Linux | **Partial** (009d) — `-tags cuda` build; manual GPU per checklist |
+| Windows | **Partial** (009d) — dev manual; CUDA toolkit + PATH |
 | macOS | **No** — NVIDIA does not support CUDA on macOS |
 
 ### Supported hardware
@@ -124,17 +124,17 @@ Capabilities apply to the **llama.cpp adapter** unless noted. Feature parity acr
 
 - All CPU requirements, plus:
 - NVIDIA driver + CUDA toolkit
-- llama.cpp built with CUDA support (e.g. `LLAMA_CUDA=1` or project equivalent at pin tag)
-- Build tag: `cuda` — isolated in `load_cuda.go`; must not break CPU-only builds
+- llama.cpp built with `-DGGML_CUDA=ON` in `third_party/llama.cpp/build-cuda/` (separate from CPU `build/`)
+- Build tag: `cuda` — `load_cuda.go`, `bindings_cuda.go`; CPU default binary unchanged
 
 ### Test coverage status
 
 | Test type | Status |
 |-----------|--------|
-| Unit | Planned — config mapping only in 009a |
-| CGO CPU fallback when CUDA missing | Planned |
-| Integration with GPU | Planned — post-009a, manual or GPU runner |
-| CI | **No** in 009a |
+| Unit (`NGLayers`, `ConfigFromProbe`) | **Yes** — `CGO_ENABLED=0` + `-tags cuda` config tests |
+| CGO CPU fallback when CUDA tag absent | **Yes** — CPU binary forces `n_gpu_layers=0` |
+| Integration with GPU | **Partial** — `cuda_integration_test.go`; `TB_CUDA_INTEGRATION=1` manual |
+| CI | **Partial** — CPU `inference-cgo` unchanged; no GPU runner; compile-only CUDA CI deferred |
 
 ---
 
@@ -254,11 +254,11 @@ Track intentional differences — do not imply equal support.
 
 | Gap | Backends affected | Resolution target |
 |-----|-------------------|-------------------|
-| Generate CPU only (009b) | CUDA, ROCm, Metal, Vulkan | Post-009b GPU tasks |
+| CUDA generate runtime proof | CUDA | Manual checklist (`009d-manual-gpu-checklist.md`); matrix **Partial** until signed |
 | SaveContext / RestoreContext stub | All llama backends | Task 011 KV manager |
 | CUDA absent on macOS | CUDA | Permanent — use Metal on macOS |
 | Metal absent on Linux/Windows | Metal | Permanent — use CUDA/ROCm/Vulkan |
-| No CI GPU tests in 009a | CUDA, ROCm, Metal, Vulkan | Post-009a CI design |
+| No CI GPU integration tests | CUDA, ROCm, Metal, Vulkan | Manual GPU (009d); optional `inference-cuda-compile` deferred |
 | No multi-GPU | All | Future RFC / workstation profile |
 | Vulkan not in probe enum | Vulkan | Probe task + matrix update |
 | StubProvider has Generate stub | Test only (`internal/runtime/`) | Permanent — runtime port tests; llama Generate is separate (009b) |
@@ -275,5 +275,5 @@ Track intentional differences — do not imply equal support.
 
 ---
 **Layer:** architecture  
-**Last updated:** 2026-06-09  
-**Matrix version:** 1.3 (post-STAB-001 — merge-blocking real GGUF integration on Ubuntu CI)
+**Last updated:** 2026-06-10  
+**Matrix version:** 1.4 (post-009d — CUDA adapter merged PR #9 `ab06c60`; **Partial** pending manual GPU sign-off)
