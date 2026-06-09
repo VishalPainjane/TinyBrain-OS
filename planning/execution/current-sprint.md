@@ -8,7 +8,7 @@
 
 ## Current Task
 
-(none — 009b complete; next task 009c not started)
+(none — 009c complete; GPU offload next)
 
 ## In Progress
 
@@ -33,10 +33,11 @@
 - [x] 010-scheduler
 - [x] 009a-llama-cgo-load
 - [x] 009b-cpu-generate
+- [x] 009c-runtime-integration
 
 ## Next
 
-- **009c** (deferred) — runtime + loader integration per [inference-lifecycle.md](../../docs/architecture/inference-lifecycle.md)
+- **GPU offload (CUDA)** — remaining v0.6 scope
 - Month 3: [011-kv-manager](../../tasks/011-kv-manager.md) (after v0.7 MLFQ)
 
 ## Definition Of Done
@@ -60,4 +61,4 @@
 
 ---
 **Layer:** planning
-**Last updated:** 2026-06-09
+**Last updated:** 2026-06-10

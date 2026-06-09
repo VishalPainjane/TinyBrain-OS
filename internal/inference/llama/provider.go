@@ -15,13 +15,13 @@ var _ runtime.InferenceProvider = (*LlamaProvider)(nil)
 // LlamaProvider implements runtime.InferenceProvider using llama.cpp (CPU backend).
 type LlamaProvider struct {
 	mu       sync.Mutex
-	resolver ModelResolver
+	resolver runtime.ModelResolver
 	cfg      LlamaConfig
 	models   map[string]*modelSlot
 }
 
 // NewLlamaProvider returns a provider that resolves models via resolver.
-func NewLlamaProvider(resolver ModelResolver, cfg LlamaConfig) *LlamaProvider {
+func NewLlamaProvider(resolver runtime.ModelResolver, cfg LlamaConfig) *LlamaProvider {
 	return &LlamaProvider{
 		resolver: resolver,
 		cfg:      cfg,

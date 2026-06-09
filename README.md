@@ -38,7 +38,7 @@ Full architecture: [docs/architecture/overview.md](docs/architecture/overview.md
 
 ## Quick Start
 
-**Current state:** v0.5 shipped at tag `v0.5`. v0.6 in progress — 009a merged; 009b (CPU Generate) complete; 009c (runtime wiring) deferred.
+**Current state:** v0.5 shipped at tag `v0.5`. v0.6 in progress — 009a–009c complete (CPU inference wired to `ModelRuntime`); GPU offload remaining.
 
 ```bash
 go test ./...
@@ -68,13 +68,35 @@ export LD_LIBRARY_PATH=third_party/llama.cpp/build/bin
 CGO_ENABLED=1 go test ./internal/inference/llama/...
 ```
 
-Optional integration test with a real GGUF file:
+Optional integration tests with a real GGUF file:
 
 ```bash
 export TB_TEST_GGUF_PATH=/path/to/model.gguf
 export LD_LIBRARY_PATH=third_party/llama.cpp/build/bin
 CGO_ENABLED=1 go test -tags integration ./internal/inference/llama/...
+CGO_ENABLED=1 go test -tags integration ./internal/runtime/...
 ```
+
+### Integrated runtime wiring (009c)
+
+Single shared `runtime.ModelResolver` instance for runtime and provider:
+
+```go
+reg := registry.NewModelRegistry()
+_ = reg.RegisterModel(registry.ModelDefinition{ID: "tiny", Path: "/models/tiny.gguf"})
+
+resolver := runtime.NewRegistryResolver(reg)
+loader := loader.NewStubLoader()
+provider := llama.NewLlamaProvider(resolver, llama.DefaultConfig())
+bus := events.NewChannelBus(64)
+rt := runtime.NewIntegratedModelRuntime(provider, loader, resolver, bus)
+
+_ = rt.LoadModel("tiny")
+resp, _ := rt.Generate(runtime.GenerateRequest{ModelID: "tiny", Prompt: "Hello"})
+_ = rt.UnloadModel("tiny")
+```
+
+Loader-less path (tests, v0.4 compatibility): `runtime.NewModelRuntime(runtime.NewStubProvider(), bus)`.
 
 ### Build requirements (CPU backend)
 
@@ -104,7 +126,7 @@ brain-top
 | v0.3 | Hardware profiler | Shipped |
 | v0.4 | Runtime shell + stub provider | Shipped |
 | v0.5 | Persistent model registry | Shipped |
-| v0.6 | llama.cpp inference | In Progress (~35%) |
+| v0.6 | llama.cpp inference | In Progress (~85%) |
 | v0.7 | MLFQ scheduler | Planned |
 | v0.8 | Plugin agents | Planned |
 | v1.0 | Integrated runtime + brain-top | Planned |

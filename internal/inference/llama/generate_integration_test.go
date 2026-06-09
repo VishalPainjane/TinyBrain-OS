@@ -23,7 +23,7 @@ func integrationProvider(t *testing.T) (*LlamaProvider, string) {
 	cfg.GreedySampler = true
 
 	p := NewLlamaProvider(staticResolver{
-		specs: map[string]ModelSpec{
+		specs: map[string]runtime.ModelSpec{
 			modelID: {ID: modelID, Path: path},
 		},
 	}, cfg)
@@ -101,7 +101,7 @@ func TestLlamaProvider_LoadGenerateUnload_cycles(t *testing.T) {
 
 	for i := 0; i < 3; i++ {
 		p := NewLlamaProvider(staticResolver{
-			specs: map[string]ModelSpec{
+			specs: map[string]runtime.ModelSpec{
 				modelID: {ID: modelID, Path: path},
 			},
 		}, cfg)

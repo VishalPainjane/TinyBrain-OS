@@ -55,3 +55,9 @@ jobs:
           CGO_ENABLED: "1"
           LD_LIBRARY_PATH: ${{ github.workspace }}/third_party/llama.cpp/build/bin
         run: go test ./internal/inference/llama/...
+      - name: Test runtime integration (CGO CPU)
+        env:
+          CGO_ENABLED: "1"
+          LD_LIBRARY_PATH: ${{ github.workspace }}/third_party/llama.cpp/build/bin
+          TB_TEST_GGUF_PATH: ${{ vars.TB_TEST_GGUF_PATH }}
+        run: go test -tags integration ./internal/runtime/...
