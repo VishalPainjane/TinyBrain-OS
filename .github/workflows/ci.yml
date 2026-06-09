@@ -171,6 +171,7 @@ jobs:
           echo "TB_TEST_GGUF_PATH=$MODEL_PATH" >> "$GITHUB_ENV"
           echo "LD_LIBRARY_PATH=${{ github.workspace }}/third_party/llama.cpp/build/bin" >> "$GITHUB_ENV"
       - name: Run llama integration tests (M1 + M2)
+        id: llama-integration-tests
         env:
           CGO_ENABLED: "1"
           JSON_OUT: ${{ runner.temp }}/go-test-llama.json
@@ -181,11 +182,15 @@ jobs:
           go test -json -tags integration -count=1 ./internal/inference/llama/... > "$JSON_OUT"
           GO_EXIT=$?
           set -e
+          export GO_EXIT
           python3 <<'PY'
           import json, os, sys
           path = os.environ["JSON_OUT"]
           min_pass = int(os.environ["MIN_PASS"])
-          pass_count = skip_count = run_count = 0
+          go_exit = int(os.environ.get("GO_EXIT", "0"))
+          pass_count = skip_count = run_count = fail_count = 0
+          fail_entries = []
+          output_entries = []
           with open(path, encoding="utf-8") as f:
               for line in f:
                   line = line.strip()
@@ -195,15 +200,21 @@ jobs:
                       ev = json.loads(line)
                   except json.JSONDecodeError:
                       continue
+                  action = ev.get("Action")
+                  if action == "fail" and len(fail_entries) < 50:
+                      fail_entries.append(ev)
+                  elif action == "output" and len(output_entries) < 50:
+                      output_entries.append(ev)
                   if not ev.get("Test"):
                       continue
-                  action = ev.get("Action")
                   if action == "pass":
                       pass_count += 1
                   elif action == "skip":
                       skip_count += 1
                   elif action == "run":
                       run_count += 1
+                  elif action == "fail":
+                      fail_count += 1
           errors = []
           if run_count == 0:
               errors.append("test run count is 0")
@@ -213,12 +224,32 @@ jobs:
               errors.append(f"pass count {pass_count} < {min_pass}")
           if errors:
               print("; ".join(errors), file=sys.stderr)
+              print("M2 diagnostics:", file=sys.stderr)
+              print(f"  pass_count={pass_count}", file=sys.stderr)
+              print(f"  run_count={run_count}", file=sys.stderr)
+              print(f"  skip_count={skip_count}", file=sys.stderr)
+              print(f"  fail_count={fail_count}", file=sys.stderr)
+              print(f"  go test exit code={go_exit}", file=sys.stderr)
+              print("  first Action:\"fail\" entries:", file=sys.stderr)
+              for i, ev in enumerate(fail_entries):
+                  print(f"    [{i}] {json.dumps(ev, ensure_ascii=True)}", file=sys.stderr)
+              print("  first Action:\"output\" entries:", file=sys.stderr)
+              for i, ev in enumerate(output_entries):
+                  print(f"    [{i}] {json.dumps(ev, ensure_ascii=True)}", file=sys.stderr)
               sys.exit(1)
           print(f"integration summary: pass={pass_count} skip={skip_count} run={run_count}")
           PY
           if [ "$GO_EXIT" -ne 0 ]; then
             exit "$GO_EXIT"
           fi
+      - name: Upload llama integration test JSON (failure)
+        if: failure() && steps.llama-integration-tests.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-test-llama-json-${{ github.run_id }}
+          path: ${{ runner.temp }}/go-test-llama.json
+          if-no-files-found: warn
+          retention-days: 14
 
   inference-integration-runtime:
     runs-on: ubuntu-latest
