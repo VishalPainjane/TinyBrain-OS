@@ -12,7 +12,8 @@ import (
 // Compile-time check that LlamaProvider implements runtime.InferenceProvider.
 var _ runtime.InferenceProvider = (*LlamaProvider)(nil)
 
-// LlamaProvider implements runtime.InferenceProvider using llama.cpp (CPU backend).
+// LlamaProvider implements runtime.InferenceProvider using llama.cpp.
+// The active backend (CPU or CUDA) is selected at compile time via build tags.
 type LlamaProvider struct {
 	mu       sync.Mutex
 	resolver runtime.ModelResolver
@@ -29,7 +30,7 @@ func NewLlamaProvider(resolver runtime.ModelResolver, cfg LlamaConfig) *LlamaPro
 	}
 }
 
-// LoadModel resolves modelID and loads the GGUF file via the CPU backend.
+// LoadModel resolves modelID and loads the GGUF file via the compile-time backend.
 func (p *LlamaProvider) LoadModel(modelID string) error {
 	if modelID == "" {
 		return fmt.Errorf("model ID is required")

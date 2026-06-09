@@ -1,10 +1,12 @@
 name: CI
 
+
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+
 
 env:
   GO_VERSION: "1.22"
@@ -21,18 +23,47 @@ env:
   CI_GGUF_SHA256_FILE: "testdata/ci/smollm2-135m-instruct-q4_k_m.gguf.sha256"
   CI_MODEL_MAX_BYTES: "262144000"
 
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
+        id: setup-go
         with:
           go-version: ${{ env.GO_VERSION }}
       - name: Run tests
+        id: go-test
         env:
           CGO_ENABLED: "0"
-        run: go test ./...
+        run: |
+          source .github/scripts/ci-emit-metrics.sh
+          START=$(tb_ci_now)
+          go test ./...
+          END=$(tb_ci_now)
+          tb_ci_env_set TB_GO_TEST_DURATION_S "$((END-START))"
+      - name: Emit CI job metrics
+        if: always()
+        continue-on-error: true
+        env:
+          JOB_NAME: test
+          JOB_CONCLUSION: ${{ job.status }}
+          SETUP_GO_CACHE_HIT: ${{ steps.setup-go.outputs.cache-hit }}
+          STEP_GO_TEST: ${{ steps.go-test.outcome }}
+        run: |
+          source .github/scripts/ci-emit-metrics.sh
+          tb_ci_env_set TB_SETUP_GO_CACHE "$(tb_ci_cache_label "$SETUP_GO_CACHE_HIT")"
+          tb_ci_emit_job_summary
+      - name: Upload CI job metrics
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-metrics-test
+          path: ${{ runner.temp }}/ci-job-metrics.json
+          if-no-files-found: warn
+
 
   inference-cgo:
     runs-on: ubuntu-latest
@@ -42,12 +73,17 @@ jobs:
         with:
           submodules: recursive
       - uses: actions/setup-go@v5
+        id: setup-go
         with:
           go-version: ${{ env.GO_VERSION }}
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential cmake
       - name: Build llama.cpp (CPU, libraries only)
+        id: build-llama
         run: |
+          source .github/scripts/ci-emit-metrics.sh
+          tb_ci_env_set TB_LLAMA_BUILD_CACHE miss
+          START=$(tb_ci_now)
           cmake -S third_party/llama.cpp -B third_party/llama.cpp/build \
             -DCMAKE_BUILD_TYPE=Release \
             $LLAMA_CMAKE_PORTABLE \
@@ -66,11 +102,41 @@ jobs:
             -DGGML_CCACHE=OFF
           cmake --build third_party/llama.cpp/build --target llama -j"$(nproc)"
           test -f third_party/llama.cpp/build/bin/libllama.so
+          END=$(tb_ci_now)
+          tb_ci_env_set TB_LLAMA_BUILD_DURATION_S "$((END-START))"
       - name: Test inference package (CGO CPU)
+        id: cgo-test
         env:
           CGO_ENABLED: "1"
           LD_LIBRARY_PATH: ${{ github.workspace }}/third_party/llama.cpp/build/bin
-        run: go test ./internal/inference/llama/...
+        run: |
+          source .github/scripts/ci-emit-metrics.sh
+          START=$(tb_ci_now)
+          go test ./internal/inference/llama/...
+          END=$(tb_ci_now)
+          tb_ci_env_set TB_CGO_TEST_DURATION_S "$((END-START))"
+      - name: Emit CI job metrics
+        if: always()
+        continue-on-error: true
+        env:
+          JOB_NAME: inference-cgo
+          JOB_CONCLUSION: ${{ job.status }}
+          SETUP_GO_CACHE_HIT: ${{ steps.setup-go.outputs.cache-hit }}
+          STEP_BUILD_LLAMA: ${{ steps.build-llama.outcome }}
+          STEP_CGO_TEST: ${{ steps.cgo-test.outcome }}
+        run: |
+          source .github/scripts/ci-emit-metrics.sh
+          tb_ci_env_set TB_SETUP_GO_CACHE "$(tb_ci_cache_label "$SETUP_GO_CACHE_HIT")"
+          tb_ci_emit_job_summary
+      - name: Upload CI job metrics
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-metrics-inference-cgo
+          path: ${{ runner.temp }}/ci-job-metrics.json
+          if-no-files-found: warn
+
 
   inference-integration:
     runs-on: ubuntu-latest
@@ -80,6 +146,7 @@ jobs:
         with:
           submodules: recursive
       - name: Verify llama.cpp submodule SHA
+        id: verify-submodule-sha
         run: |
           cd third_party/llama.cpp
           actual=$(git rev-parse HEAD)
@@ -88,6 +155,7 @@ jobs:
             exit 1
           fi
       - name: Verify llama.cpp upstream tag
+        id: verify-submodule-tag
         run: |
           cd third_party/llama.cpp
           git fetch --tags --force origin 2>/dev/null || true
@@ -97,6 +165,7 @@ jobs:
             exit 1
           fi
       - name: Read GGUF SHA256 from repository
+        id: read-gguf-sha256
         run: |
           if [ ! -f "$CI_GGUF_SHA256_FILE" ]; then
             echo "Missing checksum file: $CI_GGUF_SHA256_FILE"
@@ -109,21 +178,31 @@ jobs:
           fi
           echo "CI_GGUF_SHA256=$CI_GGUF_SHA256" >> "$GITHUB_ENV"
       - uses: actions/setup-go@v5
+        id: setup-go
         with:
           go-version: ${{ env.GO_VERSION }}
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential cmake
       - name: Restore llama.cpp build cache
+        id: llama-build-cache
         uses: actions/cache@v4
         with:
           path: third_party/llama.cpp/build
           key: ${{ env.LLAMA_BUILD_CACHE_KEY }}-${{ env.LLAMA_SUBMODULE_SHA }}
       - name: Build llama.cpp (CPU, libraries only)
+        id: build-llama
         run: |
+          source .github/scripts/ci-emit-metrics.sh
+          tb_ci_env_set TB_LLAMA_CACHE_KEY "${LLAMA_BUILD_CACHE_KEY}-${LLAMA_SUBMODULE_SHA}"
+          tb_ci_env_set TB_GGUF_CACHE_KEY "${CI_GGUF_CACHE_KEY}"
           if [ -f third_party/llama.cpp/build/bin/libllama.so ]; then
             echo "llama.cpp build cache hit"
+            tb_ci_env_set TB_LLAMA_BUILD_CACHE hit
+            tb_ci_env_set TB_LLAMA_BUILD_DURATION_S 0
             exit 0
           fi
+          tb_ci_env_set TB_LLAMA_BUILD_CACHE miss
+          START=$(tb_ci_now)
           cmake -S third_party/llama.cpp -B third_party/llama.cpp/build \
             -DCMAKE_BUILD_TYPE=Release \
             $LLAMA_CMAKE_PORTABLE \
@@ -142,6 +221,8 @@ jobs:
             -DGGML_CCACHE=OFF
           cmake --build third_party/llama.cpp/build --target llama -j"$(nproc)"
           test -f third_party/llama.cpp/build/bin/libllama.so
+          END=$(tb_ci_now)
+          tb_ci_env_set TB_LLAMA_BUILD_DURATION_S "$((END-START))"
       - name: Restore GGUF model cache
         uses: actions/cache@v4
         id: gguf-cache
@@ -149,20 +230,34 @@ jobs:
           path: ${{ runner.temp }}/tb-ci-models
           key: ${{ env.CI_GGUF_CACHE_KEY }}-${{ hashFiles('testdata/ci/smollm2-135m-instruct-q4_k_m.gguf.sha256') }}
       - name: Download GGUF model if missing
+        id: download-gguf
         run: |
+          source .github/scripts/ci-emit-metrics.sh
+          tb_ci_env_set TB_GGUF_CACHE "$(tb_ci_cache_label '${{ steps.gguf-cache.outputs.cache-hit }}')"
           MODEL_DIR="${{ runner.temp }}/tb-ci-models"
           MODEL_PATH="${MODEL_DIR}/${CI_GGUF_FILENAME}"
           mkdir -p "$MODEL_DIR"
-          if [ ! -f "$MODEL_PATH" ]; then
+          if [ -f "$MODEL_PATH" ]; then
+            tb_ci_env_set TB_GGUF_DOWNLOAD_DURATION_S 0
+          else
+            START=$(tb_ci_now)
             curl -fsSL -o "$MODEL_PATH" "$CI_GGUF_URL"
+            END=$(tb_ci_now)
+            tb_ci_env_set TB_GGUF_DOWNLOAD_DURATION_S "$((END-START))"
           fi
           test -f "$MODEL_PATH"
       - name: Verify GGUF SHA256
+        id: verify-gguf-sha256
         run: |
+          source .github/scripts/ci-emit-metrics.sh
+          START=$(tb_ci_now)
           MODEL_DIR="${{ runner.temp }}/tb-ci-models"
           MODEL_PATH="${MODEL_DIR}/${CI_GGUF_FILENAME}"
           echo "${CI_GGUF_SHA256}  ${MODEL_PATH}" | sha256sum -c -
+          END=$(tb_ci_now)
+          tb_ci_env_set TB_GGUF_VERIFY_DURATION_S "$((END-START))"
       - name: Assert GGUF model size
+        id: assert-gguf-size
         run: |
           MODEL_DIR="${{ runner.temp }}/tb-ci-models"
           MODEL_PATH="${MODEL_DIR}/${CI_GGUF_FILENAME}"
@@ -181,7 +276,9 @@ jobs:
           JSON_OUT: ${{ runner.temp }}/go-test-llama.json
           MIN_PASS: ${{ env.CI_MIN_INTEGRATION_PASSES_LLAMA }}
         run: |
+          source .github/scripts/ci-emit-metrics.sh
           set -euo pipefail
+          TB_TEST_START=$(tb_ci_now)
           set +e
           go test -json -tags integration -count=1 ./internal/inference/llama/... > "$JSON_OUT"
           GO_EXIT=$?
@@ -219,6 +316,13 @@ jobs:
                       run_count += 1
                   elif action == "fail":
                       fail_count += 1
+          def write_env(k, v):
+              with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as f:
+                  f.write(f"{k}={v}\n")
+          write_env("TB_M2_PASS_COUNT", pass_count)
+          write_env("TB_M2_RUN_COUNT", run_count)
+          write_env("TB_M2_SKIP_COUNT", skip_count)
+          write_env("TB_M2_FAIL_COUNT", fail_count)
           errors = []
           if run_count == 0:
               errors.append("test run count is 0")
@@ -227,6 +331,9 @@ jobs:
           if pass_count < min_pass:
               errors.append(f"pass count {pass_count} < {min_pass}")
           if errors:
+              write_env("TB_M2_GUARD_FAILED", "1")
+              if pass_count < min_pass:
+                  write_env("TB_FAILURE_CLASS", "pass_count_low")
               print("; ".join(errors), file=sys.stderr)
               print("M2 diagnostics:", file=sys.stderr)
               print(f"  pass_count={pass_count}", file=sys.stderr)
@@ -240,12 +347,20 @@ jobs:
               print("  first Action:\"output\" entries:", file=sys.stderr)
               for i, ev in enumerate(output_entries):
                   print(f"    [{i}] {json.dumps(ev, ensure_ascii=True)}", file=sys.stderr)
+                  out = ev.get("Output", "")
+                  if "SIGILL" in out:
+                      write_env("TB_FAILURE_CLASS", "SIGILL")
               sys.exit(1)
-          print(f"integration summary: pass={pass_count} skip={skip_count} run={run_count}")
+          write_env("TB_M2_GUARD_FAILED", "0")
+          print(f"integration summary: pass={pass_count} skip={skip_count} run={run_count}", file=sys.stderr)
           PY
+          TB_TEST_END=$(tb_ci_now)
+          tb_ci_env_set TB_INTEGRATION_TEST_DURATION_S "$((TB_TEST_END - TB_TEST_START))"
           if [ "$GO_EXIT" -ne 0 ]; then
+            tb_ci_env_set TB_FAILURE_CLASS go_test_failed
             exit "$GO_EXIT"
           fi
+          echo "integration summary: duration_s=$((TB_TEST_END - TB_TEST_START))"
       - name: Upload llama integration test JSON (failure)
         if: failure() && steps.llama-integration-tests.outcome == 'failure'
         uses: actions/upload-artifact@v4
@@ -254,6 +369,34 @@ jobs:
           path: ${{ runner.temp }}/go-test-llama.json
           if-no-files-found: warn
           retention-days: 14
+      - name: Emit CI job metrics
+        if: always()
+        continue-on-error: true
+        env:
+          JOB_NAME: inference-integration
+          JOB_CONCLUSION: ${{ job.status }}
+          SETUP_GO_CACHE_HIT: ${{ steps.setup-go.outputs.cache-hit }}
+          STEP_VERIFY_SHA: ${{ steps.verify-submodule-sha.outcome }}
+          STEP_VERIFY_TAG: ${{ steps.verify-submodule-tag.outcome }}
+          STEP_READ_SHA256: ${{ steps.read-gguf-sha256.outcome }}
+          STEP_BUILD_LLAMA: ${{ steps.build-llama.outcome }}
+          STEP_DOWNLOAD_GGUF: ${{ steps.download-gguf.outcome }}
+          STEP_VERIFY_GGUF: ${{ steps.verify-gguf-sha256.outcome }}
+          STEP_ASSERT_GGUF: ${{ steps.assert-gguf-size.outcome }}
+          STEP_INTEGRATION_TEST: ${{ steps.llama-integration-tests.outcome }}
+        run: |
+          source .github/scripts/ci-emit-metrics.sh
+          tb_ci_env_set TB_SETUP_GO_CACHE "$(tb_ci_cache_label "$SETUP_GO_CACHE_HIT")"
+          tb_ci_emit_job_summary
+      - name: Upload CI job metrics
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-metrics-inference-integration
+          path: ${{ runner.temp }}/ci-job-metrics.json
+          if-no-files-found: warn
+
 
   inference-integration-runtime:
     runs-on: ubuntu-latest
@@ -263,6 +406,7 @@ jobs:
         with:
           submodules: recursive
       - name: Verify llama.cpp submodule SHA
+        id: verify-submodule-sha
         run: |
           cd third_party/llama.cpp
           actual=$(git rev-parse HEAD)
@@ -271,6 +415,7 @@ jobs:
             exit 1
           fi
       - name: Verify llama.cpp upstream tag
+        id: verify-submodule-tag
         run: |
           cd third_party/llama.cpp
           git fetch --tags --force origin 2>/dev/null || true
@@ -280,6 +425,7 @@ jobs:
             exit 1
           fi
       - name: Read GGUF SHA256 from repository
+        id: read-gguf-sha256
         run: |
           if [ ! -f "$CI_GGUF_SHA256_FILE" ]; then
             echo "Missing checksum file: $CI_GGUF_SHA256_FILE"
@@ -292,21 +438,31 @@ jobs:
           fi
           echo "CI_GGUF_SHA256=$CI_GGUF_SHA256" >> "$GITHUB_ENV"
       - uses: actions/setup-go@v5
+        id: setup-go
         with:
           go-version: ${{ env.GO_VERSION }}
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential cmake
       - name: Restore llama.cpp build cache
+        id: llama-build-cache
         uses: actions/cache@v4
         with:
           path: third_party/llama.cpp/build
           key: ${{ env.LLAMA_BUILD_CACHE_KEY }}-${{ env.LLAMA_SUBMODULE_SHA }}
       - name: Build llama.cpp (CPU, libraries only)
+        id: build-llama
         run: |
+          source .github/scripts/ci-emit-metrics.sh
+          tb_ci_env_set TB_LLAMA_CACHE_KEY "${LLAMA_BUILD_CACHE_KEY}-${LLAMA_SUBMODULE_SHA}"
+          tb_ci_env_set TB_GGUF_CACHE_KEY "${CI_GGUF_CACHE_KEY}"
           if [ -f third_party/llama.cpp/build/bin/libllama.so ]; then
             echo "llama.cpp build cache hit"
+            tb_ci_env_set TB_LLAMA_BUILD_CACHE hit
+            tb_ci_env_set TB_LLAMA_BUILD_DURATION_S 0
             exit 0
           fi
+          tb_ci_env_set TB_LLAMA_BUILD_CACHE miss
+          START=$(tb_ci_now)
           cmake -S third_party/llama.cpp -B third_party/llama.cpp/build \
             -DCMAKE_BUILD_TYPE=Release \
             $LLAMA_CMAKE_PORTABLE \
@@ -325,6 +481,8 @@ jobs:
             -DGGML_CCACHE=OFF
           cmake --build third_party/llama.cpp/build --target llama -j"$(nproc)"
           test -f third_party/llama.cpp/build/bin/libllama.so
+          END=$(tb_ci_now)
+          tb_ci_env_set TB_LLAMA_BUILD_DURATION_S "$((END-START))"
       - name: Restore GGUF model cache
         uses: actions/cache@v4
         id: gguf-cache
@@ -332,20 +490,34 @@ jobs:
           path: ${{ runner.temp }}/tb-ci-models
           key: ${{ env.CI_GGUF_CACHE_KEY }}-${{ hashFiles('testdata/ci/smollm2-135m-instruct-q4_k_m.gguf.sha256') }}
       - name: Download GGUF model if missing
+        id: download-gguf
         run: |
+          source .github/scripts/ci-emit-metrics.sh
+          tb_ci_env_set TB_GGUF_CACHE "$(tb_ci_cache_label '${{ steps.gguf-cache.outputs.cache-hit }}')"
           MODEL_DIR="${{ runner.temp }}/tb-ci-models"
           MODEL_PATH="${MODEL_DIR}/${CI_GGUF_FILENAME}"
           mkdir -p "$MODEL_DIR"
-          if [ ! -f "$MODEL_PATH" ]; then
+          if [ -f "$MODEL_PATH" ]; then
+            tb_ci_env_set TB_GGUF_DOWNLOAD_DURATION_S 0
+          else
+            START=$(tb_ci_now)
             curl -fsSL -o "$MODEL_PATH" "$CI_GGUF_URL"
+            END=$(tb_ci_now)
+            tb_ci_env_set TB_GGUF_DOWNLOAD_DURATION_S "$((END-START))"
           fi
           test -f "$MODEL_PATH"
       - name: Verify GGUF SHA256
+        id: verify-gguf-sha256
         run: |
+          source .github/scripts/ci-emit-metrics.sh
+          START=$(tb_ci_now)
           MODEL_DIR="${{ runner.temp }}/tb-ci-models"
           MODEL_PATH="${MODEL_DIR}/${CI_GGUF_FILENAME}"
           echo "${CI_GGUF_SHA256}  ${MODEL_PATH}" | sha256sum -c -
+          END=$(tb_ci_now)
+          tb_ci_env_set TB_GGUF_VERIFY_DURATION_S "$((END-START))"
       - name: Assert GGUF model size
+        id: assert-gguf-size
         run: |
           MODEL_DIR="${{ runner.temp }}/tb-ci-models"
           MODEL_PATH="${MODEL_DIR}/${CI_GGUF_FILENAME}"
@@ -358,21 +530,28 @@ jobs:
           echo "TB_TEST_GGUF_PATH=$MODEL_PATH" >> "$GITHUB_ENV"
           echo "LD_LIBRARY_PATH=${{ github.workspace }}/third_party/llama.cpp/build/bin" >> "$GITHUB_ENV"
       - name: Run runtime integration tests (M1 + M2)
+        id: runtime-integration-tests
         env:
           CGO_ENABLED: "1"
           JSON_OUT: ${{ runner.temp }}/go-test-runtime.json
           MIN_PASS: ${{ env.CI_MIN_INTEGRATION_PASSES_RUNTIME }}
         run: |
+          source .github/scripts/ci-emit-metrics.sh
           set -euo pipefail
+          TB_TEST_START=$(tb_ci_now)
           set +e
           go test -json -tags integration -count=1 ./internal/runtime/... > "$JSON_OUT"
           GO_EXIT=$?
           set -e
+          export GO_EXIT
           python3 <<'PY'
           import json, os, sys
           path = os.environ["JSON_OUT"]
           min_pass = int(os.environ["MIN_PASS"])
-          pass_count = skip_count = run_count = 0
+          go_exit = int(os.environ.get("GO_EXIT", "0"))
+          pass_count = skip_count = run_count = fail_count = 0
+          fail_entries = []
+          output_entries = []
           with open(path, encoding="utf-8") as f:
               for line in f:
                   line = line.strip()
@@ -382,15 +561,28 @@ jobs:
                       ev = json.loads(line)
                   except json.JSONDecodeError:
                       continue
+                  action = ev.get("Action")
+                  if action == "fail" and len(fail_entries) < 50:
+                      fail_entries.append(ev)
+                  elif action == "output" and len(output_entries) < 50:
+                      output_entries.append(ev)
                   if not ev.get("Test"):
                       continue
-                  action = ev.get("Action")
                   if action == "pass":
                       pass_count += 1
                   elif action == "skip":
                       skip_count += 1
                   elif action == "run":
                       run_count += 1
+                  elif action == "fail":
+                      fail_count += 1
+          def write_env(k, v):
+              with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as f:
+                  f.write(f"{k}={v}\n")
+          write_env("TB_M2_PASS_COUNT", pass_count)
+          write_env("TB_M2_RUN_COUNT", run_count)
+          write_env("TB_M2_SKIP_COUNT", skip_count)
+          write_env("TB_M2_FAIL_COUNT", fail_count)
           errors = []
           if run_count == 0:
               errors.append("test run count is 0")
@@ -399,10 +591,98 @@ jobs:
           if pass_count < min_pass:
               errors.append(f"pass count {pass_count} < {min_pass}")
           if errors:
+              write_env("TB_M2_GUARD_FAILED", "1")
+              if pass_count < min_pass:
+                  write_env("TB_FAILURE_CLASS", "pass_count_low")
               print("; ".join(errors), file=sys.stderr)
+              print("M2 diagnostics:", file=sys.stderr)
+              print(f"  pass_count={pass_count}", file=sys.stderr)
+              print(f"  run_count={run_count}", file=sys.stderr)
+              print(f"  skip_count={skip_count}", file=sys.stderr)
+              print(f"  fail_count={fail_count}", file=sys.stderr)
+              print(f"  go test exit code={go_exit}", file=sys.stderr)
+              print("  first Action:\"fail\" entries:", file=sys.stderr)
+              for i, ev in enumerate(fail_entries):
+                  print(f"    [{i}] {json.dumps(ev, ensure_ascii=True)}", file=sys.stderr)
+              print("  first Action:\"output\" entries:", file=sys.stderr)
+              for i, ev in enumerate(output_entries):
+                  print(f"    [{i}] {json.dumps(ev, ensure_ascii=True)}", file=sys.stderr)
+                  out = ev.get("Output", "")
+                  if "SIGILL" in out:
+                      write_env("TB_FAILURE_CLASS", "SIGILL")
               sys.exit(1)
-          print(f"integration summary: pass={pass_count} skip={skip_count} run={run_count}")
+          write_env("TB_M2_GUARD_FAILED", "0")
+          print(f"integration summary: pass={pass_count} skip={skip_count} run={run_count}", file=sys.stderr)
           PY
+          TB_TEST_END=$(tb_ci_now)
+          tb_ci_env_set TB_INTEGRATION_TEST_DURATION_S "$((TB_TEST_END - TB_TEST_START))"
           if [ "$GO_EXIT" -ne 0 ]; then
+            tb_ci_env_set TB_FAILURE_CLASS go_test_failed
             exit "$GO_EXIT"
           fi
+          echo "integration summary: duration_s=$((TB_TEST_END - TB_TEST_START))"
+      - name: Upload runtime integration test JSON (failure)
+        if: failure() && steps.runtime-integration-tests.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-test-runtime-json-${{ github.run_id }}
+          path: ${{ runner.temp }}/go-test-runtime.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Emit CI job metrics
+        if: always()
+        continue-on-error: true
+        env:
+          JOB_NAME: inference-integration-runtime
+          JOB_CONCLUSION: ${{ job.status }}
+          SETUP_GO_CACHE_HIT: ${{ steps.setup-go.outputs.cache-hit }}
+          STEP_VERIFY_SHA: ${{ steps.verify-submodule-sha.outcome }}
+          STEP_VERIFY_TAG: ${{ steps.verify-submodule-tag.outcome }}
+          STEP_READ_SHA256: ${{ steps.read-gguf-sha256.outcome }}
+          STEP_BUILD_LLAMA: ${{ steps.build-llama.outcome }}
+          STEP_DOWNLOAD_GGUF: ${{ steps.download-gguf.outcome }}
+          STEP_VERIFY_GGUF: ${{ steps.verify-gguf-sha256.outcome }}
+          STEP_ASSERT_GGUF: ${{ steps.assert-gguf-size.outcome }}
+          STEP_INTEGRATION_TEST: ${{ steps.runtime-integration-tests.outcome }}
+        run: |
+          source .github/scripts/ci-emit-metrics.sh
+          tb_ci_env_set TB_SETUP_GO_CACHE "$(tb_ci_cache_label "$SETUP_GO_CACHE_HIT")"
+          tb_ci_emit_job_summary
+      - name: Upload CI job metrics
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-metrics-inference-integration-runtime
+          path: ${{ runner.temp }}/ci-job-metrics.json
+          if-no-files-found: warn
+
+
+  ci-metrics-collect:
+    needs:
+      - test
+      - inference-cgo
+      - inference-integration
+      - inference-integration-runtime
+    if: always() && github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download CI job metrics artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ci-metrics-*
+          path: artifacts
+          merge-multiple: false
+      - name: Merge CI run metrics
+        env:
+          CI_RUN_RECORD_PATH: ${{ runner.temp }}/ci-run-record.json
+        run: python3 .github/scripts/ci-collect-run-metrics.py
+      - name: Upload CI run record
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-run-record-${{ github.run_id }}
+          path: ${{ runner.temp }}/ci-run-record.json
+          if-no-files-found: error
+          retention-days: 90
