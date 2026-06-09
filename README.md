@@ -44,7 +44,7 @@ Full architecture: [docs/architecture/overview.md](docs/architecture/overview.md
 go test ./...
 ```
 
-Default CI uses `CGO_ENABLED=0` (stub inference path). For llama.cpp CPU load (matches `inference-cgo` CI):
+Default local and CI unit path uses `CGO_ENABLED=0` (stub inference). Merge-blocking CI also runs CGO unit and real-GGUF integration jobs — see [CI jobs](#ci-jobs-merge-blocking-on-main) below.
 
 ```bash
 git submodule update --init --recursive third_party/llama.cpp
@@ -68,14 +68,25 @@ export LD_LIBRARY_PATH=third_party/llama.cpp/build/bin
 CGO_ENABLED=1 go test ./internal/inference/llama/...
 ```
 
-Optional integration tests with a real GGUF file:
+Integration tests with a real GGUF file (mirrors CI — see [testdata/ci/README.md](testdata/ci/README.md)):
 
 ```bash
-export TB_TEST_GGUF_PATH=/path/to/model.gguf
+export TB_TEST_GGUF_PATH=/path/to/smollm2-135m-instruct-q4_k_m.gguf
 export LD_LIBRARY_PATH=third_party/llama.cpp/build/bin
 CGO_ENABLED=1 go test -tags integration ./internal/inference/llama/...
 CGO_ENABLED=1 go test -tags integration ./internal/runtime/...
 ```
+
+### CI jobs (merge-blocking on `main`)
+
+| Job | Purpose |
+|-----|---------|
+| `test` | `CGO_ENABLED=0 go test ./...` — stub inference path |
+| `inference-cgo` | CGO unit tests for `./internal/inference/llama/...` (no integration tag) |
+| `inference-integration` | Real GGUF — 5 llama adapter integration tests |
+| `inference-integration-runtime` | Real GGUF — runtime E2E integration test |
+
+Green CI on `main` requires all four jobs. Integration jobs download a checksum-verified SmolLM2-135M-Instruct Q4_K_M (~105 MB), verify llama.cpp pin `b9553`, and fail on silent skips. Configure branch protection required checks **after** the first green `main` run (see [testdata/ci/README.md](testdata/ci/README.md)).
 
 ### Integrated runtime wiring (009c)
 

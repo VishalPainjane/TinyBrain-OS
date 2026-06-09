@@ -57,7 +57,8 @@ No new Go module dependencies for 009a (direct CGO + submodule).
 |-----|--------|---------------|------|---------|------|
 | `test` (existing) | `ubuntu-latest` | `0` | — | Full `go test ./...` stub path | **Required** — merge blocker |
 | `inference-cgo` (new) | `ubuntu-latest` | `1` | — | `go test ./internal/inference/llama/...` CPU backend | **Required** at 009a merge |
-| `inference-integration` | `ubuntu-latest` | `1` | `integration` | Real GGUF if `TB_TEST_GGUF_PATH` cached | Optional 009a; recommended post-merge |
+| `inference-integration` | `ubuntu-latest` | `1` | `integration` | Checksum-verified SmolLM2-135M Q4_K_M; 5 llama tests | **Required** — merge blocker (STAB-001) |
+| `inference-integration-runtime` | `ubuntu-latest` | `1` | `integration` | Same GGUF bootstrap; 1 runtime E2E test | **Required** — merge blocker (STAB-001) |
 | Windows compile | `windows-latest` | `1` | — | `go build ./internal/inference/llama/...` | Optional 009a |
 | macOS compile | `macos-latest` | `1` | — | CPU build only | Optional 009a |
 | CUDA GPU | GPU runner | `1` | `cuda` | Manual / nightly | Not 009a |

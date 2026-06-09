@@ -1,0 +1,5 @@
+# llama.cpp submodule pin (CI reference)
+# Upstream: https://github.com/ggml-org/llama.cpp.git → third_party/llama.cpp
+
+tag=b9553
+commit=9e3b928fd8c9d14dbf15a8768b9fdd7e5c721d66

@@ -90,7 +90,7 @@ Capabilities apply to the **llama.cpp adapter** unless noted. Feature parity acr
 |-----------|--------|
 | Unit (`CGO_ENABLED=0` stub path) | **Yes** |
 | CGO compile (Linux CI) | **Yes** — `inference-cgo` job |
-| Integration (real GGUF) | **Partial** (009b) — tag `integration`, env `TB_TEST_GGUF_PATH`; Generate verified Linux WSL; optional CI |
+| Integration (real GGUF) | **Yes** (STAB-001) — merge-blocking `inference-integration` + `inference-integration-runtime`; tag `integration`, deterministic GGUF + SHA256; 5 llama + 1 runtime test |
 | Windows automated | No — manual |
 | macOS automated | No — manual |
 
@@ -276,4 +276,4 @@ Track intentional differences — do not imply equal support.
 ---
 **Layer:** architecture  
 **Last updated:** 2026-06-09  
-**Matrix version:** 1.2 (post-009b — CPU Generate partial; integration verified Linux WSL)
+**Matrix version:** 1.3 (post-STAB-001 — merge-blocking real GGUF integration on Ubuntu CI)
