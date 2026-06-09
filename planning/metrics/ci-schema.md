@@ -1,6 +1,8 @@
-# CI Run Metrics — JSONL Schema
+# CI Run Metrics — Artifact Schema
 
-Append-only history in `ci-runs.jsonl`. One JSON object per line per **`main` push** CI workflow run. Schema version: **1**.
+Schema for the **`ci-run-record-{run_id}`** workflow artifact: one JSON object per **`main` push** CI run, produced by `ci-metrics-collect`. Schema version: **1**.
+
+**Source of truth:** GitHub Actions artifacts and step summaries — not an in-repo file.
 
 ## Top-level fields
 
@@ -50,20 +52,27 @@ Append-only history in `ci-runs.jsonl`. One JSON object per line per **`main` pu
 
 **Cache fields:** `hit`, `miss`
 
-## Example row
+## Example record
+
+Artifact: `ci-run-record-27204998799` (file: `ci-run-record.json`).
 
 ```json
 {"schema_version":1,"run_id":"27203437159","run_attempt":1,"workflow":"CI","event":"push","ref":"refs/heads/main","head_sha":"e293b98","conclusion":"success","created_at":"2026-06-09T12:00:00Z","updated_at":"2026-06-09T12:08:00Z","workflow_duration_s":480,"jobs":[{"job_name":"test","conclusion":"success","duration_s":45,"setup_go_cache":"hit","go_test_duration_s":38,"failure_phase":"none","failure_class":""},{"job_name":"inference-cgo","conclusion":"success","duration_s":420,"setup_go_cache":"hit","llama_build_duration_s":360,"cgo_test_duration_s":25,"failure_phase":"none","failure_class":""},{"job_name":"inference-integration","conclusion":"success","duration_s":180,"setup_go_cache":"hit","llama_build_cache":"hit","llama_build_duration_s":0,"gguf_cache":"hit","gguf_download_duration_s":0,"gguf_verify_duration_s":2,"integration_test_duration_s":45,"m2_pass_count":13,"m2_run_count":13,"m2_skip_count":0,"m2_fail_count":0,"failure_phase":"none","failure_class":"","llama_cache_key":"llama-cpu-b9553-ubuntu-portable-v2","gguf_cache_key":"smollm2-135m-instruct-q4_k_m-v1"},{"job_name":"inference-integration-runtime","conclusion":"success","duration_s":175,"setup_go_cache":"hit","llama_build_cache":"hit","llama_build_duration_s":0,"gguf_cache":"hit","gguf_download_duration_s":0,"gguf_verify_duration_s":2,"integration_test_duration_s":40,"m2_pass_count":1,"m2_run_count":1,"m2_skip_count":0,"m2_fail_count":0,"failure_phase":"none","failure_class":"","llama_cache_key":"llama-cpu-b9553-ubuntu-portable-v2","gguf_cache_key":"smollm2-135m-instruct-q4_k_m-v1"}]}
 ```
 
+## Downloading run history
+
+```bash
+gh run list --branch main --workflow CI --limit 7
+gh run download <run_id> -n ci-run-record-<run_id> -D /tmp/ci-metrics
+```
+
+Per-job detail is also available as artifacts `ci-metrics-{job_name}` and in each job's GitHub Actions step summary.
+
 ## Privacy and allowlist
 
 - Do **not** record: `CI_GGUF_URL`, runner temp paths, Hugging Face tokens, env secrets.
 - Model identity: filename + checksum file hash only (via cache key suffix).
-
-## Archive
-
-When `ci-runs.jsonl` exceeds ~500 lines, move completed calendar year to `planning/metrics/archive/ci-runs-YYYY.jsonl` and document in this file.
 
 ---
 **Layer:** planning  

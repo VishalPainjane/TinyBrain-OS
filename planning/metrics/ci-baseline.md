@@ -2,7 +2,12 @@
 
 Reference bands for STAB-002 observability. Derived from STAB-001 M6 ([testdata/ci/README.md](../../testdata/ci/README.md)). Update when cache keys, runner images, or test counts change materially.
 
-**Review cadence:** Weekly on `main` — compare last 7 runs in `ci-runs.jsonl` against bands below.
+**Review cadence:** Weekly on `main` — download the last 7 `ci-run-record-{run_id}` artifacts (or inspect step summaries) and compare against bands below.
+
+```bash
+gh run list --branch main --workflow CI --limit 7
+gh run download <run_id> -n ci-run-record-<run_id> -D /tmp/ci-metrics
+```
 
 ## Integration jobs (per job, parallel)
 
@@ -56,14 +61,14 @@ Reference bands for STAB-002 observability. Derived from STAB-001 M6 ([testdata/
 | `pass_count` below threshold, `go test exit 0` | M2 guard | Inspect uploaded JSON artifact |
 | Sudden GGUF download on every run | M4 checksum or cache key change | Verify `.sha256` + `CI_GGUF_CACHE_KEY` coupled |
 | `inference-cgo` slow every run | Expected (no cache) | Do not compare to integration warm times |
-| Collector stopped appending JSONL | Bot PR failure | Fix collector; history gap acceptable |
+| Missing `ci-run-record` artifact | Collector or upstream job artifact failure | Check `ci-metrics-collect` job logs on the run |
 
 ## Baseline update procedure
 
-1. Run `jq` or manual scan of last 20 `main` rows in `ci-runs.jsonl`.
+1. Download last 7 `ci-run-record-{run_id}` artifacts and inspect `jobs[]` timings and cache fields.
 2. If warm p95 exceeds band by &gt; 20% for 2 weeks, widen band and note reason in this file.
 3. If cold runs exceed 15 min routinely, open RFC for bootstrap job (out of STAB-002 scope).
 
 ---
 **Layer:** planning  
-**Related:** [ci-schema.md](ci-schema.md), [ci-runs.jsonl](ci-runs.jsonl)
+**Related:** [ci-schema.md](ci-schema.md)

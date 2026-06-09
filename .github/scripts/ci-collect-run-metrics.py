@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Merge per-job CI metrics artifacts into one ci-runs.jsonl row (STAB-002)."""
+"""Merge per-job CI metrics artifacts into one run record JSON file (STAB-002)."""
 from __future__ import annotations
 
 import json
@@ -11,7 +11,7 @@ from pathlib import Path
 
 def main() -> int:
     artifacts_dir = Path(os.environ.get("ARTIFACTS_DIR", "artifacts"))
-    out_path = Path(os.environ["CI_RUNS_JSONL"])
+    out_path = Path(os.environ["CI_RUN_RECORD_PATH"])
     run_id = os.environ["GITHUB_RUN_ID"]
     run_attempt = int(os.environ.get("GITHUB_RUN_ATTEMPT", "1"))
     head_sha = os.environ.get("GITHUB_SHA", "")[:12]
@@ -38,7 +38,7 @@ def main() -> int:
         conclusion = "unknown"
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    row = {
+    record = {
         "schema_version": 1,
         "run_id": run_id,
         "run_attempt": run_attempt,
@@ -52,11 +52,11 @@ def main() -> int:
         "jobs": jobs,
     }
 
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    with out_path.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(row, separators=(",", ":")) + "\n")
+    with out_path.open("w", encoding="utf-8") as f:
+        json.dump(record, f, separators=(",", ":"))
+        f.write("\n")
 
-    print(f"appended run {run_id} to {out_path}")
+    print(f"wrote run record {run_id} to {out_path}")
     return 0
 
 

@@ -111,16 +111,19 @@ sha256sum -c testdata/ci/smollm2-135m-instruct-q4_k_m.gguf.sha256
 
 ## CI observability (STAB-002)
 
-Each merge-blocking job writes a **CI metrics** table to the GitHub Actions step summary (timing, cache hit/miss). On `main` push, the non-blocking `ci-metrics-collect` job appends one JSON row to [planning/metrics/ci-runs.jsonl](../../planning/metrics/ci-runs.jsonl).
+Each merge-blocking job writes a **CI metrics** table to the GitHub Actions step summary (timing, cache hit/miss). On `main` push, the non-blocking `ci-metrics-collect` job merges per-job metrics into artifact **`ci-run-record-{run_id}`** (90-day retention).
 
 | Resource | Purpose |
 |----------|---------|
-| [ci-runs.jsonl](../../planning/metrics/ci-runs.jsonl) | Append-only run history |
-| [ci-schema.md](../../planning/metrics/ci-schema.md) | JSONL field definitions |
+| `ci-run-record-{run_id}` artifact | Merged run metrics (source of truth for trends) |
+| `ci-metrics-{job}` artifacts | Per-job JSON from each merge-blocking job |
+| [ci-schema.md](../../planning/metrics/ci-schema.md) | Run record field definitions |
 | [ci-baseline.md](../../planning/metrics/ci-baseline.md) | Warm/cold duration bands + triage |
 
 **Cache fields:** `llama build` (Actions cache + file probe), `GGUF model` (`gguf-cache` step output), `setup-go` (setup-go cache output).
 
 **Failure artifacts:** `go-test-llama-json-{run_id}` and `go-test-runtime-json-{run_id}` on integration test failure (14-day retention).
 
-If `ci-metrics-collect` cannot push to `main` (branch protection), the merged row is still available as artifact `ci-run-record-{run_id}`.
+```bash
+gh run download <run_id> -n ci-run-record-<run_id> -D /tmp/ci-metrics
+```
