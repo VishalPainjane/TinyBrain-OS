@@ -2,7 +2,7 @@
 
 Code-first snapshot. Update after every completed task.
 
-**Last verified:** 2026-06-09
+**Last verified:** 2026-06-10
 
 ## Implemented
 
@@ -15,10 +15,11 @@ Code-first snapshot. Update after every completed task.
 | Agent registry | `internal/registry/agents.go` | Complete, tested |
 | Model registry (in-memory + bbolt) | `internal/registry/models*.go` | Complete, tested |
 | Hardware probe + profiles | `internal/hardware/` | Complete, tested |
-| Runtime shell + StubProvider | `internal/runtime/` | Complete, tested |
+| Runtime + integrated orchestration | `internal/runtime/` | Complete, tested (009c) |
+| ModelResolver + RegistryResolver | `internal/runtime/` | Complete, tested (009c) |
 | Model loader (stub lifecycle) | `internal/loader/` | Complete, tested |
 | FIFO scheduler skeleton | `internal/scheduler/` | Complete, tested |
-| llama.cpp adapter (CPU load/unload/generate) | `internal/inference/llama/` | Partial (009a+009b) — context at load; Generate verified; not wired to runtime |
+| llama.cpp adapter (CPU load/unload/generate) | `internal/inference/llama/` | Complete CPU path; wired via runtime (009c) |
 
 ## In Progress
 
@@ -26,12 +27,12 @@ Code-first snapshot. Update after every completed task.
 
 ## Not Implemented
 
-- Runtime ↔ LlamaProvider integration (009c)
 - CUDA / Metal / ROCm / Vulkan inference backends
 - Agent plugins, tool registry
 - Telemetry, brain-top TUI
 - KV manager, swap manager
 - Kubernetes operator
+- Scheduler → runtime command wiring
 
 ## Active Packages
 
@@ -40,9 +41,9 @@ Code-first snapshot. Update after every completed task.
 ## Tests
 
 `go test ./...` — passing (`CGO_ENABLED=0`, default CI)  
-`inference-cgo` CI job — passing (Linux CGO unit tests)  
-Integration (`-tags integration`, `TB_TEST_GGUF_PATH`) — verified Linux WSL (009b)  
-`tests/import_boundary_test.go` — scheduler must not import inference
+`inference-cgo` CI job — CGO unit tests (Linux)  
+Integration (`-tags integration`, `TB_TEST_GGUF_PATH`) — inference + runtime E2E (`runtime_integration_test.go`)  
+`tests/import_boundary_test.go` — scheduler and runtime must not import inference
 
 ## Governance
 

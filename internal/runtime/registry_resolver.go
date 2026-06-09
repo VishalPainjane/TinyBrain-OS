@@ -1,4 +1,4 @@
-package llama
+package runtime
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 // RegistryResolver adapts ModelRegistry to ModelResolver.
-// This is the only file in the inference tree that imports internal/registry.
+// This is the only file in the runtime tree that imports internal/registry for resolution.
 type RegistryResolver struct {
 	reg *registry.ModelRegistry
 }

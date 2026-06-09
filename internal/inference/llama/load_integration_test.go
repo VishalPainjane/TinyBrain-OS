@@ -17,7 +17,7 @@ func TestLlamaProvider_LoadUnload_integration(t *testing.T) {
 	}
 
 	p := NewLlamaProvider(staticResolver{
-		specs: map[string]ModelSpec{
+		specs: map[string]runtime.ModelSpec{
 			"test-model": {ID: "test-model", Path: path},
 		},
 	}, DefaultConfig())

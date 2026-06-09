@@ -1,7 +1,7 @@
-package llama
+package runtime
 
 // ModelSpec is the minimum metadata required to load a GGUF model.
-// See planning/decisions/009a-registry-resolver.md.
+// See planning/decisions/009a-registry-resolver.md and 009c-architecture-review.md.
 type ModelSpec struct {
 	ID           string
 	Path         string
@@ -10,7 +10,7 @@ type ModelSpec struct {
 }
 
 // ModelResolver resolves modelID to a load specification.
-// Registry and other backends implement this at the composition root.
+// Implemented at the composition boundary; consumed by runtime and inference adapters.
 type ModelResolver interface {
 	Resolve(modelID string) (ModelSpec, error)
 }

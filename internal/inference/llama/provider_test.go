@@ -10,17 +10,17 @@ import (
 )
 
 type staticResolver struct {
-	specs map[string]ModelSpec
+	specs map[string]runtime.ModelSpec
 	err   error
 }
 
-func (s staticResolver) Resolve(modelID string) (ModelSpec, error) {
+func (s staticResolver) Resolve(modelID string) (runtime.ModelSpec, error) {
 	if s.err != nil {
-		return ModelSpec{}, s.err
+		return runtime.ModelSpec{}, s.err
 	}
 	spec, ok := s.specs[modelID]
 	if !ok {
-		return ModelSpec{}, registry.ErrNotFound
+		return runtime.ModelSpec{}, registry.ErrNotFound
 	}
 	return spec, nil
 }
@@ -44,7 +44,7 @@ func TestLlamaProvider_LoadModel_resolveError(t *testing.T) {
 
 func TestLlamaProvider_LoadModel_pathInaccessible(t *testing.T) {
 	p := NewLlamaProvider(staticResolver{
-		specs: map[string]ModelSpec{
+		specs: map[string]runtime.ModelSpec{
 			"m1": {ID: "m1", Path: filepath.Join(t.TempDir(), "nope.gguf")},
 		},
 	}, DefaultConfig())
@@ -57,7 +57,7 @@ func TestLlamaProvider_LoadModel_pathInaccessible(t *testing.T) {
 
 func TestLlamaProvider_LoadModel_duplicate(t *testing.T) {
 	p := NewLlamaProvider(staticResolver{
-		specs: map[string]ModelSpec{
+		specs: map[string]runtime.ModelSpec{
 			"m1": {ID: "m1", Path: "/unused"},
 		},
 	}, DefaultConfig())
@@ -107,38 +107,5 @@ func TestLlamaProvider_portStubs(t *testing.T) {
 	}
 	if err := p.RestoreContext("c1"); !errors.Is(err, ErrNotImplemented) {
 		t.Fatalf("RestoreContext() error = %v, want ErrNotImplemented", err)
-	}
-}
-
-func TestRegistryResolver_Resolve(t *testing.T) {
-	reg := registry.NewModelRegistry()
-	_ = reg.RegisterModel(registry.ModelDefinition{
-		ID:   "tiny",
-		Path: "/models/tiny.gguf",
-	})
-
-	r := NewRegistryResolver(reg)
-	spec, err := r.Resolve("tiny")
-	if err != nil {
-		t.Fatalf("Resolve() error = %v", err)
-	}
-	if spec.Path != "/models/tiny.gguf" {
-		t.Fatalf("Path = %q, want /models/tiny.gguf", spec.Path)
-	}
-
-	_, err = r.Resolve("missing")
-	if !errors.Is(err, registry.ErrNotFound) {
-		t.Fatalf("Resolve(missing) error = %v, want ErrNotFound", err)
-	}
-}
-
-func TestRegistryResolver_emptyPath(t *testing.T) {
-	reg := registry.NewModelRegistry()
-	_ = reg.RegisterModel(registry.ModelDefinition{ID: "empty"})
-
-	r := NewRegistryResolver(reg)
-	_, err := r.Resolve("empty")
-	if err == nil {
-		t.Fatal("Resolve() error = nil, want path required error")
 	}
 }

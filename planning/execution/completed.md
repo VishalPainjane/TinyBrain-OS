@@ -101,5 +101,14 @@ Append-only history. Never delete entries.
 
 **Note:** Runtime ↔ `LlamaProvider` wiring deferred to 009c. CUDA/GPU deferred. SaveContext/RestoreContext remain stubs (011).
 
+## 009c-runtime-integration
+
+**Completed:** 2026-06-09
+**Commit:** `ee186c1`
+**Outcome:** Success — `ModelRuntime` orchestrates `ModelResolver` → `loader.Load` → `LlamaProvider`; shared `runtime.ModelResolver` (Option B); rollback on provider failure; lifecycle events; loader-less constructor preserved; E2E `runtime_integration_test.go`; `TestRuntimeDoesNotImportInference`
+**Files:** `internal/runtime/resolver.go`, `registry_resolver.go`, `registry_resolver_test.go`, `runtime.go`, `runtime_loader_test.go`, `runtime_integration_test.go`, `internal/inference/llama/provider.go` (+ test updates), `tests/import_boundary_test.go`, `tasks/009c-runtime-integration.md`, `planning/decisions/009c-architecture-review.md`
+
+**Note:** CUDA/GPU deferred. SaveContext/RestoreContext remain stubs (011). CI E2E requires `TB_TEST_GGUF_PATH` on Linux.
+
 ---
 **Layer:** planning

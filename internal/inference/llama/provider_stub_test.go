@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/VishalPainjane/TinyBrain-OS/internal/runtime"
 )
 
 func TestLlamaProvider_LoadUnload_cgoDisabled(t *testing.T) {
@@ -17,7 +19,7 @@ func TestLlamaProvider_LoadUnload_cgoDisabled(t *testing.T) {
 	}
 
 	p := NewLlamaProvider(staticResolver{
-		specs: map[string]ModelSpec{
+		specs: map[string]runtime.ModelSpec{
 			"m1": {ID: "m1", Path: path},
 		},
 	}, DefaultConfig())
