@@ -8,7 +8,7 @@
 
 ## Current Task
 
-009b — CPU Generate (v0.6 inference extension)
+(none — 009b complete; next task 009c not started)
 
 ## In Progress
 
@@ -32,10 +32,10 @@
 - [x] 009-model-loader
 - [x] 010-scheduler
 - [x] 009a-llama-cgo-load
+- [x] 009b-cpu-generate
 
 ## Next
 
-- **009b** — single-prompt CPU Generate on `LlamaProvider`
 - **009c** (deferred) — runtime + loader integration per [inference-lifecycle.md](../../docs/architecture/inference-lifecycle.md)
 - Month 3: [011-kv-manager](../../tasks/011-kv-manager.md) (after v0.7 MLFQ)
 
@@ -60,4 +60,4 @@
 
 ---
 **Layer:** planning
-**Last updated:** 2026-06-08
+**Last updated:** 2026-06-09

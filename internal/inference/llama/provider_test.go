@@ -81,13 +81,27 @@ func TestLlamaProvider_UnloadModel_notLoaded(t *testing.T) {
 	}
 }
 
+func TestLlamaProvider_Generate_notLoaded(t *testing.T) {
+	p := NewLlamaProvider(staticResolver{}, DefaultConfig())
+
+	_, err := p.Generate(runtime.GenerateRequest{ModelID: "m1", Prompt: "hi"})
+	if !errors.Is(err, runtime.ErrModelNotLoaded) {
+		t.Fatalf("Generate() error = %v, want ErrModelNotLoaded", err)
+	}
+}
+
+func TestLlamaProvider_Generate_emptyModelID(t *testing.T) {
+	p := NewLlamaProvider(staticResolver{}, DefaultConfig())
+
+	_, err := p.Generate(runtime.GenerateRequest{ModelID: "", Prompt: "hi"})
+	if err == nil {
+		t.Fatal("Generate() error = nil, want error")
+	}
+}
+
 func TestLlamaProvider_portStubs(t *testing.T) {
 	p := NewLlamaProvider(staticResolver{}, DefaultConfig())
 
-	_, err := p.Generate(runtime.GenerateRequest{ModelID: "m1"})
-	if !errors.Is(err, ErrNotImplemented) {
-		t.Fatalf("Generate() error = %v, want ErrNotImplemented", err)
-	}
 	if err := p.SaveContext("c1"); !errors.Is(err, ErrNotImplemented) {
 		t.Fatalf("SaveContext() error = %v, want ErrNotImplemented", err)
 	}

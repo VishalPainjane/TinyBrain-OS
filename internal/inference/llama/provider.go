@@ -83,3 +83,28 @@ func (p *LlamaProvider) UnloadModel(modelID string) error {
 	delete(p.models, modelID)
 	return nil
 }
+
+// Generate runs single-prompt inference on a loaded model.
+func (p *LlamaProvider) Generate(req runtime.GenerateRequest) (runtime.GenerateResponse, error) {
+	if req.ModelID == "" {
+		return runtime.GenerateResponse{}, fmt.Errorf("model ID is required")
+	}
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	if _, ok := p.models[req.ModelID]; !ok {
+		return runtime.GenerateResponse{}, fmt.Errorf("%w: %s", runtime.ErrModelNotLoaded, req.ModelID)
+	}
+
+	output, tokens, err := p.generateBackend(req.ModelID, req.Prompt)
+	if err != nil {
+		return runtime.GenerateResponse{}, err
+	}
+
+	return runtime.GenerateResponse{
+		ModelID:        req.ModelID,
+		Output:         output,
+		TokensProduced: int(tokens),
+	}, nil
+}

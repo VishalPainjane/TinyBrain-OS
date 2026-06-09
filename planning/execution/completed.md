@@ -92,5 +92,14 @@ Append-only history. Never delete entries.
 
 **Note:** Generate, runtime wiring, and CUDA execution deferred to 009b+.
 
+## 009b-cpu-generate
+
+**Completed:** 2026-06-09
+**Commit:** *(pending — commit after merge approval)*
+**Outcome:** Success — CPU `Generate` on `LlamaProvider` via llama.cpp b9553; context at load; memory clear per call; Linux CGO + real GGUF integration verified (TTFT/TPS, 3× cycle)
+**Files:** `internal/inference/llama/` (generate_cpu.go, generate_stub.go, generate_integration_test.go, bindings_cgo.go, provider.go, config.go, errors.go, port_stubs.go, provider_test.go, load_cpu.go, context.go, doc.go), `planning/decisions/009b-architecture-review.md`
+
+**Note:** Runtime ↔ `LlamaProvider` wiring deferred to 009c. CUDA/GPU deferred. SaveContext/RestoreContext remain stubs (011).
+
 ---
 **Layer:** planning

@@ -1,7 +1,7 @@
 package llama
 
 // modelSlot tracks per-model load state on the Go side.
-// Native llama handles are managed in load_cpu.go (CGO) or absent when CGO is off.
+// Native llama model handles live in nativeModels; context handles in nativeContexts (CGO).
 type modelSlot struct {
 	path string
 }

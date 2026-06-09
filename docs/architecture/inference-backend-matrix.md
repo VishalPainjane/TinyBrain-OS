@@ -26,7 +26,7 @@ Capabilities apply to the **llama.cpp adapter** unless noted. Feature parity acr
 |------------|-----|------|----------|-------|--------|
 | LoadModel | **Partial** (009a) | Planned (009a config) | Planned | Planned | Planned |
 | UnloadModel | **Partial** (009a) | Planned (009a config) | Planned | Planned | Planned |
-| Generate | Planned (009b) | Planned (009b) | Planned | Planned | Planned |
+| Generate | **Partial** (009b) | Planned (009b) | Planned | Planned | Planned |
 | SaveContext | Stub (009a) | Stub (009a) | Stub | Stub | Stub |
 | RestoreContext | Stub (009a) | Stub (009a) | Stub | Stub | Stub |
 | Quantization (GGUF Q4_K_M) | Planned | Planned | Planned | Planned | Planned |
@@ -90,7 +90,7 @@ Capabilities apply to the **llama.cpp adapter** unless noted. Feature parity acr
 |-----------|--------|
 | Unit (`CGO_ENABLED=0` stub path) | **Yes** |
 | CGO compile (Linux CI) | **Yes** — `inference-cgo` job |
-| Integration (real GGUF) | **Partial** — tag `integration`, env `TB_TEST_GGUF_PATH`; optional CI |
+| Integration (real GGUF) | **Partial** (009b) — tag `integration`, env `TB_TEST_GGUF_PATH`; Generate verified Linux WSL; optional CI |
 | Windows automated | No — manual |
 | macOS automated | No — manual |
 
@@ -254,14 +254,14 @@ Track intentional differences — do not imply equal support.
 
 | Gap | Backends affected | Resolution target |
 |-----|-------------------|-------------------|
-| Generate not in 009a | All llama backends | 009b |
+| Generate CPU only (009b) | CUDA, ROCm, Metal, Vulkan | Post-009b GPU tasks |
 | SaveContext / RestoreContext stub | All llama backends | Task 011 KV manager |
 | CUDA absent on macOS | CUDA | Permanent — use Metal on macOS |
 | Metal absent on Linux/Windows | Metal | Permanent — use CUDA/ROCm/Vulkan |
 | No CI GPU tests in 009a | CUDA, ROCm, Metal, Vulkan | Post-009a CI design |
 | No multi-GPU | All | Future RFC / workstation profile |
 | Vulkan not in probe enum | Vulkan | Probe task + matrix update |
-| StubProvider has Generate stub | Test only | Replaced by llama Generate in 009b for real inference |
+| StubProvider has Generate stub | Test only (`internal/runtime/`) | Permanent — runtime port tests; llama Generate is separate (009b) |
 
 ---
 
@@ -275,5 +275,5 @@ Track intentional differences — do not imply equal support.
 
 ---
 **Layer:** architecture  
-**Last updated:** 2026-06-08  
-**Matrix version:** 1.1 (post-009a — CPU load/unload partial; Generate deferred to 009b)
+**Last updated:** 2026-06-09  
+**Matrix version:** 1.2 (post-009b — CPU Generate partial; integration verified Linux WSL)
