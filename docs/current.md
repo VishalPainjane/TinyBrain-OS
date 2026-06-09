@@ -8,7 +8,7 @@
 
 **009b status:** Complete (`8cdd9b1`, PR #4) — CPU `Generate` on `LlamaProvider`; Linux CGO + real GGUF integration verified
 
-**009c status:** Complete — `ModelRuntime` orchestrates resolver → loader → `LlamaProvider`; shared `runtime.ModelResolver`; E2E integration test (`runtime_integration_test.go`)
+**009c status:** Merged (`ee186c1`, PR #5 @ `f20475f`) — `ModelRuntime` orchestrates resolver → loader → `LlamaProvider`; shared `runtime.ModelResolver`
 
 **Forbidden:** agents, Kubernetes, KV manager (011 — Month 3)
 

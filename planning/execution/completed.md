@@ -104,7 +104,7 @@ Append-only history. Never delete entries.
 ## 009c-runtime-integration
 
 **Completed:** 2026-06-09
-**Commit:** `ee186c1`
+**Commit:** `ee186c1` (merged via PR #5, `f20475f`)
 **Outcome:** Success — `ModelRuntime` orchestrates `ModelResolver` → `loader.Load` → `LlamaProvider`; shared `runtime.ModelResolver` (Option B); rollback on provider failure; lifecycle events; loader-less constructor preserved; E2E `runtime_integration_test.go`; `TestRuntimeDoesNotImportInference`
 **Files:** `internal/runtime/resolver.go`, `registry_resolver.go`, `registry_resolver_test.go`, `runtime.go`, `runtime_loader_test.go`, `runtime_integration_test.go`, `internal/inference/llama/provider.go` (+ test updates), `tests/import_boundary_test.go`, `tasks/009c-runtime-integration.md`, `planning/decisions/009c-architecture-review.md`
 
