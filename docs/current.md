@@ -6,7 +6,7 @@
 
 **009a status:** Merged — llama.cpp CPU load/unload (`b9553` @ `9e3b928fd8c9d14dbf15a8768b9fdd7e5c721d66`)
 
-**009b status:** Complete (pending commit) — CPU `Generate` on `LlamaProvider`; Linux CGO + real GGUF integration verified; not wired to runtime
+**009b status:** Complete (`8cdd9b1`, PR #4) — CPU `Generate` on `LlamaProvider`; Linux CGO + real GGUF integration verified; not wired to runtime
 
 **Forbidden:** agents, Kubernetes, KV manager (011 — Month 3)
 
