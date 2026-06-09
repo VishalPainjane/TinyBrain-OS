@@ -1,6 +1,8 @@
 package llama
 
-// LlamaConfig holds CPU-only llama.cpp load and generate settings.
+// LlamaConfig holds llama.cpp load and generate settings.
+// NGLayers is applied only when the binary is built with -tags cuda; CPU builds force 0 at load.
+// See docs/architecture/inference-backend-matrix.md.
 type LlamaConfig struct {
 	ContextSize   uint32
 	Threads       int
@@ -10,9 +12,11 @@ type LlamaConfig struct {
 	BatchSize     uint32
 	Seed          uint32
 	GreedySampler bool
+	// NGLayers is the number of model layers to offload to GPU (-1 = all layers, 0 = CPU only).
+	NGLayers int32
 }
 
-// DefaultConfig returns conservative CPU defaults (NGLayers=0 implicit).
+// DefaultConfig returns conservative defaults with NGLayers=0 (safe for CPU binaries).
 func DefaultConfig() LlamaConfig {
 	return LlamaConfig{
 		ContextSize:   512,
@@ -23,5 +27,14 @@ func DefaultConfig() LlamaConfig {
 		BatchSize:     512,
 		Seed:          0xFFFFFFFF,
 		GreedySampler: false,
+		NGLayers:      0,
 	}
+}
+
+// EffectiveNGLayers clamps cfg.NGLayers for llama.cpp: values below -1 become -1 (all layers).
+func EffectiveNGLayers(ng int32) int32 {
+	if ng < -1 {
+		return -1
+	}
+	return ng
 }

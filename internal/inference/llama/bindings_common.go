@@ -1,12 +1,9 @@
-//go:build cgo && !cuda && !rocm && !metal && !vulkan
+//go:build cgo
 
 package llama
 
 /*
 #cgo CFLAGS: -I${SRCDIR}/../../../third_party/llama.cpp/include -I${SRCDIR}/../../../third_party/llama.cpp/ggml/include
-#cgo linux LDFLAGS: -L${SRCDIR}/../../../third_party/llama.cpp/build/bin -lllama -lggml -lggml-cpu -lggml-base -lstdc++ -lm -lpthread -ldl -lgomp
-#cgo darwin LDFLAGS: -L${SRCDIR}/../../../third_party/llama.cpp/build/bin -lllama -lggml -lggml-cpu -lggml-base -lc++ -lm -lpthread
-#cgo windows LDFLAGS: -L${SRCDIR}/../../../third_party/llama.cpp/build/bin -lllama -lggml -lggml-cpu -lggml-base -lstdc++ -lm
 #include "llama.h"
 #include <stdlib.h>
 */
@@ -55,45 +52,6 @@ func freeNativeHandles(modelID string) {
 		C.llama_model_free((*C.struct_llama_model)(model))
 		delete(nativeModels, modelID)
 	}
-}
-
-func loadNativeModel(path string, modelID string, cfg LlamaConfig) error {
-	initBackend()
-
-	cPath := C.CString(path)
-	defer C.free(unsafe.Pointer(cPath))
-
-	params := C.llama_model_default_params()
-	if cfg.UseMMAP {
-		params.use_mmap = C.bool(true)
-	} else {
-		params.use_mmap = C.bool(false)
-	}
-	params.n_gpu_layers = 0
-
-	model := C.llama_model_load_from_file(cPath, params)
-	if model == nil {
-		return ErrPathInaccessible
-	}
-
-	ctxParams := C.llama_context_default_params()
-	ctxParams.n_ctx = C.uint32_t(cfg.ContextSize)
-	ctxParams.n_threads = C.int32_t(cfg.Threads)
-	ctxParams.n_batch = C.uint32_t(effectiveBatchSize(cfg))
-
-	ctx := C.llama_init_from_model(model, ctxParams)
-	if ctx == nil {
-		C.llama_model_free(model)
-		return fmt.Errorf("%w: context init failed", ErrGenerationFailed)
-	}
-
-	nativeMu.Lock()
-	defer nativeMu.Unlock()
-
-	freeNativeHandles(modelID)
-	nativeModels[modelID] = unsafe.Pointer(model)
-	nativeContexts[modelID] = unsafe.Pointer(ctx)
-	return nil
 }
 
 func unloadNativeModel(modelID string) error {
