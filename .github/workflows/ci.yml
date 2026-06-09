@@ -6,6 +6,19 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  GO_VERSION: "1.22"
+  LLAMA_SUBMODULE_SHA: "9e3b928fd8c9d14dbf15a8768b9fdd7e5c721d66"
+  LLAMA_SUBMODULE_TAG: "b9553"
+  CI_GGUF_FILENAME: "smollm2-135m-instruct-q4_k_m.gguf"
+  CI_GGUF_URL: "https://huggingface.co/unsloth/SmolLM2-135M-Instruct-GGUF/resolve/main/SmolLM2-135M-Instruct-Q4_K_M.gguf"
+  CI_GGUF_CACHE_KEY: "smollm2-135m-instruct-q4_k_m-v1"
+  LLAMA_BUILD_CACHE_KEY: "llama-cpu-b9553-ubuntu-v1"
+  CI_MIN_INTEGRATION_PASSES_LLAMA: "5"
+  CI_MIN_INTEGRATION_PASSES_RUNTIME: "1"
+  CI_GGUF_SHA256_FILE: "testdata/ci/smollm2-135m-instruct-q4_k_m.gguf.sha256"
+  CI_MODEL_MAX_BYTES: "262144000"
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -13,7 +26,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: ${{ env.GO_VERSION }}
       - name: Run tests
         env:
           CGO_ENABLED: "0"
@@ -28,7 +41,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: ${{ env.GO_VERSION }}
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential cmake
       - name: Build llama.cpp (CPU, libraries only)
@@ -55,9 +68,305 @@ jobs:
           CGO_ENABLED: "1"
           LD_LIBRARY_PATH: ${{ github.workspace }}/third_party/llama.cpp/build/bin
         run: go test ./internal/inference/llama/...
-      - name: Test runtime integration (CGO CPU)
+
+  inference-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Verify llama.cpp submodule SHA
+        run: |
+          cd third_party/llama.cpp
+          actual=$(git rev-parse HEAD)
+          if [ "$actual" != "$LLAMA_SUBMODULE_SHA" ]; then
+            echo "Submodule SHA mismatch: got $actual want $LLAMA_SUBMODULE_SHA"
+            exit 1
+          fi
+      - name: Verify llama.cpp upstream tag
+        run: |
+          cd third_party/llama.cpp
+          git fetch --tags --force origin 2>/dev/null || true
+          tag=$(git describe --tags --exact-match HEAD 2>/dev/null || true)
+          if [ "$tag" != "$LLAMA_SUBMODULE_TAG" ]; then
+            echo "Submodule tag mismatch: got '${tag:-none}' want '$LLAMA_SUBMODULE_TAG'"
+            exit 1
+          fi
+      - name: Read GGUF SHA256 from repository
+        run: |
+          if [ ! -f "$CI_GGUF_SHA256_FILE" ]; then
+            echo "Missing checksum file: $CI_GGUF_SHA256_FILE"
+            exit 1
+          fi
+          CI_GGUF_SHA256=$(tr -d '[:space:]' < "$CI_GGUF_SHA256_FILE")
+          if [ ${#CI_GGUF_SHA256} -ne 64 ]; then
+            echo "Invalid SHA256 in $CI_GGUF_SHA256_FILE"
+            exit 1
+          fi
+          echo "CI_GGUF_SHA256=$CI_GGUF_SHA256" >> "$GITHUB_ENV"
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential cmake
+      - name: Restore llama.cpp build cache
+        uses: actions/cache@v4
+        with:
+          path: third_party/llama.cpp/build
+          key: ${{ env.LLAMA_BUILD_CACHE_KEY }}-${{ env.LLAMA_SUBMODULE_SHA }}
+      - name: Build llama.cpp (CPU, libraries only)
+        run: |
+          if [ -f third_party/llama.cpp/build/bin/libllama.so ]; then
+            echo "llama.cpp build cache hit"
+            exit 0
+          fi
+          cmake -S third_party/llama.cpp -B third_party/llama.cpp/build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DLLAMA_BUILD_TESTS=OFF \
+            -DLLAMA_BUILD_TOOLS=OFF \
+            -DLLAMA_BUILD_EXAMPLES=OFF \
+            -DLLAMA_BUILD_SERVER=OFF \
+            -DLLAMA_BUILD_APP=OFF \
+            -DLLAMA_BUILD_UI=OFF \
+            -DLLAMA_BUILD_COMMON=OFF \
+            -DLLAMA_CURL=OFF \
+            -DGGML_CUDA=OFF \
+            -DGGML_METAL=OFF \
+            -DGGML_VULKAN=OFF \
+            -DGGML_HIP=OFF \
+            -DGGML_CCACHE=OFF
+          cmake --build third_party/llama.cpp/build --target llama -j"$(nproc)"
+          test -f third_party/llama.cpp/build/bin/libllama.so
+      - name: Restore GGUF model cache
+        uses: actions/cache@v4
+        id: gguf-cache
+        with:
+          path: ${{ runner.temp }}/tb-ci-models
+          key: ${{ env.CI_GGUF_CACHE_KEY }}-${{ hashFiles('testdata/ci/smollm2-135m-instruct-q4_k_m.gguf.sha256') }}
+      - name: Download GGUF model if missing
+        run: |
+          MODEL_DIR="${{ runner.temp }}/tb-ci-models"
+          MODEL_PATH="${MODEL_DIR}/${CI_GGUF_FILENAME}"
+          mkdir -p "$MODEL_DIR"
+          if [ ! -f "$MODEL_PATH" ]; then
+            curl -fsSL -o "$MODEL_PATH" "$CI_GGUF_URL"
+          fi
+          test -f "$MODEL_PATH"
+      - name: Verify GGUF SHA256
+        run: |
+          MODEL_DIR="${{ runner.temp }}/tb-ci-models"
+          MODEL_PATH="${MODEL_DIR}/${CI_GGUF_FILENAME}"
+          echo "${CI_GGUF_SHA256}  ${MODEL_PATH}" | sha256sum -c -
+      - name: Assert GGUF model size
+        run: |
+          MODEL_DIR="${{ runner.temp }}/tb-ci-models"
+          MODEL_PATH="${MODEL_DIR}/${CI_GGUF_FILENAME}"
+          size=$(stat -c%s "$MODEL_PATH")
+          if [ "$size" -gt "$CI_MODEL_MAX_BYTES" ]; then
+            echo "Model too large: ${size} bytes (max ${CI_MODEL_MAX_BYTES})"
+            exit 1
+          fi
+          echo "MODEL_PATH=$MODEL_PATH" >> "$GITHUB_ENV"
+          echo "TB_TEST_GGUF_PATH=$MODEL_PATH" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=${{ github.workspace }}/third_party/llama.cpp/build/bin" >> "$GITHUB_ENV"
+      - name: Run llama integration tests (M1 + M2)
         env:
           CGO_ENABLED: "1"
-          LD_LIBRARY_PATH: ${{ github.workspace }}/third_party/llama.cpp/build/bin
-          TB_TEST_GGUF_PATH: ${{ vars.TB_TEST_GGUF_PATH }}
-        run: go test -tags integration ./internal/runtime/...
+          JSON_OUT: ${{ runner.temp }}/go-test-llama.json
+          MIN_PASS: ${{ env.CI_MIN_INTEGRATION_PASSES_LLAMA }}
+        run: |
+          set -euo pipefail
+          set +e
+          go test -json -tags integration -count=1 ./internal/inference/llama/... > "$JSON_OUT"
+          GO_EXIT=$?
+          set -e
+          python3 <<'PY'
+          import json, os, sys
+          path = os.environ["JSON_OUT"]
+          min_pass = int(os.environ["MIN_PASS"])
+          pass_count = skip_count = run_count = 0
+          with open(path, encoding="utf-8") as f:
+              for line in f:
+                  line = line.strip()
+                  if not line:
+                      continue
+                  try:
+                      ev = json.loads(line)
+                  except json.JSONDecodeError:
+                      continue
+                  if not ev.get("Test"):
+                      continue
+                  action = ev.get("Action")
+                  if action == "pass":
+                      pass_count += 1
+                  elif action == "skip":
+                      skip_count += 1
+                  elif action == "run":
+                      run_count += 1
+          errors = []
+          if run_count == 0:
+              errors.append("test run count is 0")
+          if skip_count > 0:
+              errors.append(f"skip count {skip_count} > 0")
+          if pass_count < min_pass:
+              errors.append(f"pass count {pass_count} < {min_pass}")
+          if errors:
+              print("; ".join(errors), file=sys.stderr)
+              sys.exit(1)
+          print(f"integration summary: pass={pass_count} skip={skip_count} run={run_count}")
+          PY
+          if [ "$GO_EXIT" -ne 0 ]; then
+            exit "$GO_EXIT"
+          fi
+
+  inference-integration-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Verify llama.cpp submodule SHA
+        run: |
+          cd third_party/llama.cpp
+          actual=$(git rev-parse HEAD)
+          if [ "$actual" != "$LLAMA_SUBMODULE_SHA" ]; then
+            echo "Submodule SHA mismatch: got $actual want $LLAMA_SUBMODULE_SHA"
+            exit 1
+          fi
+      - name: Verify llama.cpp upstream tag
+        run: |
+          cd third_party/llama.cpp
+          git fetch --tags --force origin 2>/dev/null || true
+          tag=$(git describe --tags --exact-match HEAD 2>/dev/null || true)
+          if [ "$tag" != "$LLAMA_SUBMODULE_TAG" ]; then
+            echo "Submodule tag mismatch: got '${tag:-none}' want '$LLAMA_SUBMODULE_TAG'"
+            exit 1
+          fi
+      - name: Read GGUF SHA256 from repository
+        run: |
+          if [ ! -f "$CI_GGUF_SHA256_FILE" ]; then
+            echo "Missing checksum file: $CI_GGUF_SHA256_FILE"
+            exit 1
+          fi
+          CI_GGUF_SHA256=$(tr -d '[:space:]' < "$CI_GGUF_SHA256_FILE")
+          if [ ${#CI_GGUF_SHA256} -ne 64 ]; then
+            echo "Invalid SHA256 in $CI_GGUF_SHA256_FILE"
+            exit 1
+          fi
+          echo "CI_GGUF_SHA256=$CI_GGUF_SHA256" >> "$GITHUB_ENV"
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential cmake
+      - name: Restore llama.cpp build cache
+        uses: actions/cache@v4
+        with:
+          path: third_party/llama.cpp/build
+          key: ${{ env.LLAMA_BUILD_CACHE_KEY }}-${{ env.LLAMA_SUBMODULE_SHA }}
+      - name: Build llama.cpp (CPU, libraries only)
+        run: |
+          if [ -f third_party/llama.cpp/build/bin/libllama.so ]; then
+            echo "llama.cpp build cache hit"
+            exit 0
+          fi
+          cmake -S third_party/llama.cpp -B third_party/llama.cpp/build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DLLAMA_BUILD_TESTS=OFF \
+            -DLLAMA_BUILD_TOOLS=OFF \
+            -DLLAMA_BUILD_EXAMPLES=OFF \
+            -DLLAMA_BUILD_SERVER=OFF \
+            -DLLAMA_BUILD_APP=OFF \
+            -DLLAMA_BUILD_UI=OFF \
+            -DLLAMA_BUILD_COMMON=OFF \
+            -DLLAMA_CURL=OFF \
+            -DGGML_CUDA=OFF \
+            -DGGML_METAL=OFF \
+            -DGGML_VULKAN=OFF \
+            -DGGML_HIP=OFF \
+            -DGGML_CCACHE=OFF
+          cmake --build third_party/llama.cpp/build --target llama -j"$(nproc)"
+          test -f third_party/llama.cpp/build/bin/libllama.so
+      - name: Restore GGUF model cache
+        uses: actions/cache@v4
+        id: gguf-cache
+        with:
+          path: ${{ runner.temp }}/tb-ci-models
+          key: ${{ env.CI_GGUF_CACHE_KEY }}-${{ hashFiles('testdata/ci/smollm2-135m-instruct-q4_k_m.gguf.sha256') }}
+      - name: Download GGUF model if missing
+        run: |
+          MODEL_DIR="${{ runner.temp }}/tb-ci-models"
+          MODEL_PATH="${MODEL_DIR}/${CI_GGUF_FILENAME}"
+          mkdir -p "$MODEL_DIR"
+          if [ ! -f "$MODEL_PATH" ]; then
+            curl -fsSL -o "$MODEL_PATH" "$CI_GGUF_URL"
+          fi
+          test -f "$MODEL_PATH"
+      - name: Verify GGUF SHA256
+        run: |
+          MODEL_DIR="${{ runner.temp }}/tb-ci-models"
+          MODEL_PATH="${MODEL_DIR}/${CI_GGUF_FILENAME}"
+          echo "${CI_GGUF_SHA256}  ${MODEL_PATH}" | sha256sum -c -
+      - name: Assert GGUF model size
+        run: |
+          MODEL_DIR="${{ runner.temp }}/tb-ci-models"
+          MODEL_PATH="${MODEL_DIR}/${CI_GGUF_FILENAME}"
+          size=$(stat -c%s "$MODEL_PATH")
+          if [ "$size" -gt "$CI_MODEL_MAX_BYTES" ]; then
+            echo "Model too large: ${size} bytes (max ${CI_MODEL_MAX_BYTES})"
+            exit 1
+          fi
+          echo "MODEL_PATH=$MODEL_PATH" >> "$GITHUB_ENV"
+          echo "TB_TEST_GGUF_PATH=$MODEL_PATH" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=${{ github.workspace }}/third_party/llama.cpp/build/bin" >> "$GITHUB_ENV"
+      - name: Run runtime integration tests (M1 + M2)
+        env:
+          CGO_ENABLED: "1"
+          JSON_OUT: ${{ runner.temp }}/go-test-runtime.json
+          MIN_PASS: ${{ env.CI_MIN_INTEGRATION_PASSES_RUNTIME }}
+        run: |
+          set -euo pipefail
+          set +e
+          go test -json -tags integration -count=1 ./internal/runtime/... > "$JSON_OUT"
+          GO_EXIT=$?
+          set -e
+          python3 <<'PY'
+          import json, os, sys
+          path = os.environ["JSON_OUT"]
+          min_pass = int(os.environ["MIN_PASS"])
+          pass_count = skip_count = run_count = 0
+          with open(path, encoding="utf-8") as f:
+              for line in f:
+                  line = line.strip()
+                  if not line:
+                      continue
+                  try:
+                      ev = json.loads(line)
+                  except json.JSONDecodeError:
+                      continue
+                  if not ev.get("Test"):
+                      continue
+                  action = ev.get("Action")
+                  if action == "pass":
+                      pass_count += 1
+                  elif action == "skip":
+                      skip_count += 1
+                  elif action == "run":
+                      run_count += 1
+          errors = []
+          if run_count == 0:
+              errors.append("test run count is 0")
+          if skip_count > 0:
+              errors.append(f"skip count {skip_count} > 0")
+          if pass_count < min_pass:
+              errors.append(f"pass count {pass_count} < {min_pass}")
+          if errors:
+              print("; ".join(errors), file=sys.stderr)
+              sys.exit(1)
+          print(f"integration summary: pass={pass_count} skip={skip_count} run={run_count}")
+          PY
+          if [ "$GO_EXIT" -ne 0 ]; then
+            exit "$GO_EXIT"
+          fi

@@ -13,7 +13,8 @@
 | 009a CUDA-only CGO flags break macOS/ROCm builds | Medium | High | Split `load_cuda.go` with build tag; CPU baseline in `load_cpu.go`; see [cross-platform.md](../../docs/architecture/cross-platform.md) |
 | Windows CGO + mmap unverified in CI | Medium | Medium | Manual dev verification; document in 009a dependency gate |
 | Vulkan/Metal/ROCm deferred past 009a | Low | Medium | Backend-specific files + config; no core package changes |
+| E2E inference not enforced on merge | Low | High | **Mitigated (STAB-001):** merge-blocking integration jobs with SHA256 gate + skip guards |
 
 ---
 **Layer:** planning
-**Last updated:** 2026-06-07
+**Last updated:** 2026-06-09
