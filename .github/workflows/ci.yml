@@ -667,8 +667,6 @@ jobs:
     if: always() && github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     continue-on-error: true
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
       - name: Download CI job metrics artifacts
@@ -677,27 +675,14 @@ jobs:
           pattern: ci-metrics-*
           path: artifacts
           merge-multiple: false
-      - name: Append CI run to history
+      - name: Merge CI run metrics
         env:
-          CI_RUNS_JSONL: planning/metrics/ci-runs.jsonl
+          CI_RUN_RECORD_PATH: ${{ runner.temp }}/ci-run-record.json
         run: python3 .github/scripts/ci-collect-run-metrics.py
-      - name: Commit CI metrics history
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add planning/metrics/ci-runs.jsonl
-          if git diff --staged --quiet; then
-            echo "no ci-runs.jsonl changes"
-            exit 0
-          fi
-          git commit -m "chore(metrics): append CI run ${{ github.run_id }} to ci-runs.jsonl"
-          git push
-      - name: Upload CI run record (backup)
-        if: always()
-        continue-on-error: true
+      - name: Upload CI run record
         uses: actions/upload-artifact@v4
         with:
           name: ci-run-record-${{ github.run_id }}
-          path: planning/metrics/ci-runs.jsonl
-          if-no-files-found: warn
+          path: ${{ runner.temp }}/ci-run-record.json
+          if-no-files-found: error
           retention-days: 90

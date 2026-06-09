@@ -305,5 +305,24 @@ Metrics collection must **not** be merge-blocking (`continue-on-error: true` on 
 3. Step summaries disappear; STAB-001 M2 guards and llama diagnostics remain.
 
 ---
+
+## v2 Delta — Artifact-only history (STAB-002 cleanup)
+
+**Date:** 2026-06-10  
+**Reason:** Post-merge run [27204998799](https://github.com/VishalPainjane/TinyBrain-OS/actions/runs/27204998799) — `ci-metrics-collect` git push rejected (`GH006`) under protected `main`. Branch protection and bot bypass explicitly forbidden.
+
+| v1 (superseded) | v2 (binding) |
+|-----------------|--------------|
+| Append to `planning/metrics/ci-runs.jsonl` on `main` | **Removed** — file deleted from repo |
+| `git commit` + `git push` in collector | **Removed** |
+| `permissions: contents: write` on collector | **Removed** |
+| Backup artifact `ci-run-record-{run_id}` | **Primary** deliverable — single merged JSON per run |
+| JSONL schema doc | **Artifact schema** doc (`ci-schema.md`) |
+
+**Unchanged:** Step Summary metrics, per-job `ci-metrics-{job}` artifacts, merge-blocking four jobs, M2 guards, `ci-baseline.md`.
+
+**AC-H1 superseded by AC-H1′:** each `main` push produces artifact `ci-run-record-{run_id}`.
+
+---
 **Layer:** planning  
 **Related:** [real-inference-ci-gate-architecture-review.md](real-inference-ci-gate-architecture-review.md), [../metrics/ci-schema.md](../metrics/ci-schema.md), [../../tasks/stab-002-ci-observability.md](../../tasks/stab-002-ci-observability.md)

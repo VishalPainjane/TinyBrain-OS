@@ -26,7 +26,7 @@ Spec-level completion. Update when tasks complete or acceptance criteria are met
 
 **Monthly plans:** [roadmap/months/](../roadmap/months/)
 
-**CI health (STAB-002):** merge-blocking job timing and cache history in [ci-runs.jsonl](ci-runs.jsonl); baselines in [ci-baseline.md](ci-baseline.md).
+**CI health (STAB-002):** merge-blocking job timing and cache history in artifact `ci-run-record-{run_id}`; baselines in [ci-baseline.md](ci-baseline.md).
 
 ---
 **Layer:** planning
