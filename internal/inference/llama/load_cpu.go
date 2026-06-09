@@ -2,12 +2,12 @@
 
 package llama
 
-// loadBackend loads a GGUF model with the CPU backend (NGLayers=0).
+// loadBackend loads a GGUF model and inference context with the CPU backend (NGLayers=0).
 func (p *LlamaProvider) loadBackend(path string, modelID string) error {
-	return loadNativeModel(path, modelID, p.cfg.UseMMAP)
+	return loadNativeModel(path, modelID, p.cfg)
 }
 
-// unloadBackend frees the native model handle.
+// unloadBackend frees the native context and model handles.
 func (p *LlamaProvider) unloadBackend(modelID string) error {
 	return unloadNativeModel(modelID)
 }

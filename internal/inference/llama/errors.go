@@ -9,4 +9,6 @@ var (
 	ErrNotImplemented = errors.New("not implemented")
 	// ErrPathInaccessible indicates the GGUF path cannot be accessed.
 	ErrPathInaccessible = errors.New("model path not accessible")
+	// ErrGenerationFailed indicates llama.cpp decode or sampling failed.
+	ErrGenerationFailed = errors.New("generation failed")
 )

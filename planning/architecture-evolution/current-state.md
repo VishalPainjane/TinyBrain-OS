@@ -2,7 +2,7 @@
 
 Code-first snapshot. Update after every completed task.
 
-**Last verified:** 2026-06-08
+**Last verified:** 2026-06-09
 
 ## Implemented
 
@@ -18,17 +18,15 @@ Code-first snapshot. Update after every completed task.
 | Runtime shell + StubProvider | `internal/runtime/` | Complete, tested |
 | Model loader (stub lifecycle) | `internal/loader/` | Complete, tested |
 | FIFO scheduler skeleton | `internal/scheduler/` | Complete, tested |
-| llama.cpp adapter (CPU load/unload) | `internal/inference/llama/` | Partial (009a) — Generate stub; not wired to runtime |
+| llama.cpp adapter (CPU load/unload/generate) | `internal/inference/llama/` | Partial (009a+009b) — context at load; Generate verified; not wired to runtime |
 
 ## In Progress
 
-| Component | Task | Status |
-|-----------|------|--------|
-| llama.cpp Generate | 009b | Not started |
+(none)
 
 ## Not Implemented
 
-- Runtime ↔ LlamaProvider integration
+- Runtime ↔ LlamaProvider integration (009c)
 - CUDA / Metal / ROCm / Vulkan inference backends
 - Agent plugins, tool registry
 - Telemetry, brain-top TUI
@@ -42,7 +40,8 @@ Code-first snapshot. Update after every completed task.
 ## Tests
 
 `go test ./...` — passing (`CGO_ENABLED=0`, default CI)  
-`inference-cgo` CI job — passing (scoped llama build + CGO tests)  
+`inference-cgo` CI job — passing (Linux CGO unit tests)  
+Integration (`-tags integration`, `TB_TEST_GGUF_PATH`) — verified Linux WSL (009b)  
 `tests/import_boundary_test.go` — scheduler must not import inference
 
 ## Governance
