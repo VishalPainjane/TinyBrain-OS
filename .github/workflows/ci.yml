@@ -13,7 +13,9 @@ env:
   CI_GGUF_FILENAME: "smollm2-135m-instruct-q4_k_m.gguf"
   CI_GGUF_URL: "https://huggingface.co/unsloth/SmolLM2-135M-Instruct-GGUF/resolve/main/SmolLM2-135M-Instruct-Q4_K_M.gguf"
   CI_GGUF_CACHE_KEY: "smollm2-135m-instruct-q4_k_m-v1"
-  LLAMA_BUILD_CACHE_KEY: "llama-cpu-b9553-ubuntu-v1"
+  LLAMA_BUILD_CACHE_KEY: "llama-cpu-b9553-ubuntu-portable-v2"
+  # Portable CPU baseline for cached libllama.so (no -march=native / AVX-512).
+  LLAMA_CMAKE_PORTABLE: "-DGGML_NATIVE=OFF -DGGML_AVX512=OFF -DGGML_AVX512_VBMI=OFF -DGGML_AVX512_VNNI=OFF -DGGML_AVX512_BF16=OFF"
   CI_MIN_INTEGRATION_PASSES_LLAMA: "5"
   CI_MIN_INTEGRATION_PASSES_RUNTIME: "1"
   CI_GGUF_SHA256_FILE: "testdata/ci/smollm2-135m-instruct-q4_k_m.gguf.sha256"
@@ -48,6 +50,7 @@ jobs:
         run: |
           cmake -S third_party/llama.cpp -B third_party/llama.cpp/build \
             -DCMAKE_BUILD_TYPE=Release \
+            $LLAMA_CMAKE_PORTABLE \
             -DLLAMA_BUILD_TESTS=OFF \
             -DLLAMA_BUILD_TOOLS=OFF \
             -DLLAMA_BUILD_EXAMPLES=OFF \
@@ -123,6 +126,7 @@ jobs:
           fi
           cmake -S third_party/llama.cpp -B third_party/llama.cpp/build \
             -DCMAKE_BUILD_TYPE=Release \
+            $LLAMA_CMAKE_PORTABLE \
             -DLLAMA_BUILD_TESTS=OFF \
             -DLLAMA_BUILD_TOOLS=OFF \
             -DLLAMA_BUILD_EXAMPLES=OFF \
@@ -305,6 +309,7 @@ jobs:
           fi
           cmake -S third_party/llama.cpp -B third_party/llama.cpp/build \
             -DCMAKE_BUILD_TYPE=Release \
+            $LLAMA_CMAKE_PORTABLE \
             -DLLAMA_BUILD_TESTS=OFF \
             -DLLAMA_BUILD_TOOLS=OFF \
             -DLLAMA_BUILD_EXAMPLES=OFF \
