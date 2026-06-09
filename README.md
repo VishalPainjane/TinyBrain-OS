@@ -86,7 +86,9 @@ CGO_ENABLED=1 go test -tags integration ./internal/runtime/...
 | `inference-integration` | Real GGUF — 5 llama adapter integration tests |
 | `inference-integration-runtime` | Real GGUF — runtime E2E integration test |
 
-Green CI on `main` requires all four jobs. Integration jobs download a checksum-verified SmolLM2-135M-Instruct Q4_K_M (~105 MB), verify llama.cpp pin `b9553`, and fail on silent skips. Configure branch protection required checks **after** the first green `main` run (see [testdata/ci/README.md](testdata/ci/README.md)).
+Green CI on `main` requires all four jobs. Integration jobs download a checksum-verified SmolLM2-135M-Instruct Q4_K_M (~105 MB), verify llama.cpp pin `b9553`, and fail on silent skips. Branch protection on `main` requires all four check names.
+
+**CI observability:** per-job timing and cache metrics in Actions step summaries; run history in [planning/metrics/ci-runs.jsonl](planning/metrics/ci-runs.jsonl) with baselines in [planning/metrics/ci-baseline.md](planning/metrics/ci-baseline.md). See [testdata/ci/README.md](testdata/ci/README.md).
 
 ### Integrated runtime wiring (009c)
 

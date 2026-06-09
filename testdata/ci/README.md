@@ -108,3 +108,19 @@ sha256sum -c testdata/ci/smollm2-135m-instruct-q4_k_m.gguf.sha256
 | SHA256 failure after URL change | Re-run M4 coupled refresh |
 | Stale llama build after cmake flag change | Bump `LLAMA_BUILD_CACHE_KEY` (M3) |
 | All tests skipped | `TB_TEST_GGUF_PATH` unset — workflow bug; M2 should fail |
+
+## CI observability (STAB-002)
+
+Each merge-blocking job writes a **CI metrics** table to the GitHub Actions step summary (timing, cache hit/miss). On `main` push, the non-blocking `ci-metrics-collect` job appends one JSON row to [planning/metrics/ci-runs.jsonl](../../planning/metrics/ci-runs.jsonl).
+
+| Resource | Purpose |
+|----------|---------|
+| [ci-runs.jsonl](../../planning/metrics/ci-runs.jsonl) | Append-only run history |
+| [ci-schema.md](../../planning/metrics/ci-schema.md) | JSONL field definitions |
+| [ci-baseline.md](../../planning/metrics/ci-baseline.md) | Warm/cold duration bands + triage |
+
+**Cache fields:** `llama build` (Actions cache + file probe), `GGUF model` (`gguf-cache` step output), `setup-go` (setup-go cache output).
+
+**Failure artifacts:** `go-test-llama-json-{run_id}` and `go-test-runtime-json-{run_id}` on integration test failure (14-day retention).
+
+If `ci-metrics-collect` cannot push to `main` (branch protection), the merged row is still available as artifact `ci-run-record-{run_id}`.

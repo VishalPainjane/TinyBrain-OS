@@ -4,6 +4,7 @@ Tasks not yet started or scheduled for future months. Active week plan: [roadmap
 
 | Priority | Task | Target month | Reason | Dependencies |
 |----------|------|--------------|--------|--------------|
+| HIGH | STAB-002-ci-observability | stabilization | CI timing/history on `main`; workflow + metrics only | STAB-001 merged |
 | MEDIUM | 011-kv-manager | 3 | KV save/load events | v0.7 MLFQ in progress |
 | MEDIUM | 012-swap-manager | 3 | VRAM→RAM tier movement | 011-kv-manager |
 | MEDIUM | 013-brain-top | 3 / 6 | Prototype Week 12; polish Week 22 | 010-scheduler |
