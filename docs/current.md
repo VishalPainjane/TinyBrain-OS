@@ -1,10 +1,10 @@
 # Current
 
-**Version:** V0.6 Inference — shipped (tag `v0.6` @ `da826f0`, merged PR #10 @ `5b7eb49`)
+**Version:** V0.7 MLFQ Scheduler — implemented (tag pending)
 
-**Sprint:** V0.7 MLFQ Scheduler
+**Sprint:** V0.7 MLFQ Scheduler — core complete
 
-**Task:** [010-scheduler](../tasks/010-scheduler.md) — MLFQ phase (FIFO phase complete)
+**Task:** [010-scheduler](../tasks/010-scheduler.md) — complete (FIFO + MLFQ)
 
 **Post-v0.6 shell:** `cmd/tinybrain` shipped (`stab-003`, `f6c8031`)
 

@@ -74,9 +74,13 @@ func assertGoldenText(t *testing.T, name string, got []byte) {
 		t.Fatalf("read golden %s: %v (run TB_UPDATE_GOLDEN=1 go test ./cmd/tinybrain/ -run TestGolden)", goldenPath, err)
 	}
 
-	if string(want) != string(got) {
+	if normalizeGoldenText(want) != normalizeGoldenText(got) {
 		t.Fatalf("golden mismatch %s\n--- want ---\n%s--- got ---\n%s", name, want, got)
 	}
+}
+
+func normalizeGoldenText(b []byte) string {
+	return strings.ReplaceAll(string(b), "\r\n", "\n")
 }
 
 func TestGolden_doctorHeader(t *testing.T) {

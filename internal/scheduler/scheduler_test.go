@@ -2,6 +2,7 @@ package scheduler_test
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -255,6 +256,266 @@ func TestFIFOScheduler_DuplicateEnqueue(t *testing.T) {
 	}
 	if err := sched.Enqueue(p); !errors.Is(err, scheduler.ErrAlreadyQueued) {
 		t.Fatalf("duplicate Enqueue() error = %v, want ErrAlreadyQueued", err)
+	}
+}
+
+func newMLFQTestScheduler() (*process.ProcessTable, *scheduler.MLFQScheduler, *scheduler.MLFQQueue) {
+	table := process.NewProcessTable()
+	queue := scheduler.NewMLFQQueue()
+	return table, scheduler.NewMLFQScheduler(table, queue), queue
+}
+
+func TestQueueLevelFromPriority(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		priority int
+		want     int
+	}{
+		{priority: 10, want: 0},
+		{priority: 8, want: 0},
+		{priority: 7, want: 1},
+		{priority: 5, want: 1},
+		{priority: 4, want: 2},
+		{priority: 1, want: 3},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(fmt.Sprintf("priority_%d", tt.priority), func(t *testing.T) {
+			t.Parallel()
+			if got := scheduler.QueueLevelFromPriority(tt.priority); got != tt.want {
+				t.Errorf("QueueLevelFromPriority(%d) = %d, want %d", tt.priority, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMLFQQueue_HigherLevelFirst(t *testing.T) {
+	t.Parallel()
+
+	q := scheduler.NewMLFQQueue()
+	low := sampleProcess("pid-low")
+	low.Priority = 1
+	high := sampleProcess("pid-high")
+	high.Priority = 10
+
+	if err := q.Enqueue(low); err != nil {
+		t.Fatalf("Enqueue(low) error = %v", err)
+	}
+	if err := q.Enqueue(high); err != nil {
+		t.Fatalf("Enqueue(high) error = %v", err)
+	}
+
+	got, err := q.Dequeue()
+	if err != nil {
+		t.Fatalf("Dequeue() error = %v", err)
+	}
+	if got.PID != "pid-high" {
+		t.Errorf("first PID = %q, want pid-high", got.PID)
+	}
+}
+
+func TestMLFQScheduler_Preemption(t *testing.T) {
+	t.Parallel()
+
+	table, sched, _ := newMLFQTestScheduler()
+
+	low := sampleProcess("pid-low")
+	low.Priority = 1
+	high := sampleProcess("pid-high")
+	high.Priority = 10
+
+	for _, p := range []process.Process{low, high} {
+		if err := table.Create(p); err != nil {
+			t.Fatalf("Create(%s) error = %v", p.PID, err)
+		}
+	}
+
+	if err := sched.Enqueue(low); err != nil {
+		t.Fatalf("Enqueue(low) error = %v", err)
+	}
+	if _, err := sched.Schedule(); err != nil {
+		t.Fatalf("Schedule(low) error = %v", err)
+	}
+
+	if err := sched.Enqueue(high); err != nil {
+		t.Fatalf("Enqueue(high) error = %v", err)
+	}
+
+	got, err := sched.Schedule()
+	if err != nil {
+		t.Fatalf("Schedule(high) error = %v", err)
+	}
+	if got.PID != "pid-high" {
+		t.Errorf("scheduled PID = %q, want pid-high", got.PID)
+	}
+
+	lowStored, err := table.Get("pid-low")
+	if err != nil {
+		t.Fatalf("Get(pid-low) error = %v", err)
+	}
+	if lowStored.State != process.Ready {
+		t.Errorf("pid-low State = %s, want READY (re-queued after preemption)", lowStored.State)
+	}
+	if got.State != process.Running {
+		t.Errorf("pid-high State = %s, want RUNNING", got.State)
+	}
+}
+
+func TestMLFQScheduler_TokenQuantumDemotion(t *testing.T) {
+	t.Parallel()
+
+	table, sched, _ := newMLFQTestScheduler()
+	p := sampleProcess("pid-a")
+	p.Priority = 10
+
+	if err := table.Create(p); err != nil {
+		t.Fatalf("Create() error = %v", err)
+	}
+	if err := sched.Enqueue(p); err != nil {
+		t.Fatalf("Enqueue() error = %v", err)
+	}
+	if _, err := sched.Schedule(); err != nil {
+		t.Fatalf("Schedule() error = %v", err)
+	}
+
+	for i := 0; i < scheduler.TokenQuantum(0); i++ {
+		if err := sched.RecordToken("pid-a"); err != nil {
+			t.Fatalf("RecordToken(%d) error = %v", i, err)
+		}
+	}
+
+	level, ok := sched.QueueLevel("pid-a")
+	if !ok {
+		t.Fatal("QueueLevel() missing pid-a")
+	}
+	if level != 1 {
+		t.Errorf("QueueLevel after quantum = %d, want 1", level)
+	}
+}
+
+func TestMLFQScheduler_Boost(t *testing.T) {
+	t.Parallel()
+
+	table, sched, queue := newMLFQTestScheduler()
+	low := sampleProcess("pid-low")
+	low.Priority = 1
+
+	if err := table.Create(low); err != nil {
+		t.Fatalf("Create() error = %v", err)
+	}
+	if err := sched.Enqueue(low); err != nil {
+		t.Fatalf("Enqueue() error = %v", err)
+	}
+
+	if err := sched.Boost(); err != nil {
+		t.Fatalf("Boost() error = %v", err)
+	}
+
+	depths := sched.QueueDepths()
+	if depths[0] != 1 {
+		t.Errorf("Q0 depth = %d, want 1", depths[0])
+	}
+	if queue.Depth() != 1 {
+		t.Errorf("total Depth() = %d, want 1", queue.Depth())
+	}
+
+	level, ok := sched.QueueLevel("pid-low")
+	if !ok || level != 0 {
+		t.Errorf("QueueLevel = %d, ok=%v, want 0 true", level, ok)
+	}
+}
+
+func TestMLFQScheduler_QueueDepths(t *testing.T) {
+	t.Parallel()
+
+	table, sched, _ := newMLFQTestScheduler()
+	for i, priority := range []int{10, 7, 4, 1} {
+		p := sampleProcess(fmt.Sprintf("pid-%d", i))
+		p.Priority = priority
+		if err := table.Create(p); err != nil {
+			t.Fatalf("Create() error = %v", err)
+		}
+		if err := sched.Enqueue(p); err != nil {
+			t.Fatalf("Enqueue() error = %v", err)
+		}
+	}
+
+	depths := sched.QueueDepths()
+	for level, want := range []int{1, 1, 1, 1} {
+		if depths[level] != want {
+			t.Errorf("Q%d depth = %d, want %d", level, depths[level], want)
+		}
+	}
+}
+
+func TestShouldSwap(t *testing.T) {
+	t.Parallel()
+
+	now := time.Unix(1_700_000_000, 0).UTC()
+	p := sampleProcess("pid-a")
+	p.State = process.Waiting
+	p.LastExecution = now.Add(-11 * time.Second)
+
+	if !scheduler.ShouldSwap(p, now) {
+		t.Error("ShouldSwap() = false, want true after 11s idle")
+	}
+
+	p.LastExecution = now.Add(-5 * time.Second)
+	if scheduler.ShouldSwap(p, now) {
+		t.Error("ShouldSwap() = true, want false after 5s idle")
+	}
+
+	p.State = process.Running
+	p.LastExecution = now.Add(-1 * time.Hour)
+	if scheduler.ShouldSwap(p, now) {
+		t.Error("ShouldSwap() = true for RUNNING, want false")
+	}
+}
+
+func TestMLFQScheduler_AutoBoostViaTokens(t *testing.T) {
+	t.Parallel()
+
+	table, sched, _ := newMLFQTestScheduler()
+
+	runner := sampleProcess("pid-run")
+	runner.Priority = 10
+	waiter := sampleProcess("pid-wait")
+	waiter.Priority = 1
+
+	for _, p := range []process.Process{runner, waiter} {
+		if err := table.Create(p); err != nil {
+			t.Fatalf("Create(%s) error = %v", p.PID, err)
+		}
+	}
+	if err := sched.Enqueue(runner); err != nil {
+		t.Fatalf("Enqueue(runner) error = %v", err)
+	}
+	if err := sched.Enqueue(waiter); err != nil {
+		t.Fatalf("Enqueue(waiter) error = %v", err)
+	}
+	if _, err := sched.Schedule(); err != nil {
+		t.Fatalf("Schedule(runner) error = %v", err)
+	}
+
+	levelBefore, ok := sched.QueueLevel("pid-wait")
+	if !ok || levelBefore != 3 {
+		t.Fatalf("waiter level = %d, ok=%v, want 3 true", levelBefore, ok)
+	}
+
+	for i := 0; i < scheduler.BoostEveryTokens; i++ {
+		if err := sched.RecordToken("pid-run"); err != nil {
+			t.Fatalf("RecordToken(%d) error = %v", i, err)
+		}
+	}
+
+	levelAfter, ok := sched.QueueLevel("pid-wait")
+	if !ok || levelAfter != 0 {
+		t.Errorf("waiter level after boost = %d, ok=%v, want 0 true", levelAfter, ok)
+	}
+	depths := sched.QueueDepths()
+	if depths[0] != 1 {
+		t.Errorf("Q0 depth after boost = %d, want 1", depths[0])
 	}
 }
 

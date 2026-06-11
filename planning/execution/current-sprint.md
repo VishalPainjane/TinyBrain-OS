@@ -12,7 +12,7 @@
 
 ## In Progress
 
-- [ ] 010-scheduler MLFQ phase
+(none — v0.7 scheduler core complete; tag pending)
 
 ## Blocked
 

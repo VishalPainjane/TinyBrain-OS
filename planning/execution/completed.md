@@ -145,5 +145,14 @@ Append-only history. Never delete entries.
 **Outcome:** Success — solo-dev hygiene docs, expanded boundary tests (INV-001/002/008), registry YAML fuzz, CLI golden tests
 **Files:** `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`, `docs/testing-policy.md`, `planning/releases/RELEASE-CHECKLIST.md`, `planning/metrics/repo-health.md`, `tests/import_boundary_test.go`, `internal/registry/models_yaml_fuzz_test.go`, `cmd/tinybrain/*_fuzz_test.go`, `cmd/tinybrain/golden_test.go`
 
+## 010-scheduler-mlfq
+
+**Completed:** 2026-06-11
+**Commit:** `55bbfa0`
+**Outcome:** Success — MLFQ Q0–Q3, token quantum demotion, preemption, boost/aging, swap idle heuristic; FIFO scheduler preserved
+**Files:** `internal/scheduler/mlfq.go`, `internal/scheduler/queue.go`, `internal/scheduler/scheduler.go`, `internal/scheduler/scheduler_test.go`, `docs/specs/v0.7-scheduler.md`, `docs/contracts/scheduler.md`, `tasks/010-scheduler.md`
+
+**Note:** Extends FIFO skeleton (`339666d`). Runtime load orchestration and swap execution remain deferred (011/012).
+
 ---
 **Layer:** planning

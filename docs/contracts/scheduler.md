@@ -2,7 +2,7 @@
 
 ## Owner
 
-Package: `internal/scheduler/` (not yet implemented)
+Package: `internal/scheduler/` — `FIFOScheduler` (v1) and `MLFQScheduler` (v0.7)
 
 ## Consumers
 
@@ -23,8 +23,8 @@ type Scheduler interface {
 
 ## Queue Contract (v1 FIFO → v0.7 MLFQ)
 
-v1: single FIFO queue behind `Queue` interface.
-v0.7: MLFQ with Q0–Q3, token quanta, boost/aging.
+v1: single FIFO queue behind `Queue` interface (`FIFOQueue`, `FIFOScheduler`).
+v0.7: MLFQ with Q0–Q3, token quanta, boost/aging (`MLFQQueue`, `MLFQScheduler`, `RecordToken`, `QueueDepths`, `ShouldSwap`).
 
 ```go
 // Documentation only

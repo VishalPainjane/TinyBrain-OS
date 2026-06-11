@@ -2,7 +2,7 @@
 
 ## Status
 
-In Progress — **MLFQ phase** (FIFO phase complete)
+Complete — MLFQ phase (v0.7)
 
 ## Goal
 
@@ -12,10 +12,11 @@ Implement FIFO scheduler skeleton with interface ready for MLFQ migration.
 
 Per [docs/specs/v0.7-scheduler.md](../docs/specs/v0.7-scheduler.md):
 
-- MLFQ Q0–Q3 queues
-- Token quantum demotion
-- Preemption of lower-priority processes
-- Boost/aging anti-starvation
+- [x] MLFQ Q0–Q3 queues (`MLFQQueue`, `MLFQScheduler`)
+- [x] Token quantum demotion (`RecordToken`, `TokenQuantum`)
+- [x] Preemption of lower-priority processes (`Schedule` + `preemptAndRequeue`)
+- [x] Boost/aging anti-starvation (`Boost`, auto-boost every 500 tokens / 30s)
+- [x] Swap idle heuristic (`ShouldSwap`, 10s threshold)
 
 ## Context
 
@@ -32,6 +33,7 @@ Accepted decision: start FIFO, migrate to MLFQ at v0.7. Scheduler schedules VRAM
 
 - `internal/scheduler/scheduler.go`
 - `internal/scheduler/queue.go`
+- `internal/scheduler/mlfq.go`
 - `internal/scheduler/scheduler_test.go`
 
 ## Acceptance Criteria
@@ -42,11 +44,20 @@ Accepted decision: start FIFO, migrate to MLFQ at v0.7. Scheduler schedules VRAM
 - [x] Scheduling policy only — no runtime, loader, or registry imports
 - [x] Tests demonstrate two-process queue ordering
 
+## MLFQ Acceptance Criteria
+
+- [x] `MLFQQueue` dequeues Q0 before Q1–Q3
+- [x] High-priority enqueue preempts lower-priority runner (`TestMLFQScheduler_Preemption`)
+- [x] Token quantum demotes process level (`TestMLFQScheduler_TokenQuantumDemotion`)
+- [x] Boost resets queued processes to Q0 (`TestMLFQScheduler_Boost`, `TestMLFQScheduler_AutoBoostViaTokens`)
+- [x] Per-level queue depths for telemetry (`QueueDepths`)
+- [x] Swap idle heuristic — no swap before 10s idle (`ShouldSwap`)
+- [x] No runtime, loader, or inference imports (boundary tests)
+
 ## Out Of Scope
 
-- MLFQ Q0–Q3 (v0.7)
-- Token quantum, boost/aging
-- Real runtime load calls (mock runtime in tests)
+- Real runtime load calls (task 011+ integration)
+- Swap execution (task 012 swap manager)
 
 ## Related
 
