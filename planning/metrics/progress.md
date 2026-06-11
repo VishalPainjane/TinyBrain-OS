@@ -10,7 +10,7 @@ Spec-level completion. Update when tasks complete or acceptance criteria are met
 | V0.4 Runtime | 100% | Shipped | 2 | — |
 | V0.5 Model Registry | 100% | Shipped | 2 | — |
 | V0.6 Inference | 100% | Shipped | 2 | — |
-| V0.7 Scheduler | 0% | Not Started | 3 | MLFQ (010 FIFO skeleton shipped) |
+| V0.7 Scheduler | 100% | Shipped | 3 | — (tag `v0.7` @ `a0f90a7`) |
 | V0.8 Agents | 0% | Not Started | 4 | 014, integration |
 | V1.0 | 0% | Not Started | 6 | full integration |
 
@@ -22,6 +22,8 @@ Spec-level completion. Update when tasks complete or acceptance criteria are met
 
 **v0.6 shipped:** tag `v0.6` — llama.cpp inference (009a–009d). CUDA matrix Partial until manual GPU checklist signed.
 
+**v0.7 shipped:** tag `v0.7` — MLFQ scheduler (010). Month 3 memory foundations (011–013) on `main` post-tag.
+
 **Note:** Tool registry (v0.2 spec) deferred — no Month 1 task.
 
 **Monthly plans:** [roadmap/months/](../roadmap/months/)
@@ -31,4 +33,4 @@ Spec-level completion. Update when tasks complete or acceptance criteria are met
 ---
 **Layer:** planning
 **Related:** [../../docs/specs/](../../docs/specs/), [../releases/](../releases/)
-**Last updated:** 2026-06-10
+**Last updated:** 2026-06-11

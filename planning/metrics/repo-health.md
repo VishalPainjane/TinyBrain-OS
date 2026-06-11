@@ -11,10 +11,11 @@ Trust and verification status for solo development. Update at task completion an
 
 | Field | Value |
 |-------|-------|
-| Last shipped tag | `v0.6` |
-| Sprint | V0.7 MLFQ Scheduler |
-| Active task | 010-scheduler (MLFQ phase) |
-| `main` | `5b7eb49` (PR #10 merged) |
+| Last shipped tag | `v0.7` |
+| Sprint | Month 4 upcoming (v0.8 Agents) |
+| Active task | (none) |
+| `main` | `fc0a093` (PR #14 merged) |
+| Tag `v0.7` | `a0f90a7` |
 | Tag `v0.6` | `da826f0` |
 | `go test ./...` (local) | Pass (`CGO_ENABLED=0`, 2026-06-11) |
 | Boundary tests | `tests/import_boundary_test.go` — INV-001, INV-002, INV-008 |
