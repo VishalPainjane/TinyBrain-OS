@@ -38,10 +38,14 @@ Full architecture: [docs/architecture/overview.md](docs/architecture/overview.md
 
 ## Quick Start
 
-**Current state:** v0.5 shipped at tag `v0.5`. v0.6 in progress — 009a–009c complete (CPU inference wired to `ModelRuntime`); GPU offload remaining.
+**Current state:** v0.6 shipped at tag `v0.6` (llama.cpp inference). CLI composition root in progress.
 
 ```bash
 go test ./...
+go build -o tinybrain ./cmd/tinybrain
+./tinybrain doctor
+./tinybrain probe
+./tinybrain models list
 ```
 
 Default local and CI unit path uses `CGO_ENABLED=0` (stub inference). Merge-blocking CI also runs CGO unit and real-GGUF integration jobs — see [CI jobs](#ci-jobs-merge-blocking-on-main) below.
@@ -90,26 +94,30 @@ Green CI on `main` requires all four jobs. Integration jobs download a checksum-
 
 **CI observability:** per-job timing and cache metrics in Actions step summaries; merged run history in artifact `ci-run-record-{run_id}` with baselines in [planning/metrics/ci-baseline.md](planning/metrics/ci-baseline.md). See [testdata/ci/README.md](testdata/ci/README.md).
 
-### Integrated runtime wiring (009c)
+### CLI (composition root)
 
-Single shared `runtime.ModelResolver` instance for runtime and provider:
+Register models in `~/.tinybrain/models.db` (seed from `TB_MODELS_SEED` on first run). Inference requires CGO and a built llama.cpp — see build requirements below.
 
-```go
-reg := registry.NewModelRegistry()
-_ = reg.RegisterModel(registry.ModelDefinition{ID: "tiny", Path: "/models/tiny.gguf"})
+```bash
+export TB_MODELS_SEED=testdata/models.yaml   # optional first-run seed
+export TB_TEST_GGUF_PATH=/path/to/model.gguf  # for run when registry paths point here
+export LD_LIBRARY_PATH=third_party/llama.cpp/build/bin
 
-resolver := runtime.NewRegistryResolver(reg)
-loader := loader.NewStubLoader()
-provider := llama.NewLlamaProvider(resolver, llama.DefaultConfig())
-bus := events.NewChannelBus(64)
-rt := runtime.NewIntegratedModelRuntime(provider, loader, resolver, bus)
-
-_ = rt.LoadModel("tiny")
-resp, _ := rt.Generate(runtime.GenerateRequest{ModelID: "tiny", Prompt: "Hello"})
-_ = rt.UnloadModel("tiny")
+tinybrain doctor
+tinybrain probe --json
+tinybrain models list
+CGO_ENABLED=1 tinybrain run --model tinyllama-q4 --prompt "Hello"
+tinybrain status
 ```
 
-Loader-less path (tests, v0.4 compatibility): `runtime.NewModelRuntime(runtime.NewStubProvider(), bus)`.
+Environment variables:
+
+| Variable | Purpose |
+|----------|---------|
+| `TB_MODELS_DB` | Registry database path (default `~/.tinybrain/models.db`) |
+| `TB_MODELS_SEED` | YAML seed when DB is empty |
+| `TB_NGLAYERS` | GPU layers for CUDA builds (`-1` = all) |
+| `TB_LLAMA_LIB_DIR` | llama.cpp shared library directory |
 
 ### Build requirements (CPU backend)
 
@@ -122,13 +130,12 @@ Loader-less path (tests, v0.4 compatibility): `runtime.NewModelRuntime(runtime.N
 Future commands (not yet implemented):
 
 ```bash
-tinybrain run "your task"
 brain-top
 ```
 
 ## Current Version
 
-**V0.6 Inference (in progress)** — [docs/current.md](docs/current.md) | Sprint: [planning/execution/current-sprint.md](planning/execution/current-sprint.md)
+**V0.6 Inference (shipped)** + Product CLI sprint — [docs/current.md](docs/current.md) | Sprint: [planning/execution/current-sprint.md](planning/execution/current-sprint.md)
 
 ## Roadmap
 
@@ -139,12 +146,16 @@ brain-top
 | v0.3 | Hardware profiler | Shipped |
 | v0.4 | Runtime shell + stub provider | Shipped |
 | v0.5 | Persistent model registry | Shipped |
-| v0.6 | llama.cpp inference | In Progress (~85%) |
+| v0.6 | llama.cpp inference | Shipped |
 | v0.7 | MLFQ scheduler | Planned |
 | v0.8 | Plugin agents | Planned |
 | v1.0 | Integrated runtime + brain-top | Planned |
 
 Details: [docs/specs/](docs/specs/) and [planning/roadmap/master-roadmap.md](planning/roadmap/master-roadmap.md)
+
+## Development
+
+Solo workflow: [CONTRIBUTING.md](CONTRIBUTING.md) | Testing policy: [docs/testing-policy.md](docs/testing-policy.md) | Repo health: [planning/metrics/repo-health.md](planning/metrics/repo-health.md) | Changelog: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 

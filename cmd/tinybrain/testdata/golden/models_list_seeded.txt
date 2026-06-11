@@ -1,0 +1,4 @@
+TinyBrain 0.6.0 | models (1)
+
+ID            QUANT   PATH
+tinyllama-q4  Q4_K_M  /models/tinyllama-q4.gguf
