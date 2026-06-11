@@ -1,10 +1,10 @@
 # Current
 
-**Version:** V0.7 MLFQ Scheduler — implemented (tag pending)
+**Version:** V0.7 MLFQ Scheduler — shipped (merged PR #12 @ `a0f90a7`, tag `v0.7` pending)
 
-**Sprint:** V0.7 MLFQ Scheduler — core complete
+**Sprint:** Month 3 — KV and swap foundations
 
-**Task:** [010-scheduler](../tasks/010-scheduler.md) — complete (FIFO + MLFQ)
+**Task:** [012-swap-manager](../tasks/012-swap-manager.md) — next
 
 **Post-v0.6 shell:** `cmd/tinybrain` shipped (`stab-003`, `f6c8031`)
 
@@ -13,5 +13,5 @@
 **Forbidden:** `internal/agents/`, Kubernetes, web dashboard, API/Router layer — see [current-sprint.md](../planning/execution/current-sprint.md)
 
 → Sprint: [planning/execution/current-sprint.md](../planning/execution/current-sprint.md)  
-→ Spec: [docs/specs/v0.7-scheduler.md](specs/v0.7-scheduler.md)  
+→ Architecture: [docs/architecture/memory.md](architecture/memory.md)  
 → Trust: [planning/metrics/repo-health.md](../planning/metrics/repo-health.md)

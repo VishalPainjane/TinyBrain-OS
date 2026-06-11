@@ -148,7 +148,7 @@ Append-only history. Never delete entries.
 ## 010-scheduler-mlfq
 
 **Completed:** 2026-06-11
-**Commit:** `55bbfa0`
+**Commit:** `a0f90a7` (merge PR #12; feat `55bbfa0`)
 **Outcome:** Success — MLFQ Q0–Q3, token quantum demotion, preemption, boost/aging, swap idle heuristic; FIFO scheduler preserved
 **Files:** `internal/scheduler/mlfq.go`, `internal/scheduler/queue.go`, `internal/scheduler/scheduler.go`, `internal/scheduler/scheduler_test.go`, `docs/specs/v0.7-scheduler.md`, `docs/contracts/scheduler.md`, `tasks/010-scheduler.md`
 
