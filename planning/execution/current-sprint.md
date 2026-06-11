@@ -8,11 +8,11 @@
 
 ## Current Task
 
-[011-kv-manager](../../tasks/011-kv-manager.md)
+Month 3 Week 12 complete — tag `v0.7` pending
 
 ## In Progress
 
-- [ ] 012-swap-manager (next)
+(none)
 
 ## Blocked
 
@@ -20,23 +20,22 @@
 
 ## Done (prior sprint)
 
+- [x] 013-brain-top prototype
+- [x] 012-swap-manager — PR pushed
+- [x] 011-kv-manager — merged PR #13 @ `1a1acf0`
 - [x] v0.7 MLFQ scheduler (010) — merged PR #12 @ `a0f90a7`
-- [x] v0.6 inference (009a–009d) — tag `v0.6`
-- [x] stab-003-tinybrain-cli — PR #10
-- [x] repo-hygiene-testing — PR #10
 
 ## Next
 
-- 012-swap-manager
-- 013-brain-top (prototype)
+- Month 4 agent plugin work (per roadmap)
+- `v0.7` release tag + CHANGELOG
 
-## Definition Of Done
+## Definition Of Done (Month 3)
 
-- KV save/load stub with KVStored/KVLoaded events
-- `CGO_ENABLED=0 go test ./...` passes
-- Boundary tests pass (`tests/import_boundary_test.go`)
-- Task moved to [completed.md](completed.md) with commit hash
-- [docs/current.md](../../docs/current.md) synced
+- [x] KV save/load stub with events (011)
+- [x] Swap manager VRAM→RAM (012)
+- [x] brain-top prototype (013)
+- [ ] `v0.7` tag on main after CI green
 
 ## Forbidden Work
 
@@ -44,13 +43,11 @@
 - Kubernetes
 - Web dashboard
 - API/Router layer
-- llama.cpp KV export changes (unless required for stub wiring)
 
 ## Active References
 
-- Task: [tasks/011-kv-manager.md](../../tasks/011-kv-manager.md)
-- RFC: [docs/rfc/RFC-001-KV-Hibernation.md](../../docs/rfc/RFC-001-KV-Hibernation.md)
-- Architecture: [docs/architecture/memory.md](../../docs/architecture/memory.md)
+- [planning/roadmap/months/month-03.md](../roadmap/months/month-03.md)
+- [docs/architecture/telemetry.md](../../docs/architecture/telemetry.md)
 
 ---
 **Layer:** planning

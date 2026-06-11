@@ -157,11 +157,29 @@ Append-only history. Never delete entries.
 ## 011-kv-manager
 
 **Completed:** 2026-06-11
-**Commit:** `8724988`
+**Commit:** `1a1acf0` (merge PR #13; feat `8724988`)
 **Outcome:** Success — Stub KV block pool, VRAM↔RAM save/load shell, KVStored/KVLoaded events on bus
 **Files:** `internal/kv/types.go`, `internal/kv/manager.go`, `internal/kv/manager_test.go`, `tasks/011-kv-manager.md`
 
 **Note:** Metadata-only stub; llama.cpp KV export and compression deferred per RFC-001.
+
+## 012-swap-manager
+
+**Completed:** 2026-06-11
+**Commit:** `10aad3f`
+**Outcome:** Success — VRAM↔RAM swap orchestration via kv.Save/Load, process HIBERNATED/READY, SwapStarted/SwapCompleted events
+**Files:** `internal/swap/manager.go`, `internal/swap/manager_test.go`, `tasks/012-swap-manager.md`
+
+**Note:** Uses `scheduler.ShouldSwap` for swap-out eligibility; no scheduler policy changes.
+
+## 013-brain-top
+
+**Completed:** 2026-06-11
+**Commit:** `df67c1a`
+**Outcome:** Success — read-only `cmd/brain-top` prototype (process panel, MLFQ depths, resources); snapshot/watch modes
+**Files:** `cmd/brain-top/main.go`, `cmd/brain-top/render.go`, `cmd/brain-top/render_test.go`, `tasks/013-brain-top.md`
+
+**Note:** Stdlib only; Bubble Tea and live kernel IPC deferred to Month 6.
 
 ---
 **Layer:** planning
