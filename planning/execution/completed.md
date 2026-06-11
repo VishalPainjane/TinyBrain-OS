@@ -129,5 +129,21 @@ Append-only history. Never delete entries.
 
 **Note:** Runtime/scheduler/loader/registry unchanged. CUDA matrix **Partial** until manual GPU checklist signed. No bundled CUDA runtime libs.
 
+## stab-003-tinybrain-cli
+
+**Completed:** 2026-06-11
+**Commit:** `f6c8031`
+**Outcome:** Success — `cmd/tinybrain` with doctor, probe, models list, run, status, version; fuzz + golden tests; README quick start
+**Files:** `cmd/tinybrain/`, `tasks/stab-003-tinybrain-cli.md`, `README.md`
+
+**Note:** `tinybrain run` requires `CGO_ENABLED=1` and built llama.cpp. Post-v0.6 product shell — tag `v0.6` applies to inference release docs commit, not necessarily this commit.
+
+## repo-hygiene-testing
+
+**Completed:** 2026-06-11
+**Commit:** `f04feb1`
+**Outcome:** Success — solo-dev hygiene docs, expanded boundary tests (INV-001/002/008), registry YAML fuzz, CLI golden tests
+**Files:** `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`, `docs/testing-policy.md`, `planning/releases/RELEASE-CHECKLIST.md`, `planning/metrics/repo-health.md`, `tests/import_boundary_test.go`, `internal/registry/models_yaml_fuzz_test.go`, `cmd/tinybrain/*_fuzz_test.go`, `cmd/tinybrain/golden_test.go`
+
 ---
 **Layer:** planning

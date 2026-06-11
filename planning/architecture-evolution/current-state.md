@@ -2,7 +2,7 @@
 
 Code-first snapshot. Update after every completed task.
 
-**Last verified:** 2026-06-10
+**Last verified:** 2026-06-11
 
 ## Implemented
 
@@ -21,6 +21,7 @@ Code-first snapshot. Update after every completed task.
 | FIFO scheduler skeleton | `internal/scheduler/` | Complete, tested |
 | llama.cpp adapter (CPU load/unload/generate) | `internal/inference/llama/` | Complete CPU path; wired via runtime (009c) |
 | llama.cpp CUDA offload (`-tags cuda`, `NGLayers`) | `internal/inference/llama/` | **Partial** (009d merged `ab06c60`); manual GPU checklist open |
+| tinybrain CLI (doctor, probe, models, run, status) | `cmd/tinybrain/` | Complete (stab-003) |
 
 ## In Progress
 
@@ -30,14 +31,14 @@ Code-first snapshot. Update after every completed task.
 
 - Metal / ROCm / Vulkan inference backends (CUDA adapter shipped 009d; runtime GPU proof manual)
 - Agent plugins, tool registry
-- Telemetry, brain-top TUI
+- Telemetry package, brain-top TUI
 - KV manager, swap manager
 - Kubernetes operator
 - Scheduler → runtime command wiring
 
 ## Active Packages
 
-`internal/process/`, `internal/events/`, `internal/registry/`, `internal/hardware/`, `internal/runtime/`, `internal/loader/`, `internal/scheduler/`, `internal/inference/llama/`
+`internal/process/`, `internal/events/`, `internal/registry/`, `internal/hardware/`, `internal/runtime/`, `internal/loader/`, `internal/scheduler/`, `internal/inference/llama/`, `cmd/tinybrain/`
 
 ## Tests
 

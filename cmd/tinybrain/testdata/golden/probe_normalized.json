@@ -1,0 +1,8 @@
+{
+  "version": "0.6.0",
+  "profile": "\u003cprofile\u003e",
+  "ram_gib": 0,
+  "vram_gib": 0,
+  "backend": "\u003cbackend\u003e",
+  "cpu_info": "\u003ccpu\u003e"
+}
