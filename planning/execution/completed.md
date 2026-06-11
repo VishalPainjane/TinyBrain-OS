@@ -172,5 +172,14 @@ Append-only history. Never delete entries.
 
 **Note:** Uses `scheduler.ShouldSwap` for swap-out eligibility; no scheduler policy changes.
 
+## 013-brain-top
+
+**Completed:** 2026-06-11
+**Commit:** `df67c1a`
+**Outcome:** Success — read-only `cmd/brain-top` prototype (process panel, MLFQ depths, resources); snapshot/watch modes
+**Files:** `cmd/brain-top/main.go`, `cmd/brain-top/render.go`, `cmd/brain-top/render_test.go`, `tasks/013-brain-top.md`
+
+**Note:** Stdlib only; Bubble Tea and live kernel IPC deferred to Month 6.
+
 ---
 **Layer:** planning
