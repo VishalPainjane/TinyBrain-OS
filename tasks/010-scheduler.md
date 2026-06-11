@@ -2,11 +2,20 @@
 
 ## Status
 
-Complete
+In Progress — **MLFQ phase** (FIFO phase complete)
 
 ## Goal
 
 Implement FIFO scheduler skeleton with interface ready for MLFQ migration.
+
+### MLFQ phase (v0.7 — active)
+
+Per [docs/specs/v0.7-scheduler.md](../docs/specs/v0.7-scheduler.md):
+
+- MLFQ Q0–Q3 queues
+- Token quantum demotion
+- Preemption of lower-priority processes
+- Boost/aging anti-starvation
 
 ## Context
 
