@@ -2,7 +2,7 @@
 
 ## Status
 
-Not Started
+Complete (Month 3 prototype)
 
 ## Goal
 
@@ -14,27 +14,38 @@ Signature visibility feature (M8). Prototype Month 3 Week 12; production polish 
 
 ## Requirements
 
-- TBD when task unlocks
+- `cmd/brain-top/` read-only dashboard (stdlib only, no Bubble Tea yet)
+- Process panel from `ProcessTable` via adapter
+- MLFQ queue depth panel via `MLFQScheduler.QueueDepths`
+- Resource panel from `hardware.ProbeAndClassify`
+- `snapshot` and `watch` modes; no scheduler/runtime mutation
 
 ## Files
 
-- TBD (likely `cmd/brain-top/`)
+- `cmd/brain-top/main.go`
+- `cmd/brain-top/render.go`
+- `cmd/brain-top/render_test.go`
 
 ## Acceptance Criteria
 
-- [ ] TBD when task unlocks
+- [x] Renders process STATE column from process table (test with RUNNING/WAITING)
+- [x] Renders Q0–Q3 queue depths
+- [x] Renders hardware resource summary
+- [x] Read-only — no scheduler mutation from TUI
+- [x] `go test ./cmd/brain-top/...` passes
 
 ## Out Of Scope
 
 - Web dashboard
 - Direct scheduler mutation from TUI
-
-**Locked until:** Month 3, Week 12 — process table + scheduler skeleton exist
+- Bubble Tea interactive UI (Month 6)
+- Swap activity panel (no swap history store yet)
+- Live kernel IPC attachment
 
 ## Related
 
 - Month plan: [month-03.md](../planning/roadmap/months/month-03.md), [month-06.md](../planning/roadmap/months/month-06.md)
-- Architecture: [telemetry.md](../../docs/architecture/telemetry.md)
+- Architecture: [telemetry.md](../docs/architecture/telemetry.md)
 
 ---
 **Layer:** task
