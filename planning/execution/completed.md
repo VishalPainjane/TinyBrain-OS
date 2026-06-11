@@ -166,7 +166,7 @@ Append-only history. Never delete entries.
 ## 012-swap-manager
 
 **Completed:** 2026-06-11
-**Commit:** (pending)
+**Commit:** `10aad3f`
 **Outcome:** Success — VRAM↔RAM swap orchestration via kv.Save/Load, process HIBERNATED/READY, SwapStarted/SwapCompleted events
 **Files:** `internal/swap/manager.go`, `internal/swap/manager_test.go`, `tasks/012-swap-manager.md`
 
