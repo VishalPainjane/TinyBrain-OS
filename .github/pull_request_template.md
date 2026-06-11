@@ -1,28 +1,8 @@
-## Task
+## Self-review (solo)
 
-<!-- e.g. 002-process-table -->
+- [ ] Task ID and acceptance criteria in [tasks/](../tasks/)
+- [ ] `CGO_ENABLED=0 go test ./...` passes
+- [ ] Integration tier run if inference/runtime changed
+- [ ] [docs/current.md](../docs/current.md) synced if task complete
 
-## Summary
-
-<!-- What was implemented and why -->
-
-## Files Changed
-
-<!-- List modified/created files -->
-
-## Tests Added
-
-<!-- What tests were added or updated -->
-
-## Acceptance Criteria
-
-- [ ] <!-- criterion 1 -->
-- [ ] <!-- criterion 2 -->
-
-## Risks
-
-<!-- Potential future concerns -->
-
-## Out Of Scope
-
-<!-- Anything intentionally not implemented -->
+See [CONTRIBUTING.md](../CONTRIBUTING.md).

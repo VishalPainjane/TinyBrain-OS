@@ -38,10 +38,11 @@ TinyBrain OS is a hardware-aware AI runtime kernel for dynamically orchestrating
 
 ## Testing Rules
 
+- Follow [docs/testing-policy.md](docs/testing-policy.md) and [CONTRIBUTING.md](CONTRIBUTING.md)
 - Write tests for new behavior; table-driven where appropriate
-- Add regression tests when fixing bugs
-- Test architectural boundaries, not just happy paths
-- Run `go test ./...` before marking tasks complete
+- Add regression tests when fixing bugs (`TestRegression_<ShortName>`)
+- Test architectural boundaries in `tests/import_boundary_test.go`
+- Run `CGO_ENABLED=0 go test ./...` before marking tasks complete; run integration tier when inference/runtime changes
 - Verify scheduler, runtime, and UI remain decoupled
 
 ## Important Locations
