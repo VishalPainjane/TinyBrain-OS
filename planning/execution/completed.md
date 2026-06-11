@@ -157,11 +157,20 @@ Append-only history. Never delete entries.
 ## 011-kv-manager
 
 **Completed:** 2026-06-11
-**Commit:** `8724988`
+**Commit:** `1a1acf0` (merge PR #13; feat `8724988`)
 **Outcome:** Success — Stub KV block pool, VRAM↔RAM save/load shell, KVStored/KVLoaded events on bus
 **Files:** `internal/kv/types.go`, `internal/kv/manager.go`, `internal/kv/manager_test.go`, `tasks/011-kv-manager.md`
 
 **Note:** Metadata-only stub; llama.cpp KV export and compression deferred per RFC-001.
+
+## 012-swap-manager
+
+**Completed:** 2026-06-11
+**Commit:** (pending)
+**Outcome:** Success — VRAM↔RAM swap orchestration via kv.Save/Load, process HIBERNATED/READY, SwapStarted/SwapCompleted events
+**Files:** `internal/swap/manager.go`, `internal/swap/manager_test.go`, `tasks/012-swap-manager.md`
+
+**Note:** Uses `scheduler.ShouldSwap` for swap-out eligibility; no scheduler policy changes.
 
 ---
 **Layer:** planning

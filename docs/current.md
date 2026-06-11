@@ -4,7 +4,7 @@
 
 **Sprint:** Month 3 — KV and swap foundations
 
-**Task:** [012-swap-manager](../tasks/012-swap-manager.md) — next
+**Task:** [013-brain-top](../tasks/013-brain-top.md) — next
 
 **Post-v0.6 shell:** `cmd/tinybrain` shipped (`stab-003`, `f6c8031`)
 

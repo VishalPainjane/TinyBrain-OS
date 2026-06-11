@@ -8,11 +8,11 @@
 
 ## Current Task
 
-[011-kv-manager](../../tasks/011-kv-manager.md)
+[013-brain-top](../../tasks/013-brain-top.md) — next
 
 ## In Progress
 
-- [ ] 012-swap-manager (next)
+(none)
 
 ## Blocked
 
@@ -20,21 +20,19 @@
 
 ## Done (prior sprint)
 
+- [x] 011-kv-manager — merged PR #13 @ `1a1acf0`
 - [x] v0.7 MLFQ scheduler (010) — merged PR #12 @ `a0f90a7`
 - [x] v0.6 inference (009a–009d) — tag `v0.6`
-- [x] stab-003-tinybrain-cli — PR #10
-- [x] repo-hygiene-testing — PR #10
 
 ## Next
 
-- 012-swap-manager
 - 013-brain-top (prototype)
 
 ## Definition Of Done
 
-- KV save/load stub with KVStored/KVLoaded events
+- Swap manager records VRAM→RAM tier movement with lifecycle events
 - `CGO_ENABLED=0 go test ./...` passes
-- Boundary tests pass (`tests/import_boundary_test.go`)
+- Boundary tests pass
 - Task moved to [completed.md](completed.md) with commit hash
 - [docs/current.md](../../docs/current.md) synced
 
@@ -44,12 +42,10 @@
 - Kubernetes
 - Web dashboard
 - API/Router layer
-- llama.cpp KV export changes (unless required for stub wiring)
 
 ## Active References
 
-- Task: [tasks/011-kv-manager.md](../../tasks/011-kv-manager.md)
-- RFC: [docs/rfc/RFC-001-KV-Hibernation.md](../../docs/rfc/RFC-001-KV-Hibernation.md)
+- Task: [tasks/012-swap-manager.md](../../tasks/012-swap-manager.md)
 - Architecture: [docs/architecture/memory.md](../../docs/architecture/memory.md)
 
 ---
