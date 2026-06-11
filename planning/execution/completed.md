@@ -154,5 +154,14 @@ Append-only history. Never delete entries.
 
 **Note:** Extends FIFO skeleton (`339666d`). Runtime load orchestration and swap execution remain deferred (011/012).
 
+## 011-kv-manager
+
+**Completed:** 2026-06-11
+**Commit:** `8724988`
+**Outcome:** Success — Stub KV block pool, VRAM↔RAM save/load shell, KVStored/KVLoaded events on bus
+**Files:** `internal/kv/types.go`, `internal/kv/manager.go`, `internal/kv/manager_test.go`, `tasks/011-kv-manager.md`
+
+**Note:** Metadata-only stub; llama.cpp KV export and compression deferred per RFC-001.
+
 ---
 **Layer:** planning
