@@ -13,11 +13,29 @@ Release process: [planning/releases/RELEASE-CHECKLIST.md](planning/releases/RELE
 
 ### Added
 
-- `cmd/tinybrain` CLI composition root (`doctor`, `probe`, `models list`, `run`, `status`)
-- Repository hygiene docs: `CONTRIBUTING.md`, `SECURITY.md`, testing policy, release checklist, repo health note
-- Expanded architecture fitness tests (`tests/import_boundary_test.go`)
-- CLI fuzz tests (`FuzzNgLayersFromEnv`, `FuzzModelsDBPath`) and golden tests (`cmd/tinybrain/testdata/golden/`)
-- Registry YAML fuzz test (`FuzzLoadModelsYAML`)
+- `internal/kv` stub KV manager with `KVStored` / `KVLoaded` events (011)
+- `internal/swap` stub swap manager for VRAM→RAM tier moves (012)
+- `cmd/brain-top` read-only dashboard prototype — process panel, MLFQ depths, resources (013)
+
+---
+
+## [0.7.0] - 2026-06-11
+
+Tag: `v0.7` — MLFQ scheduler release. Details: [planning/releases/v0.7.md](planning/releases/v0.7.md).
+
+### Added
+
+- MLFQ scheduler (`MLFQQueue`, `MLFQScheduler`) with Q0–Q3 queues
+- Token quantum demotion via `RecordToken`
+- Preemption of lower-priority running processes
+- Boost/aging every 500 tokens or 30s
+- Swap idle heuristic (`ShouldSwap`, 10s threshold)
+- `QueueDepths()` for telemetry
+
+### Notes
+
+- FIFO scheduler preserved for tests and migration path
+- Runtime load orchestration in `Schedule` remains deferred
 
 ---
 

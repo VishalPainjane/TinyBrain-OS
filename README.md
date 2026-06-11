@@ -38,14 +38,16 @@ Full architecture: [docs/architecture/overview.md](docs/architecture/overview.md
 
 ## Quick Start
 
-**Current state:** v0.6 shipped at tag `v0.6` (llama.cpp inference). CLI composition root in progress.
+**Current state:** v0.7 shipped at tag `v0.7` (MLFQ scheduler). v0.6 inference + `cmd/tinybrain` CLI on `main`. Month 3 memory foundations (KV, swap, brain-top prototype) also on `main`.
 
 ```bash
 go test ./...
 go build -o tinybrain ./cmd/tinybrain
+go build -o brain-top ./cmd/brain-top
 ./tinybrain doctor
 ./tinybrain probe
 ./tinybrain models list
+./brain-top snapshot
 ```
 
 Default local and CI unit path uses `CGO_ENABLED=0` (stub inference). Merge-blocking CI also runs CGO unit and real-GGUF integration jobs — see [CI jobs](#ci-jobs-merge-blocking-on-main) below.

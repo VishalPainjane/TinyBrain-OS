@@ -166,7 +166,7 @@ Append-only history. Never delete entries.
 ## 012-swap-manager
 
 **Completed:** 2026-06-11
-**Commit:** `10aad3f`
+**Commit:** `fc0a093` (merge PR #14; feat `10aad3f`)
 **Outcome:** Success — VRAM↔RAM swap orchestration via kv.Save/Load, process HIBERNATED/READY, SwapStarted/SwapCompleted events
 **Files:** `internal/swap/manager.go`, `internal/swap/manager_test.go`, `tasks/012-swap-manager.md`
 
@@ -175,7 +175,7 @@ Append-only history. Never delete entries.
 ## 013-brain-top
 
 **Completed:** 2026-06-11
-**Commit:** `df67c1a`
+**Commit:** `fc0a093` (merge PR #14; feat `df67c1a`)
 **Outcome:** Success — read-only `cmd/brain-top` prototype (process panel, MLFQ depths, resources); snapshot/watch modes
 **Files:** `cmd/brain-top/main.go`, `cmd/brain-top/render.go`, `cmd/brain-top/render_test.go`, `tasks/013-brain-top.md`
 

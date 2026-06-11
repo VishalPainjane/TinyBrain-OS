@@ -4,7 +4,7 @@ CEO-level view. No technical details, packages, or interfaces — those live in 
 
 ## Current Version
 
-**V0.7 Scheduler** — in progress (MLFQ); v0.6 Inference shipped at tag `v0.6` (PR #10).
+**V0.7 Scheduler** — shipped (tag `v0.7`); Month 3 memory foundations on `main`. v0.8 Agents next.
 
 ## Target Version
 
@@ -19,9 +19,9 @@ CEO-level view. No technical details, packages, or interfaces — those live in 
 | M3 | Registry + events | Plugin definitions and decoupled event core | Partial (events + registry shipped) |
 | M4 | Hardware profiling | Adaptive behavior per detected profile | **Complete** |
 | M5 | Runtime + inference | Real GGUF inference via provider adapter | **Complete** (v0.6 CPU CI + CUDA adapter 009d) |
-| M6 | Scheduler | Priority queues, preemption, VRAM-aware scheduling | **Partial** (FIFO skeleton shipped; MLFQ v0.7) |
+| M6 | Scheduler | Priority queues, preemption, VRAM-aware scheduling | **Complete** (v0.7 MLFQ) |
 | M7 | Plugin agents | User-defined agent fleet via registry | Planned (Month 4) |
-| M8 | brain-top TUI | Live runtime visibility (htop for AI) | Planned |
+| M8 | brain-top TUI | Live runtime visibility (htop for AI) | **Partial** (013 prototype on `main`) |
 | M9 | Kubernetes operator | CRDs and controllers for Agent, Task, KVCache, SwapPolicy | Planned (Month 5) |
 | M10 | Full swarm demo | Multi-agent workflow on Standard profile hardware | Planned (Month 6) |
 

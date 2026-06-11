@@ -2,13 +2,13 @@
 
 ## Sprint
 
-**Name:** Month 3 — KV and Swap Foundations
-**Goal:** KV manager stub, swap manager, brain-top prototype
-**Version:** pre-v1.0 memory subsystems (v0.7 scheduler shipped)
+**Name:** Month 4 — Agent plugins (upcoming)
+**Goal:** Per [month-04.md](../roadmap/months/month-04.md)
+**Version:** v0.8 Agents (not started)
 
 ## Current Task
 
-Month 3 Week 12 complete — tag `v0.7` pending
+(none — awaiting Month 4 kickoff)
 
 ## In Progress
 
@@ -18,36 +18,27 @@ Month 3 Week 12 complete — tag `v0.7` pending
 
 (none)
 
-## Done (prior sprint)
+## Done (Month 3)
 
-- [x] 013-brain-top prototype
-- [x] 012-swap-manager — PR pushed
+- [x] 013-brain-top — merged PR #14 @ `fc0a093`
+- [x] 012-swap-manager — merged PR #14 @ `fc0a093`
 - [x] 011-kv-manager — merged PR #13 @ `1a1acf0`
-- [x] v0.7 MLFQ scheduler (010) — merged PR #12 @ `a0f90a7`
+- [x] v0.7 MLFQ scheduler — tag `v0.7` @ `a0f90a7`, PR #12
 
 ## Next
 
-- Month 4 agent plugin work (per roadmap)
-- `v0.7` release tag + CHANGELOG
-
-## Definition Of Done (Month 3)
-
-- [x] KV save/load stub with events (011)
-- [x] Swap manager VRAM→RAM (012)
-- [x] brain-top prototype (013)
-- [ ] `v0.7` tag on main after CI green
+- Month 4 Week 13+ per roadmap
+- `v0.8` agent plugin contract and sample fleet
 
 ## Forbidden Work
 
-- `internal/agents/`
-- Kubernetes
-- Web dashboard
-- API/Router layer
+- `internal/agents/` implementation before contract task unlocks
+- Kubernetes, web dashboard, API/Router layer
 
 ## Active References
 
-- [planning/roadmap/months/month-03.md](../roadmap/months/month-03.md)
-- [docs/architecture/telemetry.md](../../docs/architecture/telemetry.md)
+- [planning/roadmap/months/month-03.md](../roadmap/months/month-03.md) (closed)
+- [planning/roadmap/months/month-04.md](../roadmap/months/month-04.md)
 
 ---
 **Layer:** planning
