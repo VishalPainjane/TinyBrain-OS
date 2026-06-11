@@ -12,10 +12,10 @@ Trust and verification status for solo development. Update at task completion an
 | Field | Value |
 |-------|-------|
 | Last shipped tag | `v0.6` |
-| Sprint | Product CLI — complete (`stab-003`) |
-| Active task | (none) |
-| Branch | `feature/post-v0.6-cli-hygiene` |
-| Tag `v0.6` | `da826f0` (release docs commit) |
+| Sprint | V0.7 MLFQ Scheduler |
+| Active task | 010-scheduler (MLFQ phase) |
+| `main` | `5b7eb49` (PR #10 merged) |
+| Tag `v0.6` | `da826f0` |
 | `go test ./...` (local) | Pass (`CGO_ENABLED=0`, 2026-06-11) |
 | Boundary tests | `tests/import_boundary_test.go` — INV-001, INV-002, INV-008 |
 

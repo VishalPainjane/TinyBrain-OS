@@ -3,3 +3,7 @@ third_party/llama.cpp/build/
 
 # Local GGUF test artifacts (optional)
 *.gguf
+
+# CLI build artifacts
+/tinybrain
+/tinybrain.exe

@@ -4,7 +4,7 @@ CEO-level view. No technical details, packages, or interfaces — those live in 
 
 ## Current Version
 
-**V0.6 Inference** — implementation complete (tag `v0.6` not yet cut); v0.5 shipped at tag `v0.5`.
+**V0.7 Scheduler** — in progress (MLFQ); v0.6 Inference shipped at tag `v0.6` (PR #10).
 
 ## Target Version
 
