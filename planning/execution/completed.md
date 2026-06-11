@@ -148,11 +148,20 @@ Append-only history. Never delete entries.
 ## 010-scheduler-mlfq
 
 **Completed:** 2026-06-11
-**Commit:** `55bbfa0`
+**Commit:** `a0f90a7` (merge PR #12; feat `55bbfa0`)
 **Outcome:** Success — MLFQ Q0–Q3, token quantum demotion, preemption, boost/aging, swap idle heuristic; FIFO scheduler preserved
 **Files:** `internal/scheduler/mlfq.go`, `internal/scheduler/queue.go`, `internal/scheduler/scheduler.go`, `internal/scheduler/scheduler_test.go`, `docs/specs/v0.7-scheduler.md`, `docs/contracts/scheduler.md`, `tasks/010-scheduler.md`
 
 **Note:** Extends FIFO skeleton (`339666d`). Runtime load orchestration and swap execution remain deferred (011/012).
+
+## 011-kv-manager
+
+**Completed:** 2026-06-11
+**Commit:** `8724988`
+**Outcome:** Success — Stub KV block pool, VRAM↔RAM save/load shell, KVStored/KVLoaded events on bus
+**Files:** `internal/kv/types.go`, `internal/kv/manager.go`, `internal/kv/manager_test.go`, `tasks/011-kv-manager.md`
+
+**Note:** Metadata-only stub; llama.cpp KV export and compression deferred per RFC-001.
 
 ---
 **Layer:** planning
