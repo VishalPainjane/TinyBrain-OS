@@ -1,16 +1,10 @@
 # Current
 
-**Version:** V0.6 Inference — shipped in docs; **git tag `v0.6` not created yet**
+**Version:** V0.6 Inference — shipped (tag `v0.6` @ `da826f0`)
 
-**Sprint:** Product CLI — **complete** (post-v0.6 shell; not part of v0.6 tag scope)
+**Sprint:** Product CLI — **complete** (`f6c8031`)
 
-**Task:** (none — all local work pending commit)
-
-**Uncommitted work (three tracks):**
-
-1. v0.6 release closure — `planning/releases/v0.6.md`, retrospective, `progress.md`
-2. `stab-003` — `cmd/tinybrain` CLI composition root
-3. Repo hygiene — `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`, testing policy, boundary/fuzz/golden tests, `RELEASE-CHECKLIST.md`, `repo-health.md`
+**Task:** (none — on branch `feature/post-v0.6-cli-hygiene`, merge pending)
 
 **009a–009d:** Merged on `main` history; see [planning/releases/v0.6.md](../planning/releases/v0.6.md)
 

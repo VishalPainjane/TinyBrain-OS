@@ -14,7 +14,8 @@ Trust and verification status for solo development. Update at task completion an
 | Last shipped tag | `v0.6` |
 | Sprint | Product CLI — complete (`stab-003`) |
 | Active task | (none) |
-| Uncommitted | v0.6 docs + CLI + hygiene (3 logical commits) |
+| Branch | `feature/post-v0.6-cli-hygiene` |
+| Tag `v0.6` | `da826f0` (release docs commit) |
 | `go test ./...` (local) | Pass (`CGO_ENABLED=0`, 2026-06-11) |
 | Boundary tests | `tests/import_boundary_test.go` — INV-001, INV-002, INV-008 |
 

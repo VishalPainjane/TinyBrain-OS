@@ -141,7 +141,7 @@ Append-only history. Never delete entries.
 ## repo-hygiene-testing
 
 **Completed:** 2026-06-11
-**Commit:** (pending)
+**Commit:** `f04feb1`
 **Outcome:** Success — solo-dev hygiene docs, expanded boundary tests (INV-001/002/008), registry YAML fuzz, CLI golden tests
 **Files:** `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`, `docs/testing-policy.md`, `planning/releases/RELEASE-CHECKLIST.md`, `planning/metrics/repo-health.md`, `tests/import_boundary_test.go`, `internal/registry/models_yaml_fuzz_test.go`, `cmd/tinybrain/*_fuzz_test.go`, `cmd/tinybrain/golden_test.go`
 
