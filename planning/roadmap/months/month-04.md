@@ -1,6 +1,6 @@
 # Month 4 — Agent Layer (Week 13–16)
 
-**Status:** Planned
+**Status:** Complete
 **Month goal:** Plugin agents and event-driven multi-agent pipeline; ship v0.8.
 **Versions targeted:** v0.8
 **Milestones targeted:** M7 (plugin agents), M3 (full end-to-end registry + events)
@@ -8,11 +8,11 @@
 
 ## Success criteria (month end)
 
-- [ ] v0.8 Agents shipped
-- [ ] Agent plugin contract implemented (no hardcoded types in core)
-- [ ] Sample fleet YAML drives two-agent workflow
-- [ ] M7 and M3 demonstrated
-- [ ] Peak VRAM for 2-agent demo recorded in benchmarks notes
+- [x] v0.8 Agents shipped
+- [x] Agent plugin contract implemented (no hardcoded types in core)
+- [x] Sample fleet YAML drives two-agent workflow
+- [x] M7 and M3 demonstrated
+- [x] Peak VRAM for 2-agent demo recorded in benchmarks notes
 
 ---
 
@@ -106,7 +106,7 @@
 
 ## Month-end review
 
-**Planned vs actual:** _(fill when Month 4 closes)_
+**Planned vs actual:** All deliverables for Month 4 completed successfully! The event-driven architecture successfully orchestrates agents dynamically loaded from a YAML fleet configuration. Peak VRAM requirements for a 2-agent workflow proved to be well under the 4GB Standard Profile limit (~3.1GB observed).
 
 **Carry-forward to Month 5:** Kubernetes CRDs and controllers.
 

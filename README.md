@@ -38,7 +38,7 @@ Full architecture: [docs/architecture/overview.md](docs/architecture/overview.md
 
 ## Quick Start
 
-**Current state:** v0.7 shipped at tag `v0.7` (MLFQ scheduler). v0.6 inference + `cmd/tinybrain` CLI on `main`. Month 3 memory foundations (KV, swap, brain-top prototype) also on `main`.
+**Current state:** v0.8 shipped at tag `v0.8` (Agents & Event Pipeline). Month 4 memory and workflow orchestration foundations (KV, swap, brain-top, agents) on `main`.
 
 ```bash
 go test ./...
@@ -137,7 +137,7 @@ brain-top
 
 ## Current Version
 
-**V0.6 Inference (shipped)** + Product CLI sprint — [docs/current.md](docs/current.md) | Sprint: [planning/execution/current-sprint.md](planning/execution/current-sprint.md)
+**V0.8 Agents (shipped)** + Platform Extension sprint — [docs/current.md](docs/current.md) | Sprint: [planning/execution/current-sprint.md](planning/execution/current-sprint.md)
 
 ## Roadmap
 
@@ -149,8 +149,8 @@ brain-top
 | v0.4 | Runtime shell + stub provider | Shipped |
 | v0.5 | Persistent model registry | Shipped |
 | v0.6 | llama.cpp inference | Shipped |
-| v0.7 | MLFQ scheduler | Planned |
-| v0.8 | Plugin agents | Planned |
+| v0.7 | MLFQ scheduler | Shipped |
+| v0.8 | Plugin agents | Shipped |
 | v1.0 | Integrated runtime + brain-top | Planned |
 
 Details: [docs/specs/](docs/specs/) and [planning/roadmap/master-roadmap.md](planning/roadmap/master-roadmap.md)

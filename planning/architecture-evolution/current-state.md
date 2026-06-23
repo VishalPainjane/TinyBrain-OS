@@ -19,9 +19,16 @@ Code-first snapshot. Update after every completed task.
 | ModelResolver + RegistryResolver | `internal/runtime/` | Complete, tested (009c) |
 | Model loader (stub lifecycle) | `internal/loader/` | Complete, tested |
 | FIFO scheduler skeleton | `internal/scheduler/` | Complete, tested |
+| MLFQ Scheduler (Q0-Q3, boost, preemption) | `internal/scheduler/` | Complete, tested |
+| KV Manager (stub metadata, events) | `internal/kv/` | Complete, tested |
+| Swap Manager (events, VRAM↔RAM shell) | `internal/swap/` | Complete, tested |
+| brain-top TUI prototype | `cmd/brain-top/` | Complete (013) |
+| Agent plugin contract & sample executor | `internal/agents/` | Complete |
+| Agent registry config (fleet.yaml) | `internal/registry/` | Complete |
+| Event-driven workflow orchestration | `internal/router/` | Complete |
 | llama.cpp adapter (CPU load/unload/generate) | `internal/inference/llama/` | Complete CPU path; wired via runtime (009c) |
 | llama.cpp CUDA offload (`-tags cuda`, `NGLayers`) | `internal/inference/llama/` | **Partial** (009d merged `ab06c60`); manual GPU checklist open |
-| tinybrain CLI (doctor, probe, models, run, status) | `cmd/tinybrain/` | Complete (stab-003) |
+| tinybrain CLI (doctor, probe, models, run, status, workflow) | `cmd/tinybrain/` | Complete |
 
 ## In Progress
 
@@ -30,15 +37,14 @@ Code-first snapshot. Update after every completed task.
 ## Not Implemented
 
 - Metal / ROCm / Vulkan inference backends (CUDA adapter shipped 009d; runtime GPU proof manual)
-- Agent plugins, tool registry
-- Telemetry package, brain-top TUI
-- KV manager, swap manager
+- Tool registry
+- Telemetry package
 - Kubernetes operator
 - Scheduler → runtime command wiring
 
 ## Active Packages
 
-`internal/process/`, `internal/events/`, `internal/registry/`, `internal/hardware/`, `internal/runtime/`, `internal/loader/`, `internal/scheduler/`, `internal/inference/llama/`, `cmd/tinybrain/`
+`internal/process/`, `internal/events/`, `internal/registry/`, `internal/hardware/`, `internal/runtime/`, `internal/loader/`, `internal/scheduler/`, `internal/inference/llama/`, `internal/kv/`, `internal/swap/`, `internal/agents/`, `internal/router/`, `cmd/tinybrain/`, `cmd/brain-top/`
 
 ## Tests
 

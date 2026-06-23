@@ -188,5 +188,24 @@ Append-only history. Never delete entries.
 **Outcome:** Success — Agent plugin contract (Executor interface, Agent interface, SampleAgent implementation)
 **Files:** `docs/contracts/agents.md`, `internal/agents/executor.go`, `internal/agents/interface.go`, `internal/agents/sample.go`, `tasks/014-agent-plugin.md`
 
+## 015-fleet-registry
+
+**Completed:** 2026-06-23
+**Outcome:** Success — YAML loader for sample fleet configuration, supporting multiple agents
+**Files:** `internal/registry/agents_yaml.go`, `internal/registry/agents_yaml_test.go`, `testdata/fleet.yaml`, `tasks/015-fleet-registry.md`
+
+## 016-event-pipeline
+
+**Completed:** 2026-06-23
+**Outcome:** Success — Decoupled event-driven execution using router, scheduler coordinator, and agent listener
+**Files:** `internal/router/router.go`, `internal/scheduler/coordinator.go`, `internal/agents/listener.go`, `tests/pipeline_integration_test.go`, `tasks/016-event-pipeline.md`
+
+## 017-workflow-demo
+
+**Completed:** 2026-06-23
+**Commit:** `a40b0fd` (tag `v0.8`)
+**Outcome:** Success — `tinybrain workflow` orchestrates sequential 2-agent execution via task completion events
+**Files:** `cmd/tinybrain/workflow.go`, `cmd/tinybrain/main.go`, `internal/events/types.go`, `internal/agents/listener.go`, `tasks/017-workflow-demo.md`
+
 ---
 **Layer:** planning

@@ -11,7 +11,7 @@ Spec-level completion. Update when tasks complete or acceptance criteria are met
 | V0.5 Model Registry | 100% | Shipped | 2 | — |
 | V0.6 Inference | 100% | Shipped | 2 | — |
 | V0.7 Scheduler | 100% | Shipped | 3 | — (tag `v0.7` @ `a0f90a7`) |
-| V0.8 Agents | 0% | Not Started | 4 | 014, integration |
+| V0.8 Agents | 100% | Shipped | 4 | — (tag `v0.8` @ `a40b0fd`) |
 | V1.0 | 0% | Not Started | 6 | full integration |
 
 **Month 1 complete:** v0.1–v0.3 shipped together at git tag `v0.3` (single foundation release). Event core (003–004) delivered alongside registry foundation.
@@ -23,6 +23,8 @@ Spec-level completion. Update when tasks complete or acceptance criteria are met
 **v0.6 shipped:** tag `v0.6` — llama.cpp inference (009a–009d). CUDA matrix Partial until manual GPU checklist signed.
 
 **v0.7 shipped:** tag `v0.7` — MLFQ scheduler (010). Month 3 memory foundations (011–013) on `main` post-tag.
+
+**v0.8 shipped:** tag `v0.8` — Agent plugin contract (014), fleet registry (015), event-driven pipeline (016), sequential agent workflow (017).
 
 **Note:** Tool registry (v0.2 spec) deferred — no Month 1 task.
 
