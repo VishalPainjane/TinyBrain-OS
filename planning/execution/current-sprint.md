@@ -8,11 +8,11 @@
 
 ## Current Task
 
-Week 17 — CRD design (task-018)
+Week 18 — Agent and Task controllers (task-019)
 
 ## In Progress
 
-- [ ] 018-k8s-crds
+- [ ] 019-k8s-controllers-core
 
 ## Blocked
 
@@ -20,11 +20,11 @@ Week 17 — CRD design (task-018)
 
 ## Done (Month 5)
 
-(none)
+- [x] Week 17 — CRD design (task-018)
 
 ## Next
 
-- Week 18 — Agent and Task controllers
+- Week 19 — KVCache and SwapPolicy controllers
 
 ## Forbidden Work
 

@@ -2,11 +2,11 @@
 
 **Version:** Post-V0.8 Platform Extension
 
-**Sprint:** Month 5 — Platform Extension (Week 17)
+**Sprint:** Month 5 — Platform Extension (Week 18)
 
-**Task:** 018-k8s-crds started
+**Task:** 019-k8s-controllers-core started
 
-**Shipped on main (post-v0.8 tag):** (none)
+**Shipped on main (post-v0.8 tag):** Kubernetes CRDs (018)
 
 **Post-v0.6 shell:** `cmd/tinybrain` shipped; `cmd/brain-top` prototype added (013)
 
