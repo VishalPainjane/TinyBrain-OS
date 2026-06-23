@@ -13,15 +13,13 @@ Release process: [planning/releases/RELEASE-CHECKLIST.md](planning/releases/RELE
 
 ### Added
 
-- `internal/kv` stub KV manager with `KVStored` / `KVLoaded` events (011)
-- `internal/swap` stub swap manager for VRAM→RAM tier moves (012)
-- `cmd/brain-top` read-only dashboard prototype — process panel, MLFQ depths, resources (013)
+(none)
 
 ---
 
-## [0.7.0] - 2026-06-11
+## [0.7.0] - 2026-06-23
 
-Tag: `v0.7` — MLFQ scheduler release. Details: [planning/releases/v0.7.md](planning/releases/v0.7.md).
+Tag: `v0.7` — MLFQ scheduler and Memory subsystems release. Details: [planning/releases/v0.7.md](planning/releases/v0.7.md).
 
 ### Added
 
@@ -29,7 +27,9 @@ Tag: `v0.7` — MLFQ scheduler release. Details: [planning/releases/v0.7.md](pla
 - Token quantum demotion via `RecordToken`
 - Preemption of lower-priority running processes
 - Boost/aging every 500 tokens or 30s
-- Swap idle heuristic (`ShouldSwap`, 10s threshold)
+- KV manager stub (`KVStored` / `KVLoaded` events)
+- Swap manager for VRAM→RAM tier moves (swap idle heuristic, 10s threshold)
+- `brain-top` read-only dashboard prototype
 - `QueueDepths()` for telemetry
 
 ### Notes

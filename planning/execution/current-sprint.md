@@ -2,13 +2,13 @@
 
 ## Sprint
 
-**Name:** Month 4 — Agent plugins (upcoming)
-**Goal:** Per [month-04.md](../roadmap/months/month-04.md)
-**Version:** v0.8 Agents (not started)
+**Name:** Month 4 — Agent Layer
+**Goal:** Plugin agents and event-driven multi-agent pipeline; ship v0.8.
+**Version:** pre-v1.0 memory subsystems (v0.7 scheduler shipped)
 
 ## Current Task
 
-(none — awaiting Month 4 kickoff)
+Week 13 — Agent plugin contract (task-014)
 
 ## In Progress
 
@@ -32,8 +32,9 @@
 
 ## Forbidden Work
 
-- `internal/agents/` implementation before contract task unlocks
-- Kubernetes, web dashboard, API/Router layer
+- Kubernetes
+- Web dashboard
+- API/Router layer
 
 ## Active References
 
