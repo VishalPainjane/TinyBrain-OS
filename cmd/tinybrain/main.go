@@ -34,6 +34,8 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return runModelsList(stdout)
 	case "run":
 		return runRun(args[1:], stdout, stderr)
+	case "workflow":
+		return runWorkflow(args[1:], stdout, stderr)
 	case "status":
 		return runStatus(stdout)
 	case "version", "--version", "-v":
@@ -56,7 +58,8 @@ Usage:
   tinybrain doctor
   tinybrain probe [--json]
   tinybrain models list
-  tinybrain run --model ID --prompt TEXT
+  tinybrain run --agent ID --prompt TEXT
+  tinybrain workflow --prompt TEXT
   tinybrain status
   tinybrain version
 

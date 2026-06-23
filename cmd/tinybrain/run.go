@@ -4,26 +4,39 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"path/filepath"
 	"time"
 
+	"github.com/VishalPainjane/TinyBrain-OS/internal/agents"
 	"github.com/VishalPainjane/TinyBrain-OS/internal/events"
 	"github.com/VishalPainjane/TinyBrain-OS/internal/hardware"
 	"github.com/VishalPainjane/TinyBrain-OS/internal/inference/llama"
 	"github.com/VishalPainjane/TinyBrain-OS/internal/loader"
+	"github.com/VishalPainjane/TinyBrain-OS/internal/process"
+	"github.com/VishalPainjane/TinyBrain-OS/internal/registry"
+	"github.com/VishalPainjane/TinyBrain-OS/internal/router"
 	"github.com/VishalPainjane/TinyBrain-OS/internal/runtime"
+	"github.com/VishalPainjane/TinyBrain-OS/internal/scheduler"
 )
 
-// runRun executes one-shot load → generate → unload and returns an exit code.
+// runRun executes the task via the event pipeline and returns an exit code.
 func runRun(args []string, stdout, stderr io.Writer) int {
 	fs := flag.NewFlagSet("run", flag.ContinueOnError)
 	fs.SetOutput(stderr)
-	modelID := fs.String("model", "", "model ID from registry (required)")
+	agentID := fs.String("agent", "", "agent ID from fleet (required)")
+	modelIDFallback := fs.String("model", "", "legacy alias for agent")
 	prompt := fs.String("prompt", "", "prompt text (required)")
 	if err := fs.Parse(args); err != nil {
 		return 2
 	}
-	if *modelID == "" || *prompt == "" {
-		fmt.Fprintln(stderr, "usage: tinybrain run --model ID --prompt TEXT")
+	
+	targetAgent := *agentID
+	if targetAgent == "" {
+		targetAgent = *modelIDFallback
+	}
+
+	if targetAgent == "" || *prompt == "" {
+		fmt.Fprintln(stderr, "usage: tinybrain run --agent ID --prompt TEXT")
 		return 2
 	}
 
@@ -38,6 +51,7 @@ func runRun(args []string, stdout, stderr io.Writer) int {
 		return 1
 	}
 
+	// 1. Model Registry
 	reg, err := openRegistry()
 	if err != nil {
 		fmt.Fprintf(stderr, "open registry: %v\n", err)
@@ -45,6 +59,14 @@ func runRun(args []string, stdout, stderr io.Writer) int {
 	}
 	defer reg.Close()
 
+	// 2. Agent Registry (Fleet)
+	areg := registry.NewAgentRegistry()
+	if err := registry.LoadAgentsYAML(filepath.Join("testdata", "fleet.yaml"), areg); err != nil {
+		fmt.Fprintf(stderr, "load fleet: %v\n", err)
+		return 1
+	}
+
+	// 3. Inference & Runtime
 	resolver := runtime.NewRegistryResolver(reg)
 	cfg := llama.ConfigFromProbe(profile.Probe)
 	if ng, ok := ngLayersFromEnv(); ok {
@@ -55,60 +77,53 @@ func runRun(args []string, stdout, stderr io.Writer) int {
 	provider := llama.NewLlamaProvider(resolver, cfg)
 	ld := loader.NewStubLoader()
 	bus := events.NewChannelBus(16)
-	subscribeRunEvents(bus, stderr)
 
 	rt := runtime.NewIntegratedModelRuntime(provider, ld, resolver, bus)
 
-	fmt.Fprintf(stderr, "TinyBrain %s | run model=%s profile=%s backend=%s\n",
-		Version, *modelID, profile.Name, profile.Probe.Backend)
+	// 4. Kernel (Process Table)
+	ptab := process.NewProcessTable()
 
-	loadStart := time.Now()
-	if err := rt.LoadModel(*modelID); err != nil {
-		fmt.Fprintf(stderr, "[load] failed: %v\n", err)
-		return 1
-	}
-	fmt.Fprintf(stderr, "[load] %s … %.1fs\n", *modelID, time.Since(loadStart).Seconds())
+	// 5. Scheduler
+	queue := scheduler.NewMLFQQueue()
+	sched := scheduler.NewMLFQScheduler(ptab, queue)
+	coord := scheduler.NewEventCoordinator(sched, bus, ptab)
+	defer coord.Stop()
 
-	genStart := time.Now()
-	resp, err := rt.Generate(runtime.GenerateRequest{
-		ModelID: *modelID,
-		Prompt:  *prompt,
+	// 6. Agent Executor
+	exec := agents.NewExecutor(rt, bus)
+	listener := agents.NewEventListener(bus, exec, ptab, areg)
+	defer listener.Stop()
+
+	// 7. Router
+	rtr := router.NewRouter(bus, areg, ptab)
+	defer rtr.Stop()
+
+	fmt.Fprintf(stderr, "TinyBrain %s | event pipeline agent=%s profile=%s backend=%s\n",
+		Version, targetAgent, profile.Name, profile.Probe.Backend)
+
+	done := make(chan struct{})
+	
+	// Trace events
+	bus.Subscribe(events.TypeTaskCreated, func(ev events.Event) { fmt.Fprintln(stderr, "-> Event: TaskCreated") })
+	bus.Subscribe(events.TypeProcessSpawned, func(ev events.Event) { fmt.Fprintln(stderr, "-> Event: ProcessSpawned") })
+	bus.Subscribe(events.TypeProcessStateChanged, func(ev events.Event) {
+		payload := ev.Payload.(events.ProcessStateChangedPayload)
+		fmt.Fprintf(stderr, "-> Event: ProcessStateChanged (%s -> %s)\n", payload.OldState, payload.NewState)
 	})
-	genElapsed := time.Since(genStart)
-	if err != nil {
-		fmt.Fprintf(stderr, "[gen] failed: %v\n", err)
-		_ = rt.UnloadModel(*modelID)
-		return 1
-	}
-	tps := 0.0
-	if genElapsed > 0 && resp.TokensProduced > 0 {
-		tps = float64(resp.TokensProduced) / genElapsed.Seconds()
-	}
-	fmt.Fprintf(stderr, "[gen] tokens=%d elapsed=%.2fs tps=%.1f\n", resp.TokensProduced, genElapsed.Seconds(), tps)
+	bus.Subscribe(events.TypeAgentStarted, func(ev events.Event) { fmt.Fprintln(stderr, "-> Event: AgentStarted") })
+	bus.Subscribe(events.TypeTaskCompleted, func(ev events.Event) {
+		fmt.Fprintln(stderr, "-> Event: TaskCompleted")
+		close(done)
+	})
 
-	fmt.Fprintln(stdout, resp.Output)
+	// Submit task
+	taskID := fmt.Sprintf("task-%d", time.Now().UnixNano())
+	bus.Publish(events.NewEvent(events.TypeTaskCreated, events.TaskCreatedPayload{
+		TaskID:  taskID,
+		Input:   *prompt,
+		AgentID: targetAgent,
+	}, time.Now()))
 
-	if err := rt.UnloadModel(*modelID); err != nil {
-		fmt.Fprintf(stderr, "[unload] failed: %v\n", err)
-		return 1
-	}
-	fmt.Fprintf(stderr, "[unload] %s\n", *modelID)
+	<-done
 	return 0
-}
-
-func subscribeRunEvents(bus events.EventBus, stderr io.Writer) {
-	bus.Subscribe(events.TypeModelLoaded, func(ev events.Event) {
-		payload, ok := ev.Payload.(events.ModelLoadedPayload)
-		if !ok {
-			return
-		}
-		fmt.Fprintf(stderr, "[event] ModelLoaded %s\n", payload.ModelID)
-	})
-	bus.Subscribe(events.TypeModelUnloaded, func(ev events.Event) {
-		payload, ok := ev.Payload.(events.ModelUnloadedPayload)
-		if !ok {
-			return
-		}
-		fmt.Fprintf(stderr, "[event] ModelUnloaded %s\n", payload.ModelID)
-	})
 }

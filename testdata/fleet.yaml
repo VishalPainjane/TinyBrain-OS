@@ -1,0 +1,20 @@
+agents:
+  - id: sample-alpha
+    name: "Sample Alpha Planner"
+    model_profile: "tinyllama-q4"
+    tools:
+      - "fs_read"
+      - "fs_write"
+    resource_profile:
+      memory_mb: 2048
+      priority: 1
+    priority: 10
+  - id: sample-beta
+    name: "Sample Beta Coder"
+    model_profile: "starcoder-q8"
+    tools:
+      - "fs_write"
+    resource_profile:
+      memory_mb: 4096
+      priority: 2
+    priority: 5

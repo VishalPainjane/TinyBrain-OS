@@ -31,7 +31,9 @@ type Event struct {
 
 // TaskCreatedPayload is the payload for TypeTaskCreated.
 type TaskCreatedPayload struct {
-	TaskID string
+	TaskID  string
+	Input   string
+	AgentID string
 }
 
 // TaskAssignedPayload is the payload for TypeTaskAssigned.
@@ -103,6 +105,7 @@ type KVLoadedPayload struct {
 // TaskCompletedPayload is the payload for TypeTaskCompleted.
 type TaskCompletedPayload struct {
 	TaskID string
+	Result string
 }
 
 // NewEvent creates an event with the given type, payload, and timestamp.

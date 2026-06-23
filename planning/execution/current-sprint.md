@@ -8,18 +8,21 @@
 
 ## Current Task
 
-Week 13 — Agent plugin contract (task-014)
+Week 16 — Workflow demo (task-017)
 
 ## In Progress
 
-(none)
+- [ ] 017-workflow-demo
 
 ## Blocked
 
 (none)
 
-## Done (Month 3)
+## Done (Month 3 & 4)
 
+- [x] Week 15 — Event-driven pipeline (task-016)
+- [x] Week 14 — Sample fleet config (task-015)
+- [x] Week 13 — Agent plugin (task-014) — merged PR @ `5c6280e`
 - [x] 013-brain-top — merged PR #14 @ `fc0a093`
 - [x] 012-swap-manager — merged PR #14 @ `fc0a093`
 - [x] 011-kv-manager — merged PR #13 @ `1a1acf0`
@@ -27,8 +30,7 @@ Week 13 — Agent plugin contract (task-014)
 
 ## Next
 
-- Month 4 Week 13+ per roadmap
-- `v0.8` agent plugin contract and sample fleet
+- Ship v0.8
 
 ## Forbidden Work
 

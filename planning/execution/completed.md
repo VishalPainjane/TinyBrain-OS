@@ -181,5 +181,12 @@ Append-only history. Never delete entries.
 
 **Note:** Stdlib only; Bubble Tea and live kernel IPC deferred to Month 6.
 
+## 014-agent-plugin
+
+**Completed:** 2026-06-23
+**Commit:** `5c6280e` (merge PR to main)
+**Outcome:** Success — Agent plugin contract (Executor interface, Agent interface, SampleAgent implementation)
+**Files:** `docs/contracts/agents.md`, `internal/agents/executor.go`, `internal/agents/interface.go`, `internal/agents/sample.go`, `tasks/014-agent-plugin.md`
+
 ---
 **Layer:** planning

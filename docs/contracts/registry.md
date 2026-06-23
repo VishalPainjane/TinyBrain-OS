@@ -143,6 +143,34 @@ models:
 
 Duplicate IDs within the file return an error. See [testdata/models.yaml](../../testdata/models.yaml).
 
+## fleet.yaml seed format (v0.8)
+
+Bootstrap file for agent registries. Field names map to `AgentDefinition`.
+
+```yaml
+agents:
+  - id: sample-alpha
+    name: "Sample Alpha"
+    model_profile: "tinyllama-q4"
+    tools:
+      - "weather"
+    resource_profile:
+      memory_mb: 2048
+      priority: 1
+    priority: 10
+```
+
+| YAML field | AgentDefinition field |
+|------------|-----------------------|
+| `id` | `ID` (required) |
+| `name` | `Name` |
+| `model_profile` | `ModelProfile` |
+| `tools` | `Tools` |
+| `resource_profile` | `ResourceProfile` |
+| `priority` | `Priority` |
+
+Duplicate IDs within the file return an error.
+
 ## Responsibilities
 
 - Store and serve agent, model, tool definitions

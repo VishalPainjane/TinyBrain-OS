@@ -2,11 +2,11 @@
 
 **Version:** V0.8 Agents — in progress
 
-**Sprint:** Month 4 — Agent Layer (Week 13)
+**Sprint:** Month 4 — Agent Layer (Week 16)
 
-**Task:** 014-agent-plugin started
+**Task:** 017-workflow-demo started
 
-**Shipped on main (post-v0.7 tag):** KV manager (011), swap manager (012), brain-top prototype (013)
+**Shipped on main (post-v0.7 tag):** KV manager (011), swap manager (012), brain-top prototype (013), agents contract (014), fleet registry (015), event pipeline (016)
 
 **Post-v0.6 shell:** `cmd/tinybrain` shipped; `cmd/brain-top` prototype added (013)
 
