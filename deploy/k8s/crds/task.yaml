@@ -1,0 +1,37 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: tasks.core.tinybrain.io
+spec:
+  group: core.tinybrain.io
+  names:
+    kind: Task
+    plural: tasks
+    singular: task
+    shortNames:
+      - tsk
+  scope: Namespaced
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                agentRef:
+                  type: string
+                prompt:
+                  type: string
+                priority:
+                  type: integer
+            status:
+              type: object
+              properties:
+                state:
+                  type: string
+                result:
+                  type: string

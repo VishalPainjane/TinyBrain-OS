@@ -1,0 +1,9 @@
+apiVersion: core.tinybrain.io/v1alpha1
+kind: Task
+metadata:
+  name: generate-crd-task
+  namespace: default
+spec:
+  agentRef: code-agent
+  prompt: "Generate Kubernetes CRDs"
+  priority: 1
