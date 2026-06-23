@@ -1,0 +1,30 @@
+﻿apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tinybrain-operator
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tinybrain-operator-role
+rules:
+- apiGroups: ["core.tinybrain.io"]
+  resources: ["agents", "tasks"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: ["memory.tinybrain.io"]
+  resources: ["kvcaches", "swappolicies"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tinybrain-operator-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tinybrain-operator-role
+subjects:
+- kind: ServiceAccount
+  name: tinybrain-operator
+  namespace: default

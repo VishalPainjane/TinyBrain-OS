@@ -1,0 +1,23 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tinybrain-operator
+  namespace: default
+  labels:
+    app: tinybrain-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tinybrain-operator
+  template:
+    metadata:
+      labels:
+        app: tinybrain-operator
+    spec:
+      serviceAccountName: tinybrain-operator
+      containers:
+      - name: operator
+        image: tinybrain/operator:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/operator"]
