@@ -67,6 +67,7 @@ func TestCorePackagesDoNotImportInference(t *testing.T) {
 		modulePrefix + "internal/scheduler",
 		modulePrefix + "internal/kv",
 		modulePrefix + "internal/swap",
+		modulePrefix + "internal/agents",
 		modulePrefix + "internal/runtime",
 	}
 
