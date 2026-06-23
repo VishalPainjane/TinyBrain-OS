@@ -1,0 +1,8 @@
+apiVersion: memory.tinybrain.io/v1alpha1
+kind: SwapPolicy
+metadata:
+  name: global-swap-policy
+spec:
+  vramThreshold: "90%"
+  ramThreshold: "80%"
+  strategy: "LRU"

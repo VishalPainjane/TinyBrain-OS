@@ -1,0 +1,11 @@
+apiVersion: core.tinybrain.io/v1alpha1
+kind: Agent
+metadata:
+  name: code-agent
+  namespace: default
+spec:
+  model: llama3-8b-instruct
+  plugin: coder
+  systemPrompt: "You are a helpful coding assistant."
+  resources:
+    maxVram: "8Gi"

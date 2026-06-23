@@ -1,0 +1,8 @@
+apiVersion: memory.tinybrain.io/v1alpha1
+kind: KVCache
+metadata:
+  name: code-agent-cache
+  namespace: default
+spec:
+  ownerRef: code-agent
+  maxSize: "2Gi"
