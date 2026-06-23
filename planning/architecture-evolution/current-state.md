@@ -30,6 +30,7 @@ Code-first snapshot. Update after every completed task.
 | llama.cpp CUDA offload (dynamic DLL, static CGO, `NGLayers`) | `internal/inference/llama/` | **Complete** — Windows dynamic CUDA backend + static Linux CGO verified (manual GPU checklist signed off) |
 | tinybrain CLI (doctor, probe, models, run, status, workflow) | `cmd/tinybrain/` | Complete |
 | Kubernetes Operator (Agent, Task, memory CRDs & controllers) | `internal/k8s/`, `cmd/operator/` | Complete, tested (M9) |
+| Scheduler ↔ runtime command wiring (via EventBus) | `internal/agents/`, `internal/scheduler/` | Complete, event-driven |
 
 ## In Progress
 
@@ -40,7 +41,6 @@ Code-first snapshot. Update after every completed task.
 - Metal / ROCm / Vulkan inference backends (CUDA adapter verified & signed off via ADR-006 DLL loading; Metal/ROCm/Vulkan deferred)
 - Tool registry
 - Telemetry package
-- Scheduler → runtime command wiring
 
 ## Active Packages
 

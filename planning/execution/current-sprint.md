@@ -2,42 +2,41 @@
 
 ## Sprint
 
-**Name:** Month 5 — Platform Extension
-**Goal:** Kubernetes operator with CRDs and reconciliation controllers; achieve M9.
-**Version:** Post-v0.8 platform
+**Name:** Month 6 — V1.0 Release
+**Goal:** Integrate all subsystems, polish brain-top, run benchmarks, ship v1.0 and M10.
+**Version:** v1.0
 
 ## Current Task
 
-(none) — Month 5 completed
+022-system-integration
 
 ## In Progress
 
-(none)
+- [ ] 022-system-integration
 
 ## Blocked
 
 (none)
 
-## Done (Month 5)
+## Done (Month 6)
 
-- [x] Week 20 — Operator end-to-end (task-021)
-- [x] Week 19 — KVCache and SwapPolicy controllers (task-020)
-- [x] Week 18 — Agent and Task controllers (task-019)
-- [x] Week 17 — CRD design (task-018)
+(none)
 
 ## Next
 
-- Month 6 — V1.0 integration
+- Week 22 — brain-top production
+- Week 23 — Benchmark suite
+- Week 24 — Ship v1.0 and M10
 
 ## Forbidden Work
 
-- Rewriting core runtime for K8s
+- New features — fix only
 
 ## Active References
 
-- [planning/roadmap/months/month-04.md](../roadmap/months/month-04.md) (closed)
-- [planning/roadmap/months/month-05.md](../roadmap/months/month-05.md)
+- [planning/roadmap/months/month-05.md](../roadmap/months/month-05.md) (closed)
+- [planning/roadmap/months/month-06.md](../roadmap/months/month-06.md)
 
 ---
 **Layer:** planning
-**Last updated:** 2026-06-23
+**Last updated:** 2026-06-24

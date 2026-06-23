@@ -235,5 +235,11 @@ Append-only history. Never delete entries.
 **Outcome:** Success — Manifest bundle for deployment via Kustomize (RBAC, deployment, kustomization) and README integration instructions.
 **Files:** `deploy/k8s/operator/rbac.yaml`, `deploy/k8s/operator/deployment.yaml`, `deploy/k8s/kustomization.yaml`, `deploy/k8s/operator/kustomization.yaml`, `deploy/k8s/crds/kustomization.yaml`, `README.md`, `tasks/021-k8s-operator-e2e.md`
 
+## 022-system-integration
+
+**Completed:** 2026-06-24
+**Outcome:** Success — Month 6 Week 21 transitioned, single binary workflow verified with complete event-driven scheduler -> runtime execution pipeline.
+**Files:** `planning/execution/current-sprint.md`, `docs/current.md`, `planning/architecture-evolution/current-state.md`, `tasks/022-system-integration.md`
+
 ---
 **Layer:** planning
