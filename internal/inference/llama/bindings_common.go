@@ -150,11 +150,9 @@ func newNativeSampler(cfg LlamaConfig) *C.struct_llama_sampler {
 	return chain
 }
 
-// generateStats holds optional timing from generateNativeTimed (microseconds).
-type generateStats struct {
-	TTFTMicros   int64
-	DecodeMicros int64
-}
+// generateStats is defined in stats.go (no build constraints) so it is
+// available to both CGO and Windows dynamic DLL backends.
+
 
 func generateNative(modelID string, prompt string, cfg LlamaConfig) (string, uint32, error) {
 	out, n, _, err := generateNativeTimed(modelID, prompt, cfg)

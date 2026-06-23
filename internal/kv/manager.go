@@ -26,6 +26,7 @@ type Manager interface {
 	Load(kvCacheID string) error
 	Get(kvCacheID string) (Block, error)
 	Delete(kvCacheID string) error
+	VRAMUsage() uint64
 }
 
 // StubManager is an in-memory KV block pool that emits KVStored/KVLoaded events.
@@ -127,6 +128,20 @@ func (m *StubManager) Delete(kvCacheID string) error {
 	}
 	delete(m.blocks, kvCacheID)
 	return nil
+}
+
+// VRAMUsage returns the sum of SizeBytes for all blocks currently in VRAM.
+func (m *StubManager) VRAMUsage() uint64 {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	var used uint64
+	for _, block := range m.blocks {
+		if block.Tier == TierVRAM {
+			used += block.SizeBytes
+		}
+	}
+	return used
 }
 
 func (m *StubManager) saveLocked(kvCacheID string) (Block, error) {

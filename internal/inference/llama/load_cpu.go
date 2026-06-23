@@ -1,13 +1,9 @@
 //go:build cgo && !cuda && !rocm && !metal && !vulkan
 
+// Package llama — CPU static CGO load/unload shim.
+//
+// These functions exist only for the integration test path
+// (generate_integration_test.go / load_integration_test.go) which calls
+// loadNativeModel / unloadNativeModel directly.
+// The provider's public API routes through backend_cgo.go via selectBackend().
 package llama
-
-// loadBackend loads a GGUF model and inference context with the CPU backend (NGLayers=0).
-func (p *LlamaProvider) loadBackend(path string, modelID string) error {
-	return loadNativeModel(path, modelID, p.cfg)
-}
-
-// unloadBackend frees the native context and model handles.
-func (p *LlamaProvider) unloadBackend(modelID string) error {
-	return unloadNativeModel(modelID)
-}

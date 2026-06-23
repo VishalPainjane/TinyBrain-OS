@@ -49,7 +49,7 @@ func QueueLevelFromPriority(priority int) int {
 // ShouldSwap reports whether p is eligible for swap per the idle heuristic.
 // Running, new, and terminated processes are never swapped via this policy.
 // See docs/architecture/scheduler.md.
-func ShouldSwap(p process.Process, now time.Time) bool {
+func ShouldSwap(p process.Process, now time.Time, usedVRAM, totalVRAM uint64) bool {
 	switch p.State {
 	case process.Running, process.New, process.Terminated:
 		return false
@@ -57,5 +57,21 @@ func ShouldSwap(p process.Process, now time.Time) bool {
 	if p.LastExecution.IsZero() {
 		return false
 	}
-	return now.Sub(p.LastExecution) >= SwapIdleThreshold
+
+	// Priority weight: Q0 (QueueLevel 0) gets highest multiplier, Q3 gets lowest.
+	// Since NumLevels is 4, weight ranges from 4.0 to 1.0.
+	queueLevel := QueueLevelFromPriority(p.Priority)
+	weight := float64(NumLevels - queueLevel)
+
+	availableVRAM := float64(0)
+	if totalVRAM > usedVRAM {
+		availableVRAM = float64(totalVRAM - usedVRAM)
+	}
+	if totalVRAM == 0 {
+		totalVRAM = 1 // Prevent division by zero if uninitialized
+	}
+	pressureFactor := 1.0 + (availableVRAM / float64(totalVRAM))
+
+	adaptiveThreshold := time.Duration(float64(SwapIdleThreshold) * pressureFactor * weight)
+	return now.Sub(p.LastExecution) >= adaptiveThreshold
 }

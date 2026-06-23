@@ -13,24 +13,33 @@ import (
 var _ runtime.InferenceProvider = (*LlamaProvider)(nil)
 
 // LlamaProvider implements runtime.InferenceProvider using llama.cpp.
-// The active backend (CPU or CUDA) is selected at compile time via build tags.
+//
+// The active hardware backend (CPU static CGO, or Windows GPU dynamic DLL) is
+// selected once at construction via selectBackend().  All inference calls are
+// delegated to the backend interface, keeping the provider and scheduler layers
+// fully decoupled from hardware specifics.
+//
+// See ADR-006 for the rationale for runtime backend selection on Windows.
 type LlamaProvider struct {
 	mu       sync.Mutex
+	b        backend // selected at construction; immutable after that
 	resolver runtime.ModelResolver
 	cfg      LlamaConfig
 	models   map[string]*modelSlot
 }
 
-// NewLlamaProvider returns a provider that resolves models via resolver.
+// NewLlamaProvider returns a provider backed by the best available inference
+// engine on the current platform.
 func NewLlamaProvider(resolver runtime.ModelResolver, cfg LlamaConfig) *LlamaProvider {
 	return &LlamaProvider{
+		b:        selectBackend(),
 		resolver: resolver,
 		cfg:      cfg,
 		models:   make(map[string]*modelSlot),
 	}
 }
 
-// LoadModel resolves modelID and loads the GGUF file via the compile-time backend.
+// LoadModel resolves modelID and loads the GGUF file via the selected backend.
 func (p *LlamaProvider) LoadModel(modelID string) error {
 	if modelID == "" {
 		return fmt.Errorf("model ID is required")
@@ -60,7 +69,7 @@ func (p *LlamaProvider) LoadModel(modelID string) error {
 		return fmt.Errorf("%w: %s", runtime.ErrModelAlreadyLoaded, modelID)
 	}
 
-	if err := p.loadBackend(cleanPath, modelID); err != nil {
+	if err := p.b.loadModel(cleanPath, modelID, p.cfg); err != nil {
 		return err
 	}
 
@@ -77,7 +86,7 @@ func (p *LlamaProvider) UnloadModel(modelID string) error {
 		return fmt.Errorf("%w: %s", runtime.ErrModelNotLoaded, modelID)
 	}
 
-	if err := p.unloadBackend(modelID); err != nil {
+	if err := p.b.unloadModel(modelID); err != nil {
 		return err
 	}
 
@@ -98,7 +107,7 @@ func (p *LlamaProvider) Generate(req runtime.GenerateRequest) (runtime.GenerateR
 		return runtime.GenerateResponse{}, fmt.Errorf("%w: %s", runtime.ErrModelNotLoaded, req.ModelID)
 	}
 
-	output, tokens, err := p.generateBackend(req.ModelID, req.Prompt)
+	output, tokens, _, err := p.b.generate(req.ModelID, req.Prompt, p.cfg)
 	if err != nil {
 		return runtime.GenerateResponse{}, err
 	}

@@ -33,17 +33,19 @@ type Manager interface {
 type StubManager struct {
 	table *process.ProcessTable
 	kv    kv.Manager
-	bus   events.EventBus
-	now   func() time.Time
+	bus       events.EventBus
+	now       func() time.Time
+	totalVRAM uint64
 }
 
 // NewStubManager returns a swap manager using table, kv, and bus.
-func NewStubManager(table *process.ProcessTable, kvm kv.Manager, bus events.EventBus) *StubManager {
+func NewStubManager(table *process.ProcessTable, kvm kv.Manager, bus events.EventBus, totalVRAM uint64) *StubManager {
 	return &StubManager{
-		table: table,
-		kv:    kvm,
-		bus:   bus,
-		now:   time.Now,
+		table:     table,
+		kv:        kvm,
+		bus:       bus,
+		now:       time.Now,
+		totalVRAM: totalVRAM,
 	}
 }
 
@@ -60,7 +62,9 @@ func (m *StubManager) SwapOut(pid string) error {
 	if p.State == process.Running {
 		return ErrCannotSwapRunning
 	}
-	if !scheduler.ShouldSwap(p, m.now()) {
+	
+	usedVRAM := m.kv.VRAMUsage()
+	if !scheduler.ShouldSwap(p, m.now(), usedVRAM, m.totalVRAM) {
 		return ErrNotIdle
 	}
 

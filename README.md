@@ -135,6 +135,16 @@ Future commands (not yet implemented):
 brain-top
 ```
 
+### Kubernetes Deployment
+
+You can deploy the TinyBrain OS operator to a local Kubernetes cluster (like `kind` or `minikube`) to manage agents and memory thresholds declaratively.
+
+```bash
+kubectl apply -k deploy/k8s/
+```
+
+> **Note:** The Kubernetes operator is a parallel track. The local v1.0 demo does not require Kubernetes and runs directly on your host machine.
+
 ## Current Version
 
 **V0.8 Agents (shipped)** + Platform Extension sprint — [docs/current.md](docs/current.md) | Sprint: [planning/execution/current-sprint.md](planning/execution/current-sprint.md)

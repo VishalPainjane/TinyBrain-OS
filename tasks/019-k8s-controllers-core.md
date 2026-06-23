@@ -2,7 +2,7 @@
 
 ## Status
 
-In Progress
+Complete
 
 ## Goal
 
@@ -22,10 +22,10 @@ Month 5, Week 18. Building off the CRDs defined in Task 018, we must now build t
 
 ## Acceptance Criteria
 
-- [ ] Go API definitions for `Agent` and `Task` exist.
-- [ ] `AgentReconciler` and `TaskReconciler` implement the `reconcile.Reconciler` interface.
-- [ ] `cmd/operator` compiles successfully.
-- [ ] Core `internal/runtime` and `internal/scheduler` do not import Kubernetes packages.
+- [x] Go API definitions for `Agent` and `Task` exist.
+- [x] `AgentReconciler` and `TaskReconciler` implement the `reconcile.Reconciler` interface.
+- [x] `cmd/operator` compiles successfully.
+- [x] Core `internal/runtime` and `internal/scheduler` do not import Kubernetes packages.
 
 ## Out Of Scope
 

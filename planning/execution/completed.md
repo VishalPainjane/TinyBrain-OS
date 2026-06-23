@@ -207,5 +207,33 @@ Append-only history. Never delete entries.
 **Outcome:** Success — `tinybrain workflow` orchestrates sequential 2-agent execution via task completion events
 **Files:** `cmd/tinybrain/workflow.go`, `cmd/tinybrain/main.go`, `internal/events/types.go`, `internal/agents/listener.go`, `tasks/017-workflow-demo.md`
 
+## 018-k8s-crds
+
+**Completed:** 2026-06-23
+**Commit:** `5a457b6`
+**Outcome:** Success — YAML schemas and validation rules for the four Custom Resource Definitions (Agent, Task, KVCache, SwapPolicy) and sample manifests.
+**Files:** `deploy/k8s/crds/*.yaml`, `deploy/k8s/samples/*.yaml`, `tasks/018-k8s-crds.md`
+
+## 019-k8s-controllers-core
+
+**Completed:** 2026-06-23
+**Commit:** `b4252f5`
+**Outcome:** Success — Agent and Task reconciler Go structs, API registration, and core cmd/operator manager loop.
+**Files:** `internal/k8s/api/v1alpha1/`, `internal/k8s/controllers/agent_controller.go`, `internal/k8s/controllers/task_controller.go`, `cmd/operator/main.go`, `tasks/019-k8s-controllers-core.md`
+
+## 020-k8s-controllers-memory
+
+**Completed:** 2026-06-23
+**Commit:** `ac72c8c`
+**Outcome:** Success — Memory controller API group, reconcilers for KVCache and SwapPolicy, and registration in cmd/operator.
+**Files:** `internal/k8s/api/memory/v1alpha1/`, `internal/k8s/controllers/kvcache_controller.go`, `internal/k8s/controllers/swappolicy_controller.go`, `cmd/operator/main.go`, `tasks/020-k8s-controllers-memory.md`
+
+## 021-k8s-operator-e2e
+
+**Completed:** 2026-06-23
+**Commit:** `f93549e`
+**Outcome:** Success — Manifest bundle for deployment via Kustomize (RBAC, deployment, kustomization) and README integration instructions.
+**Files:** `deploy/k8s/operator/rbac.yaml`, `deploy/k8s/operator/deployment.yaml`, `deploy/k8s/kustomization.yaml`, `deploy/k8s/operator/kustomization.yaml`, `deploy/k8s/crds/kustomization.yaml`, `README.md`, `tasks/021-k8s-operator-e2e.md`
+
 ---
 **Layer:** planning

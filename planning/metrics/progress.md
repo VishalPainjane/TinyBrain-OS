@@ -20,7 +20,7 @@ Spec-level completion. Update when tasks complete or acceptance criteria are met
 
 **v0.5 shipped:** tag `v0.5` — persistent model registry (006-registry-persistence).
 
-**v0.6 shipped:** tag `v0.6` — llama.cpp inference (009a–009d). CUDA matrix Partial until manual GPU checklist signed.
+**v0.6 shipped:** tag `v0.6` — llama.cpp inference (009a–009d). CUDA matrix status promoted to Full upon manual GPU checklist verification and sign-off on Windows.
 
 **v0.7 shipped:** tag `v0.7` — MLFQ scheduler (010). Month 3 memory foundations (011–013) on `main` post-tag.
 

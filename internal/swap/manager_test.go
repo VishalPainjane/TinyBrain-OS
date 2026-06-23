@@ -30,7 +30,7 @@ func newSwapFixture(t *testing.T) (*process.ProcessTable, kv.Manager, events.Eve
 	table := process.NewProcessTable()
 	bus := events.NewChannelBus(8)
 	kvm := kv.NewStubManager(bus)
-	mgr := swap.NewStubManager(table, kvm, bus)
+	mgr := swap.NewStubManager(table, kvm, bus, 8000)
 	return table, kvm, bus, mgr
 }
 
@@ -39,7 +39,7 @@ func TestStubManager_SwapOutMovesKVAndHibernates(t *testing.T) {
 
 	table, kvm, bus, mgr := newSwapFixture(t)
 	p := testProcess("pid-a")
-	p.LastExecution = time.Now().Add(-15 * time.Second)
+	p.LastExecution = time.Now().Add(-100 * time.Second)
 
 	if err := table.Create(p); err != nil {
 		t.Fatalf("Create() error = %v", err)
@@ -108,7 +108,7 @@ func TestStubManager_SwapInRestoresKVAndReady(t *testing.T) {
 
 	table, kvm, _, mgr := newSwapFixture(t)
 	p := testProcess("pid-a")
-	p.LastExecution = time.Now().Add(-15 * time.Second)
+	p.LastExecution = time.Now().Add(-100 * time.Second)
 
 	if err := table.Create(p); err != nil {
 		t.Fatalf("Create() error = %v", err)
@@ -207,7 +207,7 @@ func TestStubManager_SwapOutRespectsSchedulerIdleHeuristic(t *testing.T) {
 	t.Parallel()
 
 	p := testProcess("pid-a")
-	p.LastExecution = time.Now().Add(-15 * time.Second)
+	p.LastExecution = time.Now().Add(-100 * time.Second)
 
 	table, kvm, _, mgr := newSwapFixture(t)
 	if err := table.Create(p); err != nil {
@@ -217,7 +217,7 @@ func TestStubManager_SwapOutRespectsSchedulerIdleHeuristic(t *testing.T) {
 		t.Fatalf("UpdateState() error = %v", err)
 	}
 	stored, _ := table.Get("pid-a")
-	if !scheduler.ShouldSwap(stored, time.Now()) {
+	if !scheduler.ShouldSwap(stored, time.Now(), 0, 8000) {
 		t.Fatal("fixture should be eligible for swap")
 	}
 	if err := kvm.Allocate(p.KVCacheID, p.PID, 1024); err != nil {

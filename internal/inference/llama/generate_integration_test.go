@@ -5,6 +5,7 @@ package llama
 import (
 	"errors"
 	"os"
+	"strconv"
 	"testing"
 
 	"github.com/VishalPainjane/TinyBrain-OS/internal/runtime"
@@ -21,6 +22,14 @@ func integrationProvider(t *testing.T) (*LlamaProvider, string) {
 	modelID := "test-model"
 	cfg := DefaultConfig()
 	cfg.GreedySampler = true
+
+	if v := os.Getenv("TB_NGLAYERS"); v != "" {
+		if n, err := strconv.ParseInt(v, 10, 32); err == nil {
+			cfg.NGLayers = int32(n)
+		}
+	} else {
+		cfg.NGLayers = -1 // default to GPU offloading
+	}
 
 	p := NewLlamaProvider(staticResolver{
 		specs: map[string]runtime.ModelSpec{

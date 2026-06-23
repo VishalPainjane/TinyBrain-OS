@@ -2,12 +2,9 @@
 
 package llama
 
-// generateBackend runs CUDA inference for a loaded model.
-func (p *LlamaProvider) generateBackend(modelID string, prompt string) (string, uint32, error) {
-	return generateNative(modelID, prompt, p.cfg)
-}
-
-// generateBackendTimed runs CUDA inference and returns TTFT/decode timing in microseconds.
+// generateBackendTimed is kept for backward-compat with cuda_integration_test.go.
+// On Windows the actual GPU execution routes through the dynamic DLL backend
+// (backend_windows_dynamic.go) selected in provider_windows.go.
 func (p *LlamaProvider) generateBackendTimed(modelID string, prompt string) (string, uint32, generateStats, error) {
-	return generateNativeTimed(modelID, prompt, p.cfg)
+	return p.b.generate(modelID, prompt, p.cfg)
 }

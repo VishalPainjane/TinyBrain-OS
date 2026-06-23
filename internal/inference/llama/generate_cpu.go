@@ -2,12 +2,9 @@
 
 package llama
 
-// generateBackend runs CPU inference for a loaded model.
-func (p *LlamaProvider) generateBackend(modelID string, prompt string) (string, uint32, error) {
-	return generateNative(modelID, prompt, p.cfg)
-}
-
-// generateBackendTimed runs CPU inference and returns TTFT/decode timing in microseconds.
+// generateBackendTimed is kept for backward-compat with cuda_integration_test.go
+// and any callers that need timing data directly.  New callers should use
+// LlamaProvider.Generate which routes through the backend interface.
 func (p *LlamaProvider) generateBackendTimed(modelID string, prompt string) (string, uint32, generateStats, error) {
-	return generateNativeTimed(modelID, prompt, p.cfg)
+	return p.b.generate(modelID, prompt, p.cfg)
 }

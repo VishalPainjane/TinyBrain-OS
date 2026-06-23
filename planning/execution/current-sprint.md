@@ -8,11 +8,11 @@
 
 ## Current Task
 
-Week 18 — Agent and Task controllers (task-019)
+(none) — Month 5 completed
 
 ## In Progress
 
-- [ ] 019-k8s-controllers-core
+(none)
 
 ## Blocked
 
@@ -20,11 +20,14 @@ Week 18 — Agent and Task controllers (task-019)
 
 ## Done (Month 5)
 
+- [x] Week 20 — Operator end-to-end (task-021)
+- [x] Week 19 — KVCache and SwapPolicy controllers (task-020)
+- [x] Week 18 — Agent and Task controllers (task-019)
 - [x] Week 17 — CRD design (task-018)
 
 ## Next
 
-- Week 19 — KVCache and SwapPolicy controllers
+- Month 6 — V1.0 integration
 
 ## Forbidden Work
 

@@ -455,20 +455,20 @@ func TestShouldSwap(t *testing.T) {
 	now := time.Unix(1_700_000_000, 0).UTC()
 	p := sampleProcess("pid-a")
 	p.State = process.Waiting
-	p.LastExecution = now.Add(-11 * time.Second)
+	p.LastExecution = now.Add(-100 * time.Second)
 
-	if !scheduler.ShouldSwap(p, now) {
-		t.Error("ShouldSwap() = false, want true after 11s idle")
+	if !scheduler.ShouldSwap(p, now, 0, 8000) {
+		t.Error("ShouldSwap() = false, want true after 100s idle")
 	}
 
 	p.LastExecution = now.Add(-5 * time.Second)
-	if scheduler.ShouldSwap(p, now) {
+	if scheduler.ShouldSwap(p, now, 0, 8000) {
 		t.Error("ShouldSwap() = true, want false after 5s idle")
 	}
 
 	p.State = process.Running
 	p.LastExecution = now.Add(-1 * time.Hour)
-	if scheduler.ShouldSwap(p, now) {
+	if scheduler.ShouldSwap(p, now, 0, 8000) {
 		t.Error("ShouldSwap() = true for RUNNING, want false")
 	}
 }

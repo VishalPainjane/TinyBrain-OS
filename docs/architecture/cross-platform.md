@@ -14,15 +14,15 @@ Current implementation may target one platform or backend when required. Shortcu
 
 ## Inference Backends
 
-| Backend | Hardware | Isolation |
-|---------|----------|-----------|
-| CPU | All platforms | Default fallback in `internal/inference/` |
-| CUDA | NVIDIA | Build tag + adapter file |
-| ROCm/HIP | AMD | Build tag + adapter file (future) |
-| Metal | Apple Silicon / macOS GPU | Build tag + adapter file (future) |
-| Vulkan | Cross-vendor GPU | Build tag + adapter file (future) |
+| Backend | Hardware | Windows isolation | Linux/macOS isolation |
+|---------|----------|-------------------|-----------------------|
+| CPU | All platforms | Static CGO (MinGW-GCC) | Static CGO (GCC/Clang) |
+| CUDA | NVIDIA | **Runtime DLL loading** (`syscall.LoadDLL`) — [ADR-006](../adr/ADR-006-Windows-GPU-Dynamic-DLL-Backend.md) | Static CGO `-tags cuda` |
+| ROCm/HIP | AMD | Runtime DLL loading (future — follows ADR-006 pattern) | Static CGO `-tags rocm` (future) |
+| Metal | Apple Silicon / macOS GPU | N/A | CGO `-tags metal` (future) |
+| Vulkan | Cross-vendor GPU | Runtime DLL loading (future) | Static CGO `-tags vulkan` (future) |
 
-Backend selection flows from [hardware probe](hardware.md) → `hardware.Backend` → inference adapter configuration. No backend logic in core packages.
+Backend selection flows from [hardware probe](hardware.md) → `hardware.Backend` → `internal/inference/llama/provider_windows.go:selectBackend()` (Windows) or `provider_non_windows.go:selectBackend()`. No backend logic in core packages.
 
 **Capability truth:** [inference-backend-matrix.md](inference-backend-matrix.md) — update before implementing any backend; feature parity is not assumed.
 
@@ -53,9 +53,17 @@ Platform-specific code lives only in:
 
 | Mechanism | Example |
 |-----------|---------|
-| Build tags | `//go:build cgo`, `//go:build cuda`, `//go:build darwin` |
+| Build tags | `//go:build cgo`, `//go:build cuda`, `//go:build windows` |
+| Runtime DLL loading (Windows GPU) | `backend_windows_dynamic.go` via `syscall.LoadDLL` |
+| Backend probe files | `provider_windows.go`, `provider_non_windows.go` |
 | Adapter packages | `internal/inference/llama/` |
 | OS-specific files | `probe_windows.go`, `probe_unix.go` |
+
+> [!NOTE]
+> On Windows, GPU backends (CUDA, future ROCm/Vulkan) use **runtime DLL loading** rather
+> than static CGO because MSVC-compiled DLLs are ABI-incompatible with MinGW-GCC CGO.
+> This is established in [ADR-006](../adr/ADR-006-Windows-GPU-Dynamic-DLL-Backend.md).
+> Future GPU backends on Windows MUST follow this pattern.
 
 Forbidden: platform branches inside `internal/process`, `internal/scheduler`, `internal/runtime`, `internal/registry`, or `internal/loader`.
 

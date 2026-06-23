@@ -1,6 +1,6 @@
 # Month 5 — Platform Extension (Week 17–20)
 
-**Status:** Planned
+**Status:** Complete
 **Month goal:** Kubernetes operator with CRDs and reconciliation controllers; achieve M9.
 **Versions targeted:** Post-v0.8 platform (not a semver bump — feeds v1.0 ecosystem)
 **Milestones targeted:** M9 (Kubernetes operator)
@@ -8,11 +8,11 @@
 
 ## Success criteria (month end)
 
-- [ ] CRDs defined: Agent, Task, KVCache, SwapPolicy
-- [ ] Agent + Task controllers reconcile
-- [ ] KVCache + SwapPolicy controllers reconcile
-- [ ] M9 demonstrated on local single-node cluster (kind/minikube)
-- [ ] Documented: v1.0 demo does not require K8s (operator is parallel track)
+- [x] CRDs defined: Agent, Task, KVCache, SwapPolicy
+- [x] Agent + Task controllers reconcile
+- [x] KVCache + SwapPolicy controllers reconcile
+- [x] M9 demonstrated on local single-node cluster (kind/minikube)
+- [x] Documented: v1.0 demo does not require K8s (operator is parallel track)
 
 ---
 
@@ -108,7 +108,7 @@ Log platform decisions in [accepted.md](../../decisions/accepted.md).
 
 ## Month-end review
 
-**Planned vs actual:** _(fill when Month 5 closes)_
+**Planned vs actual:** Month 5 successfully concluded. We built the Kubernetes API types and Custom Resource Definitions (`Agent`, `Task`, `KVCache`, `SwapPolicy`), implemented the `controller-runtime` reconciler logic in Go, successfully completely isolated the logic to the new `cmd/operator` entrypoint to protect the core `internal/runtime`, and finally bundled the solution using Kustomize manifests. M9 is complete.
 
 **Carry-forward to Month 6:** v1.0 integration, brain-top polish, benchmarks.
 

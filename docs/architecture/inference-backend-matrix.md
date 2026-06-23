@@ -102,8 +102,8 @@ Capabilities apply to the **llama.cpp adapter** unless noted. Feature parity acr
 
 | OS | Status |
 |----|--------|
-| Linux | **Partial** (009d) — `-tags cuda` build; manual GPU per checklist |
-| Windows | **Partial** (009d) — dev manual; CUDA toolkit + PATH |
+| Linux | **Partial** (009d) — `-tags cuda` static CGO build; manual GPU per checklist |
+| Windows | **Partial** (ADR-006) — runtime DLL loading (`syscall.LoadDLL`); no MSVC/CGO conflict |
 | macOS | **No** — NVIDIA does not support CUDA on macOS |
 
 ### Supported hardware
@@ -111,30 +111,39 @@ Capabilities apply to the **llama.cpp adapter** unless noted. Feature parity acr
 - NVIDIA GPUs with compatible driver + CUDA toolkit
 - `hardware.BackendCUDA` from probe
 - Single GPU only (device index `0` default)
+- Verified: RTX 4050 Laptop GPU (SM 8.9, Ada Lovelace, CUDA 12.4)
 
 ### Known limitations
 
 - Not available on macOS
-- CUDA toolkit version must match llama.cpp build flags
-- Runtime DLLs on Windows not bundled by TinyBrain
+- Windows: `backend_windows_dynamic.go` struct layouts are pinned to llama.cpp b9553 (`9e3b928`); must be re-verified on submodule update
 - Multi-GPU not supported (v0.6+)
-- CI GPU runners not available in default GitHub Actions (009a)
+- CI GPU runners not available in default GitHub Actions
+- Windows DLL probe is silent on CPU fallback — callers should check `hardware.Probe()` to detect expected GPU
 
 ### Build requirements
 
-- All CPU requirements, plus:
-- NVIDIA driver + CUDA toolkit
-- llama.cpp built with `-DGGML_CUDA=ON` in `third_party/llama.cpp/build-cuda/` (separate from CPU `build/`)
-- Build tag: `cuda` — `load_cuda.go`, `bindings_cuda.go`; CPU default binary unchanged
+**Linux (static CGO):**
+- `CGO_ENABLED=1`, GCC, llama.cpp built with `-DGGML_CUDA=ON` (MinGW Makefiles)
+- Build tag: `cuda` — routes through `bindings_cuda.go` → `bindings_common.go`
+
+**Windows (runtime DLL):**
+- NVIDIA CUDA Toolkit 12.x + MSVC 2022 (for `nvcc` host)
+- llama.cpp built with `-DGGML_CUDA=ON` using Visual Studio generator → produces `ggml-cuda.dll`, `ggml-base.dll`, `llama.dll`
+- **No** build tag required — single binary probes for DLLs at startup via `provider_windows.go:selectBackend()`
+- DLL directory: alongside binary, or override with `LLAMACPP_DLL_DIR` env var
+- See [ADR-006](../adr/ADR-006-Windows-GPU-Dynamic-DLL-Backend.md)
 
 ### Test coverage status
 
 | Test type | Status |
 |-----------|--------|
-| Unit (`NGLayers`, `ConfigFromProbe`) | **Yes** — `CGO_ENABLED=0` + `-tags cuda` config tests |
-| CGO CPU fallback when CUDA tag absent | **Yes** — CPU binary forces `n_gpu_layers=0` |
-| Integration with GPU | **Partial** — `cuda_integration_test.go`; `TB_CUDA_INTEGRATION=1` manual |
-| CI | **Partial** — CPU `inference-cgo` unchanged; no GPU runner; compile-only CUDA CI deferred |
+| Unit (`NGLayers`, `ConfigFromProbe`) | **Yes** — `CGO_ENABLED=0` config tests |
+| CGO CPU fallback (CUDA tag absent) | **Yes** — CPU binary forces `n_gpu_layers=0` |
+| Windows DLL probe (no DLL) | **Yes** — `provider_windows.go` falls back to `cgoBackend` |
+| Integration with GPU (Linux) | **Partial** — `cuda_integration_test.go`; `TB_CUDA_INTEGRATION=1` manual |
+| Integration with GPU (Windows DLL) | **Yes** — manual check-off signed off; all integration tests pass on Windows CUDA GPU |
+| CI | **Partial** — CPU `inference-cgo` unchanged; no GPU runner |
 
 ---
 
@@ -254,14 +263,16 @@ Track intentional differences — do not imply equal support.
 
 | Gap | Backends affected | Resolution target |
 |-----|-------------------|-------------------|
-| CUDA generate runtime proof | CUDA | Manual checklist (`009d-manual-gpu-checklist.md`); matrix **Partial** until signed |
+| CUDA generate runtime proof (Windows) | CUDA/Windows | **Resolved** — Signed off in [009d-manual-gpu-checklist.md](../planning/decisions/009d-manual-gpu-checklist.md) |
+| Windows DLL struct layout pinned to b9553 | CUDA/Windows DLL | Re-verify `backend_windows_dynamic.go` on submodule update |
 | SaveContext / RestoreContext stub | All llama backends | Task 011 KV manager |
 | CUDA absent on macOS | CUDA | Permanent — use Metal on macOS |
 | Metal absent on Linux/Windows | Metal | Permanent — use CUDA/ROCm/Vulkan |
-| No CI GPU integration tests | CUDA, ROCm, Metal, Vulkan | Manual GPU (009d); optional `inference-cuda-compile` deferred |
+| No CI GPU integration tests | CUDA, ROCm, Metal, Vulkan | Manual GPU (009d); GPU CI runner deferred |
 | No multi-GPU | All | Future RFC / workstation profile |
 | Vulkan not in probe enum | Vulkan | Probe task + matrix update |
 | StubProvider has Generate stub | Test only (`internal/runtime/`) | Permanent — runtime port tests; llama Generate is separate (009b) |
+| ROCm/Metal/Vulkan dynamic loaders not yet written | ROCm, Metal, Vulkan | ADR-006 establishes pattern; implementations deferred |
 
 ---
 
@@ -275,5 +286,5 @@ Track intentional differences — do not imply equal support.
 
 ---
 **Layer:** architecture  
-**Last updated:** 2026-06-10  
-**Matrix version:** 1.4 (post-009d — CUDA adapter merged PR #9 `ab06c60`; **Partial** pending manual GPU sign-off)
+**Last updated:** 2026-06-23  
+**Matrix version:** 1.5 (ADR-006 — Windows CUDA now uses runtime DLL loading; single binary probes for `ggml-cuda.dll`; struct layouts pinned to b9553)

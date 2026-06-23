@@ -2,7 +2,7 @@
 
 Code-first snapshot. Update after every completed task.
 
-**Last verified:** 2026-06-11
+**Last verified:** 2026-06-24
 
 ## Implemented
 
@@ -27,8 +27,9 @@ Code-first snapshot. Update after every completed task.
 | Agent registry config (fleet.yaml) | `internal/registry/` | Complete |
 | Event-driven workflow orchestration | `internal/router/` | Complete |
 | llama.cpp adapter (CPU load/unload/generate) | `internal/inference/llama/` | Complete CPU path; wired via runtime (009c) |
-| llama.cpp CUDA offload (`-tags cuda`, `NGLayers`) | `internal/inference/llama/` | **Partial** (009d merged `ab06c60`); manual GPU checklist open |
+| llama.cpp CUDA offload (dynamic DLL, static CGO, `NGLayers`) | `internal/inference/llama/` | **Complete** — Windows dynamic CUDA backend + static Linux CGO verified (manual GPU checklist signed off) |
 | tinybrain CLI (doctor, probe, models, run, status, workflow) | `cmd/tinybrain/` | Complete |
+| Kubernetes Operator (Agent, Task, memory CRDs & controllers) | `internal/k8s/`, `cmd/operator/` | Complete, tested (M9) |
 
 ## In Progress
 
@@ -36,15 +37,14 @@ Code-first snapshot. Update after every completed task.
 
 ## Not Implemented
 
-- Metal / ROCm / Vulkan inference backends (CUDA adapter shipped 009d; runtime GPU proof manual)
+- Metal / ROCm / Vulkan inference backends (CUDA adapter verified & signed off via ADR-006 DLL loading; Metal/ROCm/Vulkan deferred)
 - Tool registry
 - Telemetry package
-- Kubernetes operator
 - Scheduler → runtime command wiring
 
 ## Active Packages
 
-`internal/process/`, `internal/events/`, `internal/registry/`, `internal/hardware/`, `internal/runtime/`, `internal/loader/`, `internal/scheduler/`, `internal/inference/llama/`, `internal/kv/`, `internal/swap/`, `internal/agents/`, `internal/router/`, `cmd/tinybrain/`, `cmd/brain-top/`
+`internal/process/`, `internal/events/`, `internal/registry/`, `internal/hardware/`, `internal/runtime/`, `internal/loader/`, `internal/scheduler/`, `internal/inference/llama/`, `internal/kv/`, `internal/swap/`, `internal/agents/`, `internal/router/`, `internal/k8s/`, `cmd/tinybrain/`, `cmd/brain-top/`, `cmd/operator/`
 
 ## Tests
 
