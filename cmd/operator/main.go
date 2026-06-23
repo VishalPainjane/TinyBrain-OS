@@ -13,6 +13,7 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
 	corev1alpha1 "github.com/VishalPainjane/TinyBrain-OS/internal/k8s/api/v1alpha1"
+	memoryv1alpha1 "github.com/VishalPainjane/TinyBrain-OS/internal/k8s/api/memory/v1alpha1"
 	"github.com/VishalPainjane/TinyBrain-OS/internal/k8s/controllers"
 )
 
@@ -24,6 +25,7 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 	utilruntime.Must(corev1alpha1.AddToScheme(scheme))
+	utilruntime.Must(memoryv1alpha1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 
@@ -70,6 +72,22 @@ func main() {
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Task")
+		os.Exit(1)
+	}
+
+	if err = (&controllers.KVCacheReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "KVCache")
+		os.Exit(1)
+	}
+
+	if err = (&controllers.SwapPolicyReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "SwapPolicy")
 		os.Exit(1)
 	}
 
