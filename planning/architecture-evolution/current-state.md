@@ -22,7 +22,7 @@ Code-first snapshot. Update after every completed task.
 | MLFQ Scheduler (Q0-Q3, boost, preemption) | `internal/scheduler/` | Complete, tested |
 | KV Manager (stub metadata, events) | `internal/kv/` | Complete, tested |
 | Swap Manager (events, VRAM↔RAM shell) | `internal/swap/` | Complete, tested |
-| brain-top TUI prototype | `cmd/brain-top/` | Complete (013) |
+| brain-top TUI | `cmd/brain-top/` | Complete, production (023) |
 | Agent plugin contract & sample executor | `internal/agents/` | Complete |
 | Agent registry config (fleet.yaml) | `internal/registry/` | Complete |
 | Event-driven workflow orchestration | `internal/router/` | Complete |
@@ -31,6 +31,7 @@ Code-first snapshot. Update after every completed task.
 | tinybrain CLI (doctor, probe, models, run, status, workflow) | `cmd/tinybrain/` | Complete |
 | Kubernetes Operator (Agent, Task, memory CRDs & controllers) | `internal/k8s/`, `cmd/operator/` | Complete, tested (M9) |
 | Scheduler ↔ runtime command wiring (via EventBus) | `internal/agents/`, `internal/scheduler/` | Complete, event-driven |
+| Benchmark Suite | `cmd/benchmark/` | Complete (018) |
 
 ## In Progress
 

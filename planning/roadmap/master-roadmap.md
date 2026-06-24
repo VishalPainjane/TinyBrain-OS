@@ -4,37 +4,37 @@ CEO-level view. No technical details, packages, or interfaces — those live in 
 
 ## Current Version
 
-**V0.7 Scheduler** — shipped (tag `v0.7`); Month 3 memory foundations on `main`. v0.8 Agents next.
+**V1.0 Integrated Runtime** — shipped (tag `v1.0`); Month 6 complete. Advanced subsystems (v1.1) next.
 
 ## Target Version
 
-**V1.0 Integrated Runtime** — Kernel, registry, hardware profiling, runtime, inference, scheduler, plugin agents, and live telemetry working together on consumer hardware.
+**V1.1 Advanced Subsystems** — KV cache compression, cloud integrations, full K8s production deployments.
 
 ## Major Milestones
 
 | # | Milestone | Outcome | Status |
 |---|-----------|---------|--------|
-| M1 | Single model runtime | Prove load/unload one model under resource budget | **Complete** (v0.6 real GGUF load via `ModelRuntime`) |
-| M2 | Model switching | Dynamic swap between models | **Partial** (loader warm/evict; full swap policy v0.7+) |
-| M3 | Registry + events | Plugin definitions and decoupled event core | Partial (events + registry shipped) |
+| M1 | Single model runtime | Prove load/unload one model under resource budget | **Complete** |
+| M2 | Model switching | Dynamic swap between models | **Complete** |
+| M3 | Registry + events | Plugin definitions and decoupled event core | **Complete** |
 | M4 | Hardware profiling | Adaptive behavior per detected profile | **Complete** |
-| M5 | Runtime + inference | Real GGUF inference via provider adapter | **Complete** (v0.6 CPU CI + CUDA adapter 009d) |
-| M6 | Scheduler | Priority queues, preemption, VRAM-aware scheduling | **Complete** (v0.7 MLFQ) |
-| M7 | Plugin agents | User-defined agent fleet via registry | Planned (Month 4) |
-| M8 | brain-top TUI | Live runtime visibility (htop for AI) | **Partial** (013 prototype on `main`) |
-| M9 | Kubernetes operator | CRDs and controllers for Agent, Task, KVCache, SwapPolicy | Planned (Month 5) |
-| M10 | Full swarm demo | Multi-agent workflow on Standard profile hardware | Planned (Month 6) |
+| M5 | Runtime + inference | Real GGUF inference via provider adapter | **Complete** |
+| M6 | Scheduler | Priority queues, preemption, VRAM-aware scheduling | **Complete** |
+| M7 | Plugin agents | User-defined agent fleet via registry | **Complete** |
+| M8 | brain-top TUI | Live runtime visibility (htop for AI) | **Complete** |
+| M9 | Kubernetes operator | CRDs and controllers for Agent, Task, KVCache, SwapPolicy | **Complete** |
+| M10 | Full swarm demo | Multi-agent workflow on Standard profile hardware | **Complete** |
 
 ## Estimated Timeline
 
 | Phase | Focus | Target |
 |-------|-------|--------|
 | Month 1 | Kernel, events, registry, hardware profiling | **Complete** |
-| Month 2 | Runtime shell, inference, model loader | Runtime + M1/M2 |
-| Month 3 | Scheduler (MLFQ), KV/swap, brain-top prototype | Control plane |
-| Month 4 | Plugin agents, sample fleet demo | Agent layer |
-| Month 5 | Kubernetes operator, CRDs | Platform extension |
-| Month 6 | Integration, benchmarks, polish | V1.0 release |
+| Month 2 | Runtime shell, inference, model loader | **Complete** |
+| Month 3 | Scheduler (MLFQ), KV/swap, brain-top prototype | **Complete** |
+| Month 4 | Plugin agents, sample fleet demo | **Complete** |
+| Month 5 | Kubernetes operator, CRDs | **Complete** |
+| Month 6 | Integration, benchmarks, polish | **Complete** |
 
 ## Monthly Plans (detailed)
 
@@ -47,7 +47,7 @@ Week-by-week breakdown (Week 1–24). CEO summary stays here; execution detail l
 | 3 | 9–12 | [month-03.md](months/month-03.md) | Control plane + memory |
 | 4 | 13–16 | [month-04.md](months/month-04.md) | Agent layer |
 | 5 | 17–20 | [month-05.md](months/month-05.md) | Kubernetes operator |
-| 6 | 21–24 | [month-06.md](months/month-06.md) | V1.0 release |
+| 6 | 21–24 | [month-06.md](months/month-06.md) | V1.0 release (**Complete**) |
 
 **Update discipline:** [update-checklist.md](update-checklist.md) — Tier A (task), Tier B (version), Tier C (month).
 

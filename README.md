@@ -147,23 +147,18 @@ kubectl apply -k deploy/k8s/
 
 ## Current Version
 
-**V0.8 Agents (shipped)** + Platform Extension sprint — [docs/current.md](docs/current.md) | Sprint: [planning/execution/current-sprint.md](planning/execution/current-sprint.md)
+**Current Version:** `v1.0` (Development) | **Current Sprint:** Month 7 (Advanced Subsystems)
 
-## Roadmap
+## Month-by-Month Roadmap
 
-| Version | Goal | Status |
-|---------|------|--------|
-| v0.1 | Kernel — process model + table | Shipped |
-| v0.2 | Registry — agent/model definitions + events | Shipped |
-| v0.3 | Hardware profiler | Shipped |
-| v0.4 | Runtime shell + stub provider | Shipped |
-| v0.5 | Persistent model registry | Shipped |
-| v0.6 | llama.cpp inference | Shipped |
-| v0.7 | MLFQ scheduler | Shipped |
-| v0.8 | Plugin agents | Shipped |
-| v1.0 | Integrated runtime + brain-top | Planned |
-
-Details: [docs/specs/](docs/specs/) and [planning/roadmap/master-roadmap.md](planning/roadmap/master-roadmap.md)
+| Phase | Goal | Status | Subsystems |
+|---|---|---|---|
+| [Month 1](planning/roadmap/months/month-01.md) | Single-Node Foundation | ✅ Shipped `v0.3` | Kernel, Process Table, Event Bus, Hardware Prober |
+| [Month 2](planning/roadmap/months/month-02.md) | The Inference Engine | ✅ Shipped `v0.6` | Runtime interface, `llama.cpp` integration, GGUF loader |
+| [Month 3](planning/roadmap/months/month-03.md) | OS Memory Model | ✅ Shipped `v0.7` | KV Cache Manager, CPU Swap Manager, MLFQ Scheduler |
+| [Month 4](planning/roadmap/months/month-04.md) | Agents as Processes | ✅ Shipped `v0.8` | Agent Plugin API, Fleet Registry, Event Pipeline |
+| [Month 5](planning/roadmap/months/month-05.md) | Control Plane | ✅ Shipped `v0.9` | Kubernetes CRDs, Fleet Operator, Network Bridge |
+| [Month 6](planning/roadmap/months/month-06.md) | V1.0 Release | ✅ Shipped `v1.0` | System Integration, `brain-top`, Benchmark Suite |
 
 ## Development
 

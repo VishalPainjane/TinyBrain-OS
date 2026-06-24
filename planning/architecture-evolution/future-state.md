@@ -13,6 +13,7 @@ Target end-state for TinyBrain OS. Not a commitment timeline — see [../roadmap
 - Dynamic model loading, unloading, warming, prefetching
 - MLFQ scheduler with VRAM-aware preemption and token-quantum time slices
 - KV hibernation across VRAM → RAM → NVMe memory tiers
+- KV cache compression pipeline
 - LRU eviction when VRAM exceeds threshold
 
 ## Plugin System

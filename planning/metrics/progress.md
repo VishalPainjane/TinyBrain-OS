@@ -12,7 +12,7 @@ Spec-level completion. Update when tasks complete or acceptance criteria are met
 | V0.6 Inference | 100% | Shipped | 2 | — |
 | V0.7 Scheduler | 100% | Shipped | 3 | — (tag `v0.7` @ `a0f90a7`) |
 | V0.8 Agents | 100% | Shipped | 4 | — (tag `v0.8` @ `a40b0fd`) |
-| V1.0 | 0% | Not Started | 6 | full integration |
+| V1.0 | 100% | Shipped | 6 | — |
 
 **Month 1 complete:** v0.1–v0.3 shipped together at git tag `v0.3` (single foundation release). Event core (003–004) delivered alongside registry foundation.
 

@@ -2,13 +2,13 @@
 
 ## Sprint
 
-**Name:** Month 6 — V1.0 Release
-**Goal:** Integrate all subsystems, polish brain-top, run benchmarks, ship v1.0 and M10.
-**Version:** v1.0
+**Name:** Month 7 — Advanced Subsystems
+**Goal:** KV Cache Compression, Cloud Providers, Full Kubernetes Deploy.
+**Version:** v1.1
 
 ## Current Task
 
-018-benchmark-suite
+(none)
 
 ## In Progress
 
@@ -18,19 +18,17 @@
 
 (none)
 
-## Done (Month 6)
+## Done (Month 7)
 
-- [x] 022-system-integration
-- [x] 023-brain-top-production
-- [x] 018-benchmark-suite
+(none)
 
 ## Next
 
-- Week 24 — Ship v1.0 and M10
+(none)
 
 ## Forbidden Work
 
-- New features — fix only
+(none)
 
 ## Active References
 

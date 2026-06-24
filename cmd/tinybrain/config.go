@@ -10,7 +10,7 @@ import (
 )
 
 // Version is the CLI release version (matches latest shipped tag).
-const Version = "0.8.0"
+const Version = "1.0.0"
 
 // dataDir returns the TinyBrain config directory (~/.tinybrain).
 func dataDir() string {

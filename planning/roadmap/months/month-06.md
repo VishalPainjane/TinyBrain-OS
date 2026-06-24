@@ -1,6 +1,6 @@
 # Month 6 — V1.0 Release (Week 21–24)
 
-**Status:** Planned
+**Status:** Complete
 **Month goal:** Integrate all subsystems, polish brain-top, run benchmarks, ship v1.0 and M10.
 **Versions targeted:** v1.0
 **Milestones targeted:** M10 (full swarm demo)
@@ -8,12 +8,12 @@
 
 ## Success criteria (month end)
 
-- [ ] v1.0 Integrated Runtime shipped
-- [ ] All v0.1–v0.8 acceptance criteria verified
-- [ ] brain-top production panels: agents, queues, VRAM/RAM, swaps
-- [ ] Benchmark: swarm vs monolith (TTFT, TPS, peak VRAM)
-- [ ] M10 demonstrated
-- [ ] README quick start commands accurate
+- [x] v1.0 Integrated Runtime shipped
+- [x] All v0.1–v0.8 acceptance criteria verified
+- [x] brain-top production panels: agents, queues, VRAM/RAM, swaps
+- [x] Benchmark: swarm vs monolith (TTFT, TPS, peak VRAM)
+- [x] M10 demonstrated
+- [x] README quick start commands accurate
 
 ---
 
@@ -109,7 +109,7 @@
 
 ## Month-end review
 
-**Planned vs actual:** _(fill when Month 6 closes)_
+**Planned vs actual:** Shipped v1.0 directly as planned. All acceptance criteria hit. Brain-top UI fully reflects multi-agent execution state. Benchmarks prove out event bus viability.
 
 **Post-v1.0:** KV compression pipeline, cloud providers, full K8s production deploy — track in backlog and RFCs.
 
