@@ -241,5 +241,17 @@ Append-only history. Never delete entries.
 **Outcome:** Success — Month 6 Week 21 transitioned, single binary workflow verified with complete event-driven scheduler -> runtime execution pipeline.
 **Files:** `planning/execution/current-sprint.md`, `docs/current.md`, `planning/architecture-evolution/current-state.md`, `tasks/022-system-integration.md`
 
+## 023-brain-top-production
+
+**Completed:** 2026-06-24
+**Outcome:** Success — Hardened BubbleTea TUI dashboard for production system monitoring.
+**Files:** `cmd/brain-top/`, `tasks/023-brain-top-production.md`
+
+## 018-benchmark-suite
+
+**Completed:** 2026-06-24
+**Outcome:** Success — Swarm vs monolith benchmark testbed for TTFT and TPS metrics.
+**Files:** `cmd/benchmark/`, `tasks/018-benchmark-suite.md`
+
 ---
 **Layer:** planning

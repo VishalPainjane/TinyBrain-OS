@@ -27,7 +27,14 @@ Task delivery: estimate vs actual. Add a row when a task starts; fill actual whe
 | 015-fleet-registry | 1 day | 1 day | 0 |
 | 016-event-pipeline | 2 days | 2 days | 0 |
 | 017-workflow-demo | 1 day | 1 day | 0 |
+| 018-k8s-crds | 1 day | 1 day | 0 |
+| 019-k8s-controllers-core | 2 days | 2 days | 0 |
+| 020-k8s-controllers-memory | 1 day | 1 day | 0 |
+| 021-k8s-operator-e2e | 1 day | 1 day | 0 |
+| 022-system-integration | 2 days | 2 days | 0 |
+| 023-brain-top-production | 2 days | 2 days | 0 |
+| 018-benchmark-suite | 2 days | 2 days | 0 |
 
 ---
 **Layer:** planning
-**Last updated:** 2026-06-08
+**Last updated:** 2026-06-24

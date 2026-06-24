@@ -4,25 +4,14 @@ Tasks not yet started or scheduled for future months. Active week plan: [roadmap
 
 | Priority | Task | Target month | Reason | Dependencies |
 |----------|------|--------------|--------|--------------|
-| HIGH | STAB-002-ci-observability | stabilization | CI timing/history via artifacts; cleanup complete in follow-up PR | STAB-001 merged |
-| MEDIUM | 011-kv-manager | 3 | KV save/load events | v0.7 MLFQ in progress |
-| MEDIUM | 012-swap-manager | 3 | VRAM→RAM tier movement | 011-kv-manager |
-| MEDIUM | 013-brain-top | 3 / 6 | Prototype Week 12; polish Week 22 | 010-scheduler |
-| MEDIUM | 014-agent-plugin | 4 | v0.8 agent contract | 008-runtime, 005 |
-| MEDIUM | tool-registry | TBD | v0.2 spec gap — no task yet | 005, 006 |
-| MEDIUM | 015-k8s-crds | 5 | M9 CRD schemas | v0.8 |
-| MEDIUM | 016-k8s-controllers-core | 5 | Agent + Task controllers | 015-k8s-crds |
-| MEDIUM | 017-k8s-controllers-memory | 5 | KVCache + SwapPolicy | 016-k8s-controllers-core |
-| LOW | 018-benchmark-suite | 6 | Swarm vs monolith report | v0.8 agents |
+| HIGH | 024-kv-compression | 7 | VRAM exhaustion protection | — |
+| HIGH | 025-cloud-providers | 7 | Fallback to OpenAI/Anthropic/vLLM | — |
+| MEDIUM | 026-k8s-production | 7 | Full fleet management in production | 018-021 |
 
-**Completed Month 1:** 001–007  
+**Completed Month 1–6:** 001–023, STAB-001–003
 
-**Completed Month 2 (adjacent):** 008–010, 006-registry-persistence, 009a–009d, STAB-001, STAB-002  
-
-**Next (sprint):** v0.6 tag prep — see [current-sprint.md](current-sprint.md)
-
-**Note:** 011-kv-manager was incorrectly listed as V0.5 active task; realigned 2026-06-08 per planning assessment.
+**Next (sprint):** Month 7 tasks — see [current-sprint.md](current-sprint.md)
 
 ---
 **Layer:** planning
-**Last updated:** 2026-06-10
+**Last updated:** 2026-06-24
