@@ -18,3 +18,19 @@ agents:
       memory_mb: 4096
       priority: 2
     priority: 5
+  - id: bench-monolith
+    name: "Benchmark Monolith"
+    model_profile: "llama-3-8b-monolith"
+    tools: []
+    resource_profile:
+      memory_mb: 8192
+      priority: 1
+    priority: 10
+  - id: bench-swarm-worker
+    name: "Benchmark Swarm Worker"
+    model_profile: "tinyllama-q4"
+    tools: []
+    resource_profile:
+      memory_mb: 2048
+      priority: 1
+    priority: 10

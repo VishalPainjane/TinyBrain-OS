@@ -8,7 +8,7 @@
 
 ## Current Task
 
-023-brain-top-production
+018-benchmark-suite
 
 ## In Progress
 
@@ -22,10 +22,10 @@
 
 - [x] 022-system-integration
 - [x] 023-brain-top-production
+- [x] 018-benchmark-suite
 
 ## Next
 
-- Week 23 — Benchmark suite
 - Week 24 — Ship v1.0 and M10
 
 ## Forbidden Work

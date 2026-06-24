@@ -6,3 +6,10 @@ models:
     quantization: Q4_K_M
     capabilities:
       - chat
+  - id: llama-3-8b-monolith
+    path: /models/llama-3-8b-monolith.gguf
+    size_bytes: 4637534208
+    memory_budget: 8147483648
+    quantization: Q4_K_M
+    capabilities:
+      - chat
