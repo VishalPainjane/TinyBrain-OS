@@ -37,16 +37,19 @@ func TestRenderSnapshot_ProcessesAndQueues(t *testing.T) {
 	}
 
 	var buf bytes.Buffer
-	renderSnapshot(&buf, "test", processTableReader{table: table}, mlfqQueueReader{sched: sched})
+	colorEnabled = false
+	defer func() { colorEnabled = true }()
+	renderSnapshot(&buf, "test", processTableReader{table: table}, mlfqQueueReader{sched: sched}, nil)
 	out := buf.String()
 
 	for _, want := range []string{
-		"brain-top test | snapshot",
-		"[Processes]",
+		"brain-top test",
+		"Processes",
 		"pid-a", "RUNNING",
 		"pid-b", "READY",
-		"[Queues]",
-		"[Resources]",
+		"MLFQ Queues",
+		"Resources",
+		"Swap Monitor",
 	} {
 		if !strings.Contains(out, want) {
 			t.Errorf("output missing %q\n%s", want, out)
@@ -57,15 +60,21 @@ func TestRenderSnapshot_ProcessesAndQueues(t *testing.T) {
 func TestRenderSnapshot_EmptyProcessTable(t *testing.T) {
 	t.Parallel()
 
+	colorEnabled = false
+	defer func() { colorEnabled = true }()
+
 	var buf bytes.Buffer
-	renderSnapshot(&buf, "test", processTableReader{table: process.NewProcessTable()}, nil)
-	if !strings.Contains(buf.String(), "(none)") {
+	renderSnapshot(&buf, "test", processTableReader{table: process.NewProcessTable()}, nil, nil)
+	if !strings.Contains(buf.String(), "(no processes)") {
 		t.Fatalf("expected empty process panel, got:\n%s", buf.String())
 	}
 }
 
 func TestRun_VersionAndSnapshot(t *testing.T) {
 	t.Parallel()
+
+	colorEnabled = false
+	defer func() { colorEnabled = true }()
 
 	var stdout bytes.Buffer
 	if code := run([]string{"version"}, &stdout, nil); code != 0 {
@@ -79,7 +88,87 @@ func TestRun_VersionAndSnapshot(t *testing.T) {
 	if code := run([]string{"snapshot"}, &stdout, nil); code != 0 {
 		t.Fatalf("run(snapshot) = %d", code)
 	}
-	if !strings.Contains(stdout.String(), "[Processes]") {
+	if !strings.Contains(stdout.String(), "Processes") {
 		t.Fatalf("snapshot output = %q", stdout.String())
+	}
+}
+
+func TestRun_HelpAndUnknown(t *testing.T) {
+	t.Parallel()
+
+	var stdout, stderr bytes.Buffer
+	if code := run([]string{"help"}, &stdout, &stderr); code != 0 {
+		t.Fatalf("run(help) = %d", code)
+	}
+	if !strings.Contains(stdout.String(), "Usage") {
+		t.Fatalf("help output missing Usage:\n%s", stdout.String())
+	}
+
+	stdout.Reset()
+	stderr.Reset()
+	if code := run([]string{"bogus"}, &stdout, &stderr); code != 2 {
+		t.Fatalf("run(bogus) = %d, want 2", code)
+	}
+	if !strings.Contains(stderr.String(), "unknown command") {
+		t.Fatalf("stderr = %q", stderr.String())
+	}
+}
+
+func TestRun_InvalidInterval(t *testing.T) {
+	t.Parallel()
+
+	var stdout, stderr bytes.Buffer
+
+	// Invalid duration.
+	if code := run([]string{"watch", "nope"}, &stdout, &stderr); code != 2 {
+		t.Fatalf("run(watch nope) = %d, want 2", code)
+	}
+
+	stderr.Reset()
+
+	// Too-short interval.
+	if code := run([]string{"watch", "50ms"}, &stdout, &stderr); code != 2 {
+		t.Fatalf("run(watch 50ms) = %d, want 2", code)
+	}
+	if !strings.Contains(stderr.String(), "200ms") {
+		t.Fatalf("stderr = %q", stderr.String())
+	}
+}
+
+func TestRenderSnapshot_AllFourPanels(t *testing.T) {
+	t.Parallel()
+
+	colorEnabled = false
+	defer func() { colorEnabled = true }()
+
+	var buf bytes.Buffer
+	renderSnapshot(&buf, "test", processTableReader{}, mlfqQueueReader{}, nil)
+	out := buf.String()
+
+	panels := []string{"Processes", "Resources", "MLFQ Queues", "Swap Monitor"}
+	for _, panel := range panels {
+		if !strings.Contains(out, panel) {
+			t.Errorf("output missing panel %q\n%s", panel, out)
+		}
+	}
+
+	// Verify box-drawing characters are present.
+	for _, ch := range []string{"┌", "┐", "└", "┘", "│"} {
+		if !strings.Contains(out, ch) {
+			t.Errorf("output missing box character %q", ch)
+		}
+	}
+}
+
+func TestRenderSnapshot_HeaderContainsVersion(t *testing.T) {
+	t.Parallel()
+
+	colorEnabled = false
+	defer func() { colorEnabled = true }()
+
+	var buf bytes.Buffer
+	renderSnapshot(&buf, "1.0.0", processTableReader{}, mlfqQueueReader{}, nil)
+	if !strings.Contains(buf.String(), "brain-top 1.0.0") {
+		t.Fatalf("header missing version:\n%s", buf.String())
 	}
 }

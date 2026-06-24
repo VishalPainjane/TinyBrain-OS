@@ -2,11 +2,11 @@
 
 **Version:** v1.0
 
-**Sprint:** Month 6 — V1.0 Release (Week 21)
+**Sprint:** Month 6 — V1.0 Release (Week 22)
 
-**Task:** 022-system-integration
+**Task:** 023-brain-top-production
 
-**Shipped on main (post-v0.8 tag):** Kubernetes CRDs (018), Agent/Task Controllers (019), Memory Controllers (020), System Integration (022)
+**Shipped on main (post-v0.8 tag):** Kubernetes CRDs (018), Agent/Task Controllers (019), Memory Controllers (020), System Integration (022), brain-top production (023)
 
 **Post-v0.6 shell:** `cmd/tinybrain` shipped; `cmd/brain-top` prototype added (013)
 

@@ -8,11 +8,11 @@
 
 ## Current Task
 
-022-system-integration
+023-brain-top-production
 
 ## In Progress
 
-- [ ] 022-system-integration
+(none)
 
 ## Blocked
 
@@ -20,11 +20,11 @@
 
 ## Done (Month 6)
 
-(none)
+- [x] 022-system-integration
+- [x] 023-brain-top-production
 
 ## Next
 
-- Week 22 — brain-top production
 - Week 23 — Benchmark suite
 - Week 24 — Ship v1.0 and M10
 

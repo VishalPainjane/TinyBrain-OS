@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/VishalPainjane/TinyBrain-OS/internal/agents"
@@ -52,6 +53,13 @@ func runWorkflow(args []string, stdout, stderr io.Writer) int {
 	}
 	defer reg.Close()
 
+	if err := registry.LoadModelsYAML(filepath.Join("testdata", "models.yaml"), reg); err != nil {
+		if !strings.Contains(err.Error(), "duplicate id") && !strings.Contains(err.Error(), "duplicate ID") {
+			fmt.Fprintf(stderr, "load models: %v\n", err)
+			return 1
+		}
+	}
+
 	areg := registry.NewAgentRegistry()
 	if err := registry.LoadAgentsYAML(filepath.Join("testdata", "fleet.yaml"), areg); err != nil {
 		fmt.Fprintf(stderr, "load fleet: %v\n", err)
@@ -71,6 +79,12 @@ func runWorkflow(args []string, stdout, stderr io.Writer) int {
 
 	rt := runtime.NewIntegratedModelRuntime(provider, ld, resolver, bus)
 
+	if err := rt.LoadModel("tinyllama-q4"); err != nil {
+		fmt.Fprintf(stderr, "error: load model: %v\n", err)
+		return 1
+	}
+	defer rt.UnloadModel("tinyllama-q4")
+
 	ptab := process.NewProcessTable()
 	queue := scheduler.NewMLFQQueue()
 	sched := scheduler.NewMLFQScheduler(ptab, queue)
@@ -84,81 +98,47 @@ func runWorkflow(args []string, stdout, stderr io.Writer) int {
 	rtr := router.NewRouter(bus, areg, ptab)
 	defer rtr.Stop()
 
-	fmt.Fprintf(stderr, "TinyBrain %s | two-agent workflow profile=%s backend=%s\n",
+	fmt.Fprintf(stderr, "TinyBrain %s | workflow profile=%s backend=%s\n",
 		Version, profile.Name, profile.Probe.Backend)
 
-	done1 := make(chan string)
-	done2 := make(chan string)
+	done := make(chan string)
 	
-	task1ID := fmt.Sprintf("task-planner-%d", time.Now().UnixNano())
-	task2ID := fmt.Sprintf("task-coder-%d", time.Now().UnixNano())
+	taskID := fmt.Sprintf("task-%d", time.Now().UnixNano())
 
 	// Trace events
 	bus.Subscribe(events.TypeTaskCompleted, func(ev events.Event) {
 		payload := ev.Payload.(events.TaskCompletedPayload)
-		if payload.TaskID == task1ID {
-			fmt.Fprintln(stderr, "-> Event: Planner TaskCompleted")
-			done1 <- payload.Result
-		} else if payload.TaskID == task2ID {
-			fmt.Fprintln(stderr, "-> Event: Coder TaskCompleted")
-			done2 <- payload.Result
+		if payload.TaskID == taskID {
+			fmt.Fprintln(stderr, "-> Event: TaskCompleted")
+			done <- payload.Result
 		}
 	})
 
-	// Submit task 1 (Planner)
-	fmt.Fprintln(stderr, "--- Submitting to sample-alpha (Planner) ---")
+	// Submit task
+	fmt.Fprintln(stderr, "--- Submitting task ---")
 	bus.Publish(events.NewEvent(events.TypeTaskCreated, events.TaskCreatedPayload{
-		TaskID:  task1ID,
+		TaskID:  taskID,
 		Input:   *prompt,
 		AgentID: "sample-alpha",
 	}, time.Now()))
 
-	var plannerResult string
+	var result string
 	select {
-	case plannerResult = <-done1:
+	case result = <-done:
 	case <-time.After(5 * time.Minute):
-		fmt.Fprintln(stderr, "error: planner task timed out")
+		fmt.Fprintln(stderr, "error: task timed out")
 		return 1
 	}
 
-	// Extract generated text from Planner's structured JSON
-	var parsed1 struct {
+	// Extract generated text from structured JSON if possible
+	var parsed struct {
 		Text string `json:"text"`
 	}
-	if err := json.Unmarshal([]byte(plannerResult), &parsed1); err != nil {
-		fmt.Fprintf(stderr, "warning: planner output not valid JSON: %v\n", err)
-		parsed1.Text = plannerResult
+	if err := json.Unmarshal([]byte(result), &parsed); err != nil || parsed.Text == "" {
+		parsed.Text = result
 	}
 
-	fmt.Fprintf(stderr, "\n[Planner Output]\n%s\n\n", parsed1.Text)
-
-	// Submit task 2 (Coder) using planner's output
-	coderPrompt := fmt.Sprintf("Based on the following plan, write the code:\n%s", parsed1.Text)
-	fmt.Fprintln(stderr, "--- Submitting to sample-beta (Coder) ---")
-	bus.Publish(events.NewEvent(events.TypeTaskCreated, events.TaskCreatedPayload{
-		TaskID:  task2ID,
-		Input:   coderPrompt,
-		AgentID: "sample-beta",
-	}, time.Now()))
-
-	var coderResult string
-	select {
-	case coderResult = <-done2:
-	case <-time.After(5 * time.Minute):
-		fmt.Fprintln(stderr, "error: coder task timed out")
-		return 1
-	}
-
-	// Extract generated text from Coder's structured JSON
-	var parsed2 struct {
-		Text string `json:"text"`
-	}
-	if err := json.Unmarshal([]byte(coderResult), &parsed2); err != nil {
-		fmt.Fprintf(stderr, "warning: coder output not valid JSON: %v\n", err)
-		parsed2.Text = coderResult
-	}
-
-	fmt.Fprintf(stdout, "\n[Final Output]\n%s\n", parsed2.Text)
+	fmt.Fprintf(stdout, "\n[Final Output]\n%s\n", parsed.Text)
 
 	return 0
 }

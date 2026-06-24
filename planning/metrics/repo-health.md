@@ -12,14 +12,15 @@ Trust and verification status for solo development. Update at task completion an
 | Field | Value |
 |-------|-------|
 | Last shipped tag | `v0.8` |
-| Sprint | Month 5 — Platform Extension |
-| Active task | (none) — Month 5 completed |
+| Sprint | Month 6 — V1.0 Release |
+| Active task | 022-system-integration |
 | `main` | `f93549e` |
 | Tag `v0.8` | `a40b0fd` |
 | Tag `v0.7` | `a0f90a7` |
 | Tag `v0.6` | `da826f0` |
 | `go test ./...` (local) | Pass (`CGO_ENABLED=0`, 2026-06-24) |
 | Boundary tests | `tests/import_boundary_test.go` — INV-001, INV-002, INV-008 |
+| Deep-Dive Audit | Pristine (2026-06-24) |
 
 ---
 
@@ -76,4 +77,4 @@ Fixture docs: [testdata/ci/README.md](../../testdata/ci/README.md)
 ---
 
 **Layer:** planning  
-**Last updated:** 2026-06-11
+**Last updated:** 2026-06-24

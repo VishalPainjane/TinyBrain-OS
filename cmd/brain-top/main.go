@@ -1,15 +1,19 @@
-// Command brain-top is a read-only terminal dashboard prototype for TinyBrain OS.
+// Command brain-top is a read-only terminal dashboard for TinyBrain OS.
+// It displays four panels: process states, resource utilization, MLFQ queue
+// depths, and swap monitor activity.
+// See docs/architecture/telemetry.md and tasks/023-brain-top-production.md.
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
 	"time"
 )
 
-// Version tracks the brain-top prototype release line.
-const Version = "0.1.0-proto"
+// Version tracks the brain-top release line.
+const Version = "1.0.0"
 
 func main() {
 	os.Exit(run(os.Args[1:], os.Stdout, os.Stderr))
@@ -18,6 +22,11 @@ func main() {
 func run(args []string, stdout, stderr io.Writer) int {
 	interval := time.Second
 	once := true
+
+	// Check NO_COLOR environment variable.
+	if os.Getenv("NO_COLOR") != "" {
+		colorEnabled = false
+	}
 
 	if len(args) > 0 {
 		switch args[0] {
@@ -52,33 +61,55 @@ func run(args []string, stdout, stderr io.Writer) int {
 
 	procs := processTableReader{}
 	queues := mlfqQueueReader{}
+	var swaps SwapReader // nil — no swap events until wired to live kernel
 
 	if once {
-		renderSnapshot(stdout, Version, procs, queues)
+		renderSnapshot(stdout, Version, procs, queues, swaps)
 		return 0
 	}
 
+	// Watch mode with graceful shutdown.
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	watchSignals(cancel)
+
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	// Render immediately, then on each tick.
+	clearScreen(stdout)
+	renderSnapshot(stdout, Version, procs, queues, swaps)
+
 	for {
-		clearScreen(stdout)
-		renderSnapshot(stdout, Version, procs, queues)
-		time.Sleep(interval)
+		select {
+		case <-ctx.Done():
+			fmt.Fprintln(stdout, "\nbrain-top: shutting down")
+			return 0
+		case <-ticker.C:
+			clearScreen(stdout)
+			renderSnapshot(stdout, Version, procs, queues, swaps)
+		}
 	}
 }
 
 func printUsage(w io.Writer) {
-	fmt.Fprintf(w, `brain-top %s — read-only process and queue dashboard (prototype)
+	fmt.Fprintf(w, `brain-top %s — TinyBrain OS process and resource dashboard
 
 Usage:
-  brain-top [snapshot]
-  brain-top watch [interval]
+  brain-top [snapshot]     One-shot dashboard render (default)
+  brain-top watch [interval]  Live refresh (default 1s, minimum 200ms)
+  brain-top version        Print version
+  brain-top help           Print this help
 
 Examples:
-  brain-top
-  brain-top watch 1s
+  brain-top                Snapshot of current state
+  brain-top watch          Live dashboard, 1s refresh
+  brain-top watch 500ms    Live dashboard, 500ms refresh
 
-Notes:
-  Prototype renders empty process/queue panels unless wired to a live kernel.
-  Does not mutate scheduler or runtime state.
+Environment:
+  NO_COLOR=1    Disable ANSI colours
+
+Press Ctrl+C to exit watch mode.
 
 `, Version)
 }

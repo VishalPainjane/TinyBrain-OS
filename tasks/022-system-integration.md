@@ -21,7 +21,7 @@ Month 6, Week 21 marks the integration of all prior tasks into a single v1.0 pip
 
 ## Acceptance Criteria
 
-- [ ] `go run cmd/tinybrain/main.go workflow --prompt "test"` succeeds end-to-end.
+- [ ] `go run ./cmd/tinybrain workflow --prompt "test"` succeeds end-to-end.
 - [ ] `go test ./...` passes (with `CGO_ENABLED=0`).
 - [ ] `tests/import_boundary_test.go` passes.
 - [ ] Documentation updated to reflect completion of wiring.
