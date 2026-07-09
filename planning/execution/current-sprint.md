@@ -2,9 +2,9 @@
 
 ## Sprint
 
-**Name:** Month 7 — Advanced Subsystems
+**Name:** Month 7 — Advanced Subsystems (CLOSED)
 **Goal:** KV Cache Compression, Cloud Providers, Full Kubernetes Deploy.
-**Version:** v1.1
+**Version:** v1.1 Released
 
 ## Current Task
 
@@ -20,7 +20,13 @@
 
 ## Done (Month 7)
 
-(none)
+- `tinybrain models pull` command to download and register models from CLI
+- Bbolt registry concurrency fallback (read-only copy on lock)
+- Scheduler Cancellation & Disconnect Hardening (Memory Leak fixes)
+- Track 1: OpenAI API Compatibility (`/v1/chat/completions`)
+- Track 3: Continuous Prefix Caching
+- 024 KV Compression Pipeline (Zstandard simulated data plane)
+- 026 Kubernetes Production Deploy (Helm charts / Kustomize)
 
 ## Next
 
@@ -32,9 +38,9 @@
 
 ## Active References
 
-- [planning/roadmap/months/month-05.md](../roadmap/months/month-05.md) (closed)
-- [planning/roadmap/months/month-06.md](../roadmap/months/month-06.md)
+- [planning/roadmap/months/month-06.md](../roadmap/months/month-06.md) (closed)
+- [planning/roadmap/months/month-07.md](../roadmap/months/month-07.md)
 
 ---
 **Layer:** planning
-**Last updated:** 2026-06-24
+**Last updated:** 2026-07-09

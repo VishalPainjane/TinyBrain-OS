@@ -1,4 +1,4 @@
-//go:build windows && cgo && !cuda
+//go:build windows && cgo
 
 // Package llama — Windows provider backend selector.
 //

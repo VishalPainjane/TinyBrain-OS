@@ -52,9 +52,9 @@ func (b *cgoBackend) formatChat(modelID string, messages []runtime.ChatMessage, 
 }
 
 func (b *cgoBackend) saveContext(modelID, ctxID string) error {
-	return fmt.Errorf("saveContext not implemented for static CGO backend")
+	return fmt.Errorf("%w: saveContext not implemented for static CGO backend", ErrNotImplemented)
 }
 
 func (b *cgoBackend) restoreContext(modelID, ctxID string) error {
-	return fmt.Errorf("restoreContext not implemented for static CGO backend")
+	return fmt.Errorf("%w: restoreContext not implemented for static CGO backend", ErrNotImplemented)
 }

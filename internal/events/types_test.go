@@ -31,8 +31,8 @@ func TestNewEvent(t *testing.T) {
 
 func TestAllTypes_ContainsCoreEvents(t *testing.T) {
 	types := events.AllTypes()
-	if len(types) != 13 {
-		t.Fatalf("AllTypes() len = %d, want 13", len(types))
+	if len(types) != 15 {
+		t.Fatalf("AllTypes() len = %d, want 15", len(types))
 	}
 
 	want := map[events.Type]bool{
@@ -48,6 +48,8 @@ func TestAllTypes_ContainsCoreEvents(t *testing.T) {
 		events.TypeSwapCompleted:       true,
 		events.TypeKVStored:            true,
 		events.TypeKVLoaded:            true,
+		events.TypeKVCompressed:        true,
+		events.TypeKVDecompressed:      true,
 		events.TypeTaskCompleted:       true,
 	}
 

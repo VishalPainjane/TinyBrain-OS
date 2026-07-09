@@ -2,14 +2,20 @@ package api_test
 
 import (
 	"fmt"
-	"testing"
+	"os"
 	"path/filepath"
+	"testing"
+
 	"github.com/sugarme/tokenizer/pretrained"
 )
 
 func TestTokenizerAlignmentTruth(t *testing.T) {
 	// Adjust path since tests run in internal/api directory
 	tokenizerPath := filepath.Join("..", "..", "models", "tinyllama", "tokenizer.json")
+	if _, err := os.Stat(tokenizerPath); os.IsNotExist(err) {
+		t.Skipf("Skipping test: tokenizer not found at %s", tokenizerPath)
+	}
+
 	tk, err := pretrained.FromFile(tokenizerPath)
 	if err != nil {
 		t.Fatalf("Failed to load tokenizer from %s: %v", tokenizerPath, err)
