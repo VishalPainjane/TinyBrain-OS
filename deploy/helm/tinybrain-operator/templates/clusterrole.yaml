@@ -1,0 +1,21 @@
+{{- if .Values.rbac.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "tinybrain-operator.fullname" . }}
+  labels:
+    {{- include "tinybrain-operator.labels" . | nindent 4 }}
+rules:
+- apiGroups: ["core.tinybrain.io"]
+  resources: ["agents", "tasks"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: ["memory.tinybrain.io"]
+  resources: ["kvcaches", "swappolicies"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+- apiGroups: ["coordination.k8s.io"]
+  resources: ["leases"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+{{- end }}

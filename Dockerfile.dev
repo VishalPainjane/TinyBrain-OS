@@ -1,0 +1,26 @@
+FROM nvidia/cuda:12.2.2-devel-ubuntu22.04
+
+# Avoid interactive prompts during apt installations
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies and C/C++ build tools (provides gcc and g++)
+RUN apt-get update && apt-get install -y \
+    wget \
+    git \
+    build-essential \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Go (using v1.22 as it matches the project baseline)
+ENV GO_VERSION=1.22.4
+RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz && \
+    rm go${GO_VERSION}.linux-amd64.tar.gz
+
+# Add Go to PATH
+ENV PATH="/usr/local/go/bin:${PATH}"
+
+# Explicitly enable CGO for compiling the C++ Dummy Backend and future CUDA extensions
+ENV CGO_ENABLED=1
+
+WORKDIR /app
