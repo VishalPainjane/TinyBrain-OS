@@ -13,13 +13,23 @@ Observability layer for TinyBrain OS. Most student projects skip this — TinyBr
 
 | Metric | Description |
 |--------|-------------|
-| agent_load_time | Model load duration |
-| agent_unload_time | Model unload duration |
-| swap_time | Tier movement latency |
-| queue_wait_time | Time in queue before execution |
-| vram_usage / ram_usage | Resource utilization |
-| tokens_per_second | Inference throughput |
-| ttft | Time to first token |
+| agent_load_time | Model load duration (Time to pin weights) |
+| queue_wait_time | Time in queue before execution starts |
+| ttft | Time to First Token (measures startup/prefill overhead) |
+| itl | Inter-Token Latency (measures true decode generation latency) |
+| sustained_decode_throughput | True decoding tokens/sec during continuous batching |
+| tail_latency | P95/P99 latency for both TTFT and ITL |
+| prompt_length | Number of tokens in the prefill prompt |
+| generated_length | Number of tokens produced in the decode phase |
+| batch_size | Number of active sequences in the batch at each iteration |
+| prefill_decode_split | Ratio of GPU time spent on prefill vs decode |
+| cancellation_rate | Rate of sequences aborted before completion |
+| oom_retry_count | Count of Out-Of-Memory errors and sequence retries |
+| kv_cache_hit_rate | Ratio of prompt tokens avoiding recomputation |
+| kv_cache_eviction_rate | Rate of KV block eviction to RAM swap |
+| gpu_utilization | Real GPU compute saturation vs memory bandwidth wait |
+| vram_usage / ram_usage | Paged memory block resource utilization |
+| swap_time | Tier movement latency (`cudaMemcpyAsync`) |
 
 ## brain-top TUI (future)
 

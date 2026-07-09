@@ -9,7 +9,7 @@ Canonical model lifecycle across runtime, loader, and inference adapter.
 
 ## 1. Canonical Model Lifecycle
 
-Six states apply to **model weight / inference context** residency. These names are fixed across all packages.
+Six states apply to **resident model weight** residency. These names are fixed across all packages. Note that in TinyBrain OS v2, the model weights are decoupled from the sequence execution context (KV Cache).
 
 | State | Meaning |
 |-------|---------|
@@ -20,7 +20,7 @@ Six states apply to **model weight / inference context** residency. These names 
 | `UNLOADING` | Teardown in progress (context free, unmap) |
 | `UNLOADED` | Fully evicted; may transition to `NOT_LOADED` or `LOADING` on next load |
 
-**Not model lifecycle:** process states (`NEW`, `READY`, `RUNNING`, …) in `internal/process/` — independent subsystem.
+**Sequence Lifecycle:** process states (`NEW`, `READY`, `RUNNING`, `PREEMPTED`, `HIBERNATED`, …) in `internal/process/` apply to the individual request sequences (KV Caches), not the model weights. This is an independent subsystem managed by the sequence scheduler.
 
 ```text
 NOT_LOADED ──Load──► LOADING ──success──► ACTIVE ◄──Warm──┐

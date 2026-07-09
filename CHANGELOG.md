@@ -17,6 +17,23 @@ Release process: [planning/releases/RELEASE-CHECKLIST.md](planning/releases/RELE
 
 ---
 
+## [1.1.0] - 2026-07-09
+
+Tag: `v1.1` — Advanced Subsystems and Production Maturity. Details: [planning/releases/v1.1.md](planning/releases/v1.1.md).
+
+### Added
+- Zero-copy Continuous Prefix Caching via RadixAttention (`internal/scheduler/v2`).
+- KV Cache Compression Pipeline using Zstandard (`internal/kv`).
+- Production Kubernetes Helm chart for TinyBrain Operator (`deploy/helm/tinybrain-operator`).
+- OpenAI API Compatibility (`/v1/chat/completions`) with Server-Sent Events (SSE).
+- `tinybrain models pull` command.
+
+### Fixed
+- Fixed concurrency memory leaks and crashes during HTTP client disconnects by wrapping state mutations in `CancelChan`.
+- Fallback logic for Bbolt registry to use read-only mode during locks.
+
+---
+
 ## [0.7.0] - 2026-06-23
 
 Tag: `v0.7` — MLFQ scheduler and Memory subsystems release. Details: [planning/releases/v0.7.md](planning/releases/v0.7.md).
@@ -75,7 +92,9 @@ Tag: `v0.3` — Foundation release: kernel (v0.1), registry/events (v0.2), hardw
 
 ---
 
-[Unreleased]: https://github.com/VishalPainjane/TinyBrain-OS/compare/v0.6...HEAD
+[Unreleased]: https://github.com/VishalPainjane/TinyBrain-OS/compare/v1.1...HEAD
+[1.1.0]: https://github.com/VishalPainjane/TinyBrain-OS/releases/tag/v1.1
+[0.7.0]: https://github.com/VishalPainjane/TinyBrain-OS/releases/tag/v0.7
 [0.6.0]: https://github.com/VishalPainjane/TinyBrain-OS/releases/tag/v0.6
 [0.5.0]: https://github.com/VishalPainjane/TinyBrain-OS/releases/tag/v0.5
 [0.4.0]: https://github.com/VishalPainjane/TinyBrain-OS/releases/tag/v0.4

@@ -58,7 +58,7 @@ Model definitions may be stored in memory or in a bbolt file. Agent definitions 
 | `ModelRegistry` | `NewModelRegistry()` | `InMemoryStore` |
 | `ModelRegistry` | `NewBboltModelRegistry(dbPath, seedPath)` | `BboltStore` (`go.etcd.io/bbolt`) |
 | `InMemoryStore` | `NewInMemoryStore()` | Mutex-protected map |
-| `BboltStore` | `NewBboltStore(path)` | bbolt bucket `models`; key = model ID; value = gob-encoded `ModelDefinition` |
+| `BboltStore` | `NewBboltStore(path)` | bbolt bucket `models`; key = model ID; value = gob-encoded `ModelDefinition`. Uses a temporary copy for read-only access if the file is locked by the daemon. |
 
 `LoadModelsYAML(path, store)` registers models from a seed file into any `ModelStore`. When used via `NewBboltModelRegistry`, seed loads **only if the store is empty**; no hot reload.
 

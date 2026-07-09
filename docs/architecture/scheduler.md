@@ -1,14 +1,15 @@
 # Scheduler
 
-The scheduler is the control center of TinyBrain OS. Its primary job is managing **VRAM budget** and process execution order — not scheduling agents as abstract concepts.
+The scheduler is the control center of TinyBrain OS. Its primary job is managing **VRAM budget** and **sequence execution order** (continuous batching) — not scheduling agents as abstract concepts, and not swapping entire models.
 
 ## Responsibilities
 
 - Queue management (FIFO skeleton → MLFQ at v0.7)
+- Admission Control (checking sequence limits before admitting to the active batch)
+- Iteration-Level Scheduling (deciding which sequences fill the active batch per forward pass)
 - Priority assignment and preemption
 - Fairness, aging, starvation prevention
-- Delegating model operations to runtime (never calling inference directly)
-- Swap heuristic decisions (idle > 10s before swap)
+- Swap heuristic decisions (KV Cache eviction, never model eviction)
 
 ## MLFQ Design (v0.7 target)
 
@@ -19,15 +20,16 @@ The scheduler is the control center of TinyBrain OS. Its primary job is managing
 | Q2 | | 128 tokens |
 | Q3 | Lowest | 256 tokens |
 
-Scheduling loop runs per token generated. Quantum exceeded → demote to lower queue. Boost all queues periodically (every 30s or 500 tokens) to prevent starvation.
+**Iteration-Level Scheduling (Continuous/In-Flight Batching):**
+The scheduling loop runs at the iteration boundary (after every token generated). Requests do not run to completion uninterrupted. After each forward pass, the scheduler checks the queue, ejects completed sequences, and admits new sequences into the active batch mid-flight to avoid generation stragglers. Quantum exceeded → sequence paused, demote to lower queue. Boost all queues periodically to prevent starvation.
 
 ## Preemption
 
-Higher-priority work can interrupt lower-priority running processes. Preempted process → PREEMPTED state; KV may be preserved.
+Higher-priority work can interrupt lower-priority active sequences. We frame preemption at the **output-token boundary**, not as a CPU-style process switch. When preempted, the sequence enters the PREEMPTED state, and the context switch is handled by evicting the lower-priority sequence's KV Cache blocks to host RAM (or spilling), allowing the high-priority sequence to allocate VRAM blocks.
 
 ## Swap Heuristic
 
-Never swap immediately on pause. If idle > 10 seconds → swap to lower tier. Otherwise keep warm. Reduces thrashing.
+Never swap KV cache immediately on pause. If a sequence is idle > 10 seconds → swap to lower tier (RAM). Otherwise keep warm. The model weights themselves are never swapped as part of preemption. Reduces thrashing.
 
 ## Inputs
 
@@ -47,7 +49,7 @@ InferenceProvider, llama.cpp, registry writes, UI.
 
 ## Future Plans
 
-Full MLFQ with token quanta; VRAM threshold policies; SwapPolicy CRD integration (Kubernetes).
+Full MLFQ with token quanta; Continuous Batching implementation; Chunked Prefill (Prefill/Decode disaggregation) policies; VRAM threshold policies; SwapPolicy CRD integration.
 
 ## Non-Goals
 
@@ -60,6 +62,7 @@ Model loading implementation; agent execution logic; inference.
 ## Related ADRs
 
 ADR-003, accepted decision (FIFO first)
+ADR-008 (Iteration-level scheduling and paged memory)
 
 ---
 **Layer:** architecture

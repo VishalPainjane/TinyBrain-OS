@@ -13,3 +13,11 @@ models:
     quantization: Q4_K_M
     capabilities:
       - chat
+  - id: starcoder-q8
+    path: /models/starcoder-q8.gguf
+    size_bytes: 2200000000
+    memory_budget: 4147483648
+    quantization: Q8_0
+    capabilities:
+      - code
+

@@ -27,12 +27,43 @@ Models (GGUF)
 5. Agent plugin produces structured JSON output.
 6. Telemetry records metrics; resources are released when done.
 
+## TinyBrain OS v2 Architectural Specification
+
+To support Iteration-Level Scheduling and Paged Memory, the architecture is decoupled into a clear Control Plane and Data Plane:
+
+```text
+                  +---------------------------------------+
+                  |             CONTROL PLANE             |
+                  |  [Request Ingest] -> [MLFQ Queue]     |
+                  +-------------------+-------------------+
+                                      | (Token Boundary Decisions)
+                                      v
+                  +---------------------------------------+
+                  |              DATA PLANE               |
+                  |  +---------------------------------+  |
+                  |  | Persistent Inference Daemon     |  |
+                  |  | (Weights Pinned in VRAM)        |  |
+                  |  +---------------------------------+  |
+                  |  | Paged KV-Cache Memory Allocator |  |
+                  |  | [VRAM Blocks] <-> [Host RAM]    |  |
+                  |  +---------------------------------+  |
+                  +---------------------------------------+
+```
+
+### The Control Plane (Go / Engine Orchestration)
+- **Admission Controller**: Receives `TaskCreated` events. Validates token budgets and registers sequence IDs.
+- **MLFQ Iteration Scheduler**: Manages a pool of active sequences. Every iteration, it constructs an array of sequence pointers up to `MaxBatchSize` to pass to the engine backend.
+
+### The Data Plane (CGO / CUDA Backend)
+- **Resident Model Worker**: Loads the quantized model once during boot. Exposes an iterative execution function: `ExecuteIteration(Batch* batch)`.
+- **Block Memory Manager**: Manages a fixed array of pre-allocated VRAM blocks. Tracks block lifespans, allocations, and coordinates asynchronous host-to-device memory transfers (`cudaMemcpyAsync`) during context swaps.
+
 ## Main Layers
 
 | Layer | Responsibility |
 |-------|----------------|
 | Interface | Entry point — REST/gRPC API, status, streaming |
-| Router | Task classification → agent capability selection |
+| Router | Task classification, applies model-specific chat templates before dispatch, agent selection |
 | Scheduler | Order, priority, preemption, fairness, VRAM budget |
 | Runtime | Model lifecycle, generate, context save/restore |
 | Registry | Agent, model, tool definitions |
@@ -91,7 +122,7 @@ This document does not define interfaces (see contracts/) or implementation (see
 
 ## Related ADRs
 
-ADR-001, ADR-002, ADR-003, ADR-004, ADR-005
+ADR-001, ADR-002, ADR-003, ADR-004, ADR-005, ADR-008
 
 ---
 **Layer:** architecture

@@ -1,13 +1,14 @@
 # Kernel
 
-The kernel is the foundation of TinyBrain OS. It provides the process abstraction — the OS analogue for agent execution.
+The kernel is the foundation of TinyBrain OS. It provides the process abstraction — the OS analogue for agent execution. In TinyBrain OS v2, a "Process" is redefined: it is **not** the model executable, but the **mutable execution context (KV Cache)** and decoding progress of a request sequence. The model weights are treated as a persistent, resident service (the Data Plane).
 
 ## Responsibilities
 
-- Define process lifecycle states (ProcessState)
-- Maintain the process table (PID → process metadata)
-- Track state, priority, memory usage, KV cache references
+- Define process lifecycle states (sequence state, not model state)
+- Maintain the process table (PID → sequence context metadata)
+- Track state, priority, memory usage (Paged VRAM blocks), KV cache references
 - Support boot phases: hardware detection → capability classification → agent mapping (future)
+- **Resident Model Worker**: Host the persistent inference engine (weights) in VRAM as a persistent worker / resident model service, entirely separating TTFT (Time-To-First-Token) cold boot latency from true sequence generation throughput (Inter-Token Latency). Tasks (sequences) are processed iteratively against the loaded resident model.
 
 ## Process Lifecycle States
 
@@ -74,6 +75,8 @@ Scheduling policy (scheduler owns transitions logic); model loading (runtime own
 ## Related ADRs
 
 ADR-003 (event-driven core)
+ADR-007 (daemonized inference engine)
+ADR-008 (iteration-level scheduling and paged memory)
 
 ---
 **Layer:** architecture
