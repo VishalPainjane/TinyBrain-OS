@@ -31,9 +31,10 @@ func (t Tier) String() string {
 
 // Block is a tracked KV cache block in the pool.
 type Block struct {
-	KVCacheID  string
-	PID        string
-	SizeBytes  uint64
-	Tier       Tier
-	LastAccess time.Time
+	KVCacheID           string
+	PID                 string
+	SizeBytes           uint64
+	CompressedSizeBytes uint64
+	Tier                Tier
+	LastAccess          time.Time
 }

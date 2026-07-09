@@ -1,12 +1,14 @@
 package kv
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"sync"
 	"time"
 
 	"github.com/VishalPainjane/TinyBrain-OS/internal/events"
+	"github.com/klauspost/compress/zstd"
 )
 
 var (
@@ -32,18 +34,28 @@ type Manager interface {
 // StubManager is an in-memory KV block pool that emits KVStored/KVLoaded events.
 // Real llama.cpp export is deferred; Save/Load update tier metadata only.
 type StubManager struct {
-	mu     sync.Mutex
-	blocks map[string]Block
-	bus    events.EventBus
-	now    func() time.Time
+	mu       sync.Mutex
+	blocks   map[string]Block
+	ramCache map[string][]byte // simulates TierRAM physical storage
+	bus      events.EventBus
+	now      func() time.Time
+	
+	encoder *zstd.Encoder
+	decoder *zstd.Decoder
 }
 
 // NewStubManager returns a stub KV manager backed by bus for lifecycle events.
 func NewStubManager(bus events.EventBus) *StubManager {
+	enc, _ := zstd.NewWriter(nil)
+	dec, _ := zstd.NewReader(nil)
+	
 	return &StubManager{
-		blocks: make(map[string]Block),
-		bus:    bus,
-		now:    time.Now,
+		blocks:   make(map[string]Block),
+		ramCache: make(map[string][]byte),
+		bus:      bus,
+		now:      time.Now,
+		encoder:  enc,
+		decoder:  dec,
 	}
 }
 
@@ -153,9 +165,36 @@ func (m *StubManager) saveLocked(kvCacheID string) (Block, error) {
 		return Block{}, fmt.Errorf("%w: save requires VRAM, got %s", ErrInvalidTier, block.Tier)
 	}
 
+	// 1. Simulate VRAM physical memory extraction
+	// We create a dummy tensor block. Repeating pattern compresses well.
+	dummyTensor := bytes.Repeat([]byte("tensor_data_"), int(block.SizeBytes/12)+1)
+	if len(dummyTensor) > int(block.SizeBytes) {
+		dummyTensor = dummyTensor[:block.SizeBytes]
+	}
+
+	start := m.now()
+
+	// 2. Compress the block using Zstandard
+	compressed := m.encoder.EncodeAll(dummyTensor, make([]byte, 0, len(dummyTensor)))
+
+	latency := m.now().Sub(start).Milliseconds()
+	ratio := float64(len(dummyTensor)) / float64(len(compressed))
+
+	// 3. Store in RAM cache simulation
+	m.ramCache[kvCacheID] = compressed
+
 	block.Tier = TierRAM
+	block.CompressedSizeBytes = uint64(len(compressed))
 	block.LastAccess = m.now()
 	m.blocks[kvCacheID] = block
+	
+	// Emit telemetry
+	m.publish(events.TypeKVCompressed, events.KVCompressedPayload{
+		KVCacheID:        block.KVCacheID,
+		CompressionRatio: ratio,
+		LatencyMs:        latency,
+	})
+
 	return block, nil
 }
 
@@ -168,9 +207,40 @@ func (m *StubManager) loadLocked(kvCacheID string) (Block, error) {
 		return Block{}, fmt.Errorf("%w: load requires RAM, got %s", ErrInvalidTier, block.Tier)
 	}
 
+	compressed, ok := m.ramCache[kvCacheID]
+	if !ok {
+		return Block{}, fmt.Errorf("physical RAM cache missing for block %s", kvCacheID)
+	}
+
+	start := m.now()
+
+	// 1. Decompress from RAM
+	decompressed, err := m.decoder.DecodeAll(compressed, nil)
+	if err != nil {
+		return Block{}, fmt.Errorf("failed to decompress block: %w", err)
+	}
+	
+	// Ensure sizes match logic
+	if uint64(len(decompressed)) != block.SizeBytes {
+		// Log warning or handle mismatch
+	}
+
+	latency := m.now().Sub(start).Milliseconds()
+
+	// 2. Clean up RAM cache
+	delete(m.ramCache, kvCacheID)
+
 	block.Tier = TierVRAM
+	block.CompressedSizeBytes = 0
 	block.LastAccess = m.now()
 	m.blocks[kvCacheID] = block
+	
+	// Emit telemetry
+	m.publish(events.TypeKVDecompressed, events.KVDecompressedPayload{
+		KVCacheID: block.KVCacheID,
+		LatencyMs: latency,
+	})
+
 	return block, nil
 }
 

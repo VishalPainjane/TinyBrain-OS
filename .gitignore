@@ -3,7 +3,45 @@ third_party/llama.cpp/build/
 
 # Local GGUF test artifacts (optional)
 *.gguf
+models/
 
 # CLI build artifacts
 /tinybrain
 /tinybrain.exe
+/brain-top
+/brain-top.exe
+/main
+/main.exe
+/server
+/server.exe
+test_half
+test_half.exe
+
+# Compiled libraries and object files
+*.so
+*.a
+*.o
+*.dll
+*.dylib
+
+# Logs and DBs
+*.log
+*.db
+
+# Temp / Scratch files
+scratch/
+temp.txt
+test.go
+test.js
+test_script.py
+test.json
+payload.json
+payload2.json
+req.json
+data.json
+embed_out.txt
+final_out.txt
+layer_dbg.txt
+logits.txt
+curl.log
+server.log

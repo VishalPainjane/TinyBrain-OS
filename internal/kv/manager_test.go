@@ -47,12 +47,25 @@ func TestStubManager_SavePublishesKVStored(t *testing.T) {
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(1)
-	unsub := bus.Subscribe(events.TypeKVStored, func(ev events.Event) {
+	wg.Add(2) // Wait for both KVCompressed and KVStored
+	
+	unsub1 := bus.Subscribe(events.TypeKVCompressed, func(ev events.Event) {
 		defer wg.Done()
-		if ev.Type != events.TypeKVStored {
-			t.Errorf("Type = %q, want KVStored", ev.Type)
+		payload, ok := ev.Payload.(events.KVCompressedPayload)
+		if !ok {
+			t.Fatalf("Payload type = %T, want KVCompressedPayload", ev.Payload)
 		}
+		if payload.KVCacheID != "kv-1" {
+			t.Errorf("Payload = %+v, want kv-1", payload)
+		}
+		if payload.CompressionRatio <= 1.0 {
+			t.Errorf("Expected CompressionRatio > 1.0, got %f", payload.CompressionRatio)
+		}
+	})
+	defer unsub1()
+	
+	unsub2 := bus.Subscribe(events.TypeKVStored, func(ev events.Event) {
+		defer wg.Done()
 		payload, ok := ev.Payload.(events.KVStoredPayload)
 		if !ok {
 			t.Fatalf("Payload type = %T, want KVStoredPayload", ev.Payload)
@@ -61,7 +74,7 @@ func TestStubManager_SavePublishesKVStored(t *testing.T) {
 			t.Errorf("Payload = %+v, want kv-1 pid-a", payload)
 		}
 	})
-	defer unsub()
+	defer unsub2()
 
 	if err := mgr.Save("kv-1"); err != nil {
 		t.Fatalf("Save() error = %v", err)
@@ -90,8 +103,21 @@ func TestStubManager_LoadPublishesKVLoaded(t *testing.T) {
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(1)
-	unsub := bus.Subscribe(events.TypeKVLoaded, func(ev events.Event) {
+	wg.Add(2) // Wait for both KVDecompressed and KVLoaded
+	
+	unsub1 := bus.Subscribe(events.TypeKVDecompressed, func(ev events.Event) {
+		defer wg.Done()
+		payload, ok := ev.Payload.(events.KVDecompressedPayload)
+		if !ok {
+			t.Fatalf("Payload type = %T, want KVDecompressedPayload", ev.Payload)
+		}
+		if payload.KVCacheID != "kv-1" {
+			t.Errorf("Payload = %+v, want kv-1", payload)
+		}
+	})
+	defer unsub1()
+	
+	unsub2 := bus.Subscribe(events.TypeKVLoaded, func(ev events.Event) {
 		defer wg.Done()
 		payload, ok := ev.Payload.(events.KVLoadedPayload)
 		if !ok {
@@ -101,7 +127,7 @@ func TestStubManager_LoadPublishesKVLoaded(t *testing.T) {
 			t.Errorf("Payload = %+v, want kv-1 pid-a", payload)
 		}
 	})
-	defer unsub()
+	defer unsub2()
 
 	if err := mgr.Load("kv-1"); err != nil {
 		t.Fatalf("Load() error = %v", err)

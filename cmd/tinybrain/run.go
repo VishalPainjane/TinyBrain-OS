@@ -80,6 +80,17 @@ func runRun(args []string, stdout, stderr io.Writer) int {
 
 	rt := runtime.NewIntegratedModelRuntime(provider, ld, resolver, bus)
 
+	def, err := areg.GetAgent(targetAgent)
+	if err != nil {
+		fmt.Fprintf(stderr, "error: agent %s not found in fleet\n", targetAgent)
+		return 1
+	}
+
+	if err := rt.LoadModel(def.ModelProfile); err != nil {
+		fmt.Fprintf(stderr, "error loading model %s: %v\n", def.ModelProfile, err)
+		return 1
+	}
+
 	// 4. Kernel (Process Table)
 	ptab := process.NewProcessTable()
 
@@ -113,6 +124,9 @@ func runRun(args []string, stdout, stderr io.Writer) int {
 	bus.Subscribe(events.TypeAgentStarted, func(ev events.Event) { fmt.Fprintln(stderr, "-> Event: AgentStarted") })
 	bus.Subscribe(events.TypeTaskCompleted, func(ev events.Event) {
 		fmt.Fprintln(stderr, "-> Event: TaskCompleted")
+		if payload, ok := ev.Payload.(events.TaskCompletedPayload); ok {
+			fmt.Fprintf(stdout, "\nOutput:\n%s\n", payload.Result)
+		}
 		close(done)
 	})
 

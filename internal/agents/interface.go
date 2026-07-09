@@ -16,6 +16,9 @@ type Agent interface {
 // Agents must not import inference or call InferenceProvider directly.
 type RuntimeAPI interface {
 	Generate(req runtime.GenerateRequest) (runtime.GenerateResponse, error)
+	LoadModel(modelID string) error
+	FormatChat(modelID string, messages []runtime.ChatMessage, opts runtime.FormatChatOpts) (string, string, error)
+	GetMetadata(modelID string) (runtime.ModelCapabilities, error)
 }
 
 // ExecuteContext carries dependencies injected for a single execution.

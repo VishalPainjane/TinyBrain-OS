@@ -107,7 +107,7 @@ func (p *LlamaProvider) Generate(req runtime.GenerateRequest) (runtime.GenerateR
 		return runtime.GenerateResponse{}, fmt.Errorf("%w: %s", runtime.ErrModelNotLoaded, req.ModelID)
 	}
 
-	output, tokens, _, err := p.b.generate(req.ModelID, req.Prompt, p.cfg)
+	output, tokens, _, err := p.b.generate(req, p.cfg)
 	if err != nil {
 		return runtime.GenerateResponse{}, err
 	}
@@ -117,4 +117,60 @@ func (p *LlamaProvider) Generate(req runtime.GenerateRequest) (runtime.GenerateR
 		Output:         output,
 		TokensProduced: int(tokens),
 	}, nil
+}
+
+// SaveContext delegates context persistence to the backend.
+func (p *LlamaProvider) SaveContext(modelID, ctxID string) error {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	if _, ok := p.models[modelID]; !ok {
+		return fmt.Errorf("%w: %s", runtime.ErrModelNotLoaded, modelID)
+	}
+
+	return p.b.saveContext(modelID, ctxID)
+}
+
+// RestoreContext delegates context restoration to the backend.
+func (p *LlamaProvider) RestoreContext(modelID, ctxID string) error {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	if _, ok := p.models[modelID]; !ok {
+		return fmt.Errorf("%w: %s", runtime.ErrModelNotLoaded, modelID)
+	}
+
+	return p.b.restoreContext(modelID, ctxID)
+}
+
+// FormatChat applies the model's chat template to a list of structured messages.
+func (p *LlamaProvider) FormatChat(modelID string, messages []runtime.ChatMessage, opts runtime.FormatChatOpts) (string, string, error) {
+	if modelID == "" {
+		return "", "", fmt.Errorf("model ID is required")
+	}
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	if _, ok := p.models[modelID]; !ok {
+		return "", "", fmt.Errorf("%w: %s", runtime.ErrModelNotLoaded, modelID)
+	}
+
+	return p.b.formatChat(modelID, messages, opts)
+}
+
+// GetMetadata retrieves the capabilities of the loaded model.
+func (p *LlamaProvider) GetMetadata(modelID string) (runtime.ModelCapabilities, error) {
+	if modelID == "" {
+		return runtime.ModelCapabilities{}, fmt.Errorf("model ID is required")
+	}
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	if _, ok := p.models[modelID]; !ok {
+		return runtime.ModelCapabilities{}, fmt.Errorf("%w: %s", runtime.ErrModelNotLoaded, modelID)
+	}
+
+	return p.b.getMetadata(modelID)
 }

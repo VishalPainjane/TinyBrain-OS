@@ -19,6 +19,8 @@ const (
 	TypeSwapCompleted       Type = "SwapCompleted"
 	TypeKVStored            Type = "KVStored"
 	TypeKVLoaded            Type = "KVLoaded"
+	TypeKVCompressed        Type = "KVCompressed"
+	TypeKVDecompressed      Type = "KVDecompressed"
 	TypeTaskCompleted       Type = "TaskCompleted"
 )
 
@@ -102,6 +104,19 @@ type KVLoadedPayload struct {
 	PID       string
 }
 
+// KVCompressedPayload is the payload for TypeKVCompressed.
+type KVCompressedPayload struct {
+	KVCacheID        string
+	CompressionRatio float64
+	LatencyMs        int64
+}
+
+// KVDecompressedPayload is the payload for TypeKVDecompressed.
+type KVDecompressedPayload struct {
+	KVCacheID string
+	LatencyMs int64
+}
+
 // TaskCompletedPayload is the payload for TypeTaskCompleted.
 type TaskCompletedPayload struct {
 	TaskID string
@@ -132,6 +147,8 @@ func AllTypes() []Type {
 		TypeSwapCompleted,
 		TypeKVStored,
 		TypeKVLoaded,
+		TypeKVCompressed,
+		TypeKVDecompressed,
 		TypeTaskCompleted,
 	}
 }

@@ -6,8 +6,10 @@ type ModelRuntime interface {
 	LoadModel(modelID string) error
 	UnloadModel(modelID string) error
 	Generate(req GenerateRequest) (GenerateResponse, error)
-	SaveContext(id string) error
-	RestoreContext(id string) error
+	SaveContext(modelID, ctxID string) error
+	RestoreContext(modelID, ctxID string) error
+	FormatChat(modelID string, messages []ChatMessage, opts FormatChatOpts) (prompt string, tmpl string, err error)
+	GetMetadata(modelID string) (ModelCapabilities, error)
 }
 
 // InferenceProvider is the inference port implemented by engine adapters.
@@ -16,6 +18,8 @@ type InferenceProvider interface {
 	LoadModel(modelID string) error
 	UnloadModel(modelID string) error
 	Generate(req GenerateRequest) (GenerateResponse, error)
-	SaveContext(id string) error
-	RestoreContext(id string) error
+	SaveContext(modelID, ctxID string) error
+	RestoreContext(modelID, ctxID string) error
+	FormatChat(modelID string, messages []ChatMessage, opts FormatChatOpts) (prompt string, tmpl string, err error)
+	GetMetadata(modelID string) (ModelCapabilities, error)
 }

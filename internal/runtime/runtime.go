@@ -1,6 +1,8 @@
 package runtime
 
 import (
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/VishalPainjane/TinyBrain-OS/internal/events"
@@ -49,6 +51,9 @@ func (r *modelRuntime) LoadModel(modelID string) error {
 	}
 
 	if err := r.loader.Load(modelID, spec.Path); err != nil {
+		if errors.Is(err, loader.ErrModelAlreadyLoaded) {
+			return fmt.Errorf("%w: %s", ErrModelAlreadyLoaded, modelID)
+		}
 		return err
 	}
 
@@ -90,13 +95,23 @@ func (r *modelRuntime) Generate(req GenerateRequest) (GenerateResponse, error) {
 }
 
 // SaveContext delegates context persistence to the provider.
-func (r *modelRuntime) SaveContext(id string) error {
-	return r.provider.SaveContext(id)
+func (r *modelRuntime) SaveContext(modelID, ctxID string) error {
+	return r.provider.SaveContext(modelID, ctxID)
 }
 
 // RestoreContext delegates context restoration to the provider.
-func (r *modelRuntime) RestoreContext(id string) error {
-	return r.provider.RestoreContext(id)
+func (r *modelRuntime) RestoreContext(modelID, ctxID string) error {
+	return r.provider.RestoreContext(modelID, ctxID)
+}
+
+// FormatChat delegates chat template formatting to the provider.
+func (r *modelRuntime) FormatChat(modelID string, messages []ChatMessage, opts FormatChatOpts) (string, string, error) {
+	return r.provider.FormatChat(modelID, messages, opts)
+}
+
+// GetMetadata retrieves capabilities and metadata from the provider.
+func (r *modelRuntime) GetMetadata(modelID string) (ModelCapabilities, error) {
+	return r.provider.GetMetadata(modelID)
 }
 
 func (r *modelRuntime) publishModelLoaded(modelID string) {

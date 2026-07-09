@@ -85,7 +85,7 @@ func tokenizeNative(vocab *C.struct_llama_vocab, prompt string) ([]C.llama_token
 	nMax := C.int32_t(256)
 	for {
 		buf := make([]C.llama_token, int(nMax))
-		n := C.llama_tokenize(vocab, cPrompt, textLen, &buf[0], nMax, C.bool(false), C.bool(false))
+		n := C.llama_tokenize(vocab, cPrompt, textLen, &buf[0], nMax, C.bool(true), C.bool(false))
 		if n >= 0 {
 			return buf[:int(n)], nil
 		}

@@ -68,21 +68,29 @@ func (p *StubProvider) Generate(req GenerateRequest) (GenerateResponse, error) {
 }
 
 // SaveContext stores an empty placeholder blob for id.
-func (p *StubProvider) SaveContext(id string) error {
+func (p *StubProvider) SaveContext(modelID, id string) error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
-	p.contexts[id] = []byte{}
+	p.contexts[id] = []byte("stub")
 	return nil
 }
 
-// RestoreContext succeeds when id was previously saved.
-func (p *StubProvider) RestoreContext(id string) error {
+// RestoreContext returns ErrContextNotFound if the id was never saved.
+func (p *StubProvider) RestoreContext(modelID, id string) error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
 	if _, ok := p.contexts[id]; !ok {
-		return fmt.Errorf("%w: %s", ErrContextNotFound, id)
+		return ErrContextNotFound
 	}
 	return nil
+}
+
+func (p *StubProvider) FormatChat(modelID string, messages []ChatMessage, opts FormatChatOpts) (string, string, error) {
+	return "", "", nil
+}
+
+func (p *StubProvider) GetMetadata(modelID string) (ModelCapabilities, error) {
+	return ModelCapabilities{ModelID: modelID}, nil
 }

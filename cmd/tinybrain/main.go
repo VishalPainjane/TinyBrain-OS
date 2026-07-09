@@ -27,13 +27,32 @@ func run(args []string, stdout, stderr io.Writer) int {
 		}
 		return runProbe(stdout, jsonOut)
 	case "models":
-		if len(args) < 2 || args[1] != "list" {
-			fmt.Fprintln(stderr, "usage: tinybrain models list")
+		if len(args) < 2 {
+			fmt.Fprintln(stderr, "usage: tinybrain models <list|pull>")
 			return 2
 		}
-		return runModelsList(stdout)
+		switch args[1] {
+		case "list":
+			return runModelsList(stdout)
+		case "pull":
+			return runModelsPull(args[2:], stdout, stderr)
+		default:
+			fmt.Fprintf(stderr, "unknown models subcommand: %s\n", args[1])
+			fmt.Fprintln(stderr, "usage: tinybrain models <list|pull>")
+			return 2
+		}
+	case "agents":
+		if len(args) < 2 || args[1] != "list" {
+			fmt.Fprintln(stderr, "usage: tinybrain agents list")
+			return 2
+		}
+		return runAgentsList(stdout)
 	case "run":
 		return runRun(args[1:], stdout, stderr)
+	case "daemon":
+		return runDaemon(args[1:], stdout, stderr)
+	case "submit":
+		return runSubmit(args[1:], stdout, stderr)
 	case "workflow":
 		return runWorkflow(args[1:], stdout, stderr)
 	case "status":
@@ -58,7 +77,11 @@ Usage:
   tinybrain doctor
   tinybrain probe [--json]
   tinybrain models list
+  tinybrain models pull --id ID --url URL
+  tinybrain agents list
   tinybrain run --agent ID --prompt TEXT
+  tinybrain daemon [--port 8080] [--agent ID]
+  tinybrain submit [--port 8080] --agent ID --prompt TEXT
   tinybrain workflow --prompt TEXT
   tinybrain status
   tinybrain version

@@ -1,5 +1,6 @@
-TinyBrain 1.0.0 | models (2)
+TinyBrain 1.0.0 | models (3)
 
 ID                   QUANT   PATH
 llama-3-8b-monolith  Q4_K_M  /models/llama-3-8b-monolith.gguf
+starcoder-q8         Q8_0    /models/starcoder-q8.gguf
 tinyllama-q4         Q4_K_M  /models/tinyllama-q4.gguf

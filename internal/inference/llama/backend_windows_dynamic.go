@@ -44,6 +44,8 @@ import (
 	"syscall"
 	"time"
 	"unsafe"
+
+	osruntime "github.com/VishalPainjane/TinyBrain-OS/internal/runtime"
 )
 
 // ErrDLLNotFound is returned when ggml-cuda.dll or llama.dll cannot be located.
@@ -94,14 +96,24 @@ type llamaDLLBackend struct {
 	procSamplerInitGreedy         *syscall.Proc // llama_sampler_init_greedy
 	procSamplerInitTemp           *syscall.Proc // llama_sampler_init_temp
 	procSamplerInitDist           *syscall.Proc // llama_sampler_init_dist
+	procSamplerInitGrammar        *syscall.Proc // llama_sampler_init_grammar
 	procSamplerSample             *syscall.Proc // llama_sampler_sample
 	procSamplerFree               *syscall.Proc // llama_sampler_free
+
+	procStateGetSize *syscall.Proc // llama_state_get_size
+	procStateGetData *syscall.Proc // llama_state_get_data
+	procStateSetData *syscall.Proc // llama_state_set_data
+
+	// templates & metadata
+	procChatApplyTemplate *syscall.Proc // llama_chat_apply_template
+	procModelMetaValStr   *syscall.Proc // llama_model_meta_val_str
 
 	// state
 	backendOnce sync.Once
 	mu          sync.Mutex
 	models      map[string]uintptr // modelID → llama_model*
 	contexts    map[string]uintptr // modelID → llama_context*
+	stateBlobs  map[string][]byte  // ctxID → []byte
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -134,6 +146,12 @@ type llamaModelParams struct {
 	useExtraBufts uint8 // bool
 	noHost        uint8 // bool
 	noAlloc       uint8 // bool
+}
+
+// llamaChatMessage mirrors llama_chat_message (llama.h).
+type llamaChatMessage struct {
+	role    uintptr // const char *
+	content uintptr // const char *
 }
 
 // llamaContextParams mirrors llama_context_params (llama.h).
@@ -273,6 +291,7 @@ func NewWindowsDynamicBackend(dllDir string) (*llamaDLLBackend, error) {
 		ggmlCoreDLL: ggmlCoreDLL,
 		models:      make(map[string]uintptr),
 		contexts:    make(map[string]uintptr),
+		stateBlobs:  make(map[string][]byte),
 	}
 
 	// Resolve all required procedure addresses.
@@ -318,6 +337,11 @@ func (b *llamaDLLBackend) resolveProcs() error {
 		{&b.procSamplerInitDist, ll, "llama_sampler_init_dist"},
 		{&b.procSamplerSample, ll, "llama_sampler_sample"},
 		{&b.procSamplerFree, ll, "llama_sampler_free"},
+		{&b.procStateGetSize, ll, "llama_state_get_size"},
+		{&b.procStateGetData, ll, "llama_state_get_data"},
+		{&b.procStateSetData, ll, "llama_state_set_data"},
+		{&b.procChatApplyTemplate, ll, "llama_chat_apply_template"},
+		{&b.procModelMetaValStr, ll, "llama_model_meta_val_str"},
 	}
 
 	for _, bnd := range bindings {
@@ -327,6 +351,12 @@ func (b *llamaDLLBackend) resolveProcs() error {
 		}
 		*bnd.dest = proc
 	}
+
+	// Optional bindings
+	if proc, err := ll.FindProc("llama_sampler_init_grammar"); err == nil {
+		b.procSamplerInitGrammar = proc
+	}
+
 	return nil
 }
 
@@ -392,9 +422,12 @@ func (b *llamaDLLBackend) freeHandles(modelID string) {
 	}
 }
 
-func (b *llamaDLLBackend) generate(modelID, prompt string, cfg LlamaConfig) (string, uint32, generateStats, error) {
+func (b *llamaDLLBackend) generate(req osruntime.GenerateRequest, cfg LlamaConfig) (string, uint32, generateStats, error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
+
+	modelID := req.ModelID
+	prompt := req.Prompt
 
 	modelPtr, ok := b.models[modelID]
 	if !ok {
@@ -432,13 +465,16 @@ func (b *llamaDLLBackend) generate(modelID, prompt string, cfg LlamaConfig) (str
 	}
 
 	// Build sampler
-	samplerPtr := b.buildSampler(cfg)
+	samplerPtr := b.buildSampler(cfg, modelPtr, req.Grammar)
 	if samplerPtr == 0 {
 		return "", 0, generateStats{}, ErrGenerationFailed
 	}
 	defer b.procSamplerFree.Call(samplerPtr)
 
 	maxTokens := cfg.MaxTokens
+	if req.MaxTokens > 0 {
+		maxTokens = uint32(req.MaxTokens)
+	}
 	if maxTokens == 0 {
 		maxTokens = 128
 	}
@@ -488,6 +524,114 @@ func (b *llamaDLLBackend) generate(modelID, prompt string, cfg LlamaConfig) (str
 	_ = runtime.GOOS
 
 	return out.String(), produced, stats, nil
+}
+
+func (b *llamaDLLBackend) getMetadata(modelID string) (osruntime.ModelCapabilities, error) {
+	b.mu.Lock()
+	modelPtr, ok := b.models[modelID]
+	b.mu.Unlock()
+
+	if !ok {
+		return osruntime.ModelCapabilities{}, fmt.Errorf("dynamic: native model not loaded")
+	}
+
+	key, _ := syscall.BytePtrFromString("tokenizer.chat_template")
+	buf := make([]byte, 32768)
+	nR, _, _ := b.procModelMetaValStr.Call(
+		modelPtr,
+		uintptr(unsafe.Pointer(key)),
+		uintptr(unsafe.Pointer(&buf[0])),
+		uintptr(len(buf)),
+	)
+	
+	n := int32(nR)
+	template := ""
+	if n > 0 && n <= int32(len(buf)) {
+		if buf[n-1] == 0 {
+			n--
+		}
+		template = string(buf[:n])
+	}
+	
+	return osruntime.ModelCapabilities{
+		ModelID:            modelID,
+		ChatTemplate:       template,
+		SupportsMultimodal: false,
+		SupportsTools:      false,
+		SupportsGrammar:    false, 
+	}, nil
+}
+
+func (b *llamaDLLBackend) formatChat(modelID string, messages []osruntime.ChatMessage, opts osruntime.FormatChatOpts) (string, string, error) {
+	caps, err := b.getMetadata(modelID)
+	if err != nil {
+		return "", "", err
+	}
+
+	tmplStr := opts.TemplateName
+	if tmplStr == "" {
+		tmplStr = caps.ChatTemplate
+	}
+	
+	var cChat []llamaChatMessage
+	var pinStr [](*byte)
+	
+	for _, m := range messages {
+		cRole, _ := syscall.BytePtrFromString(m.Role)
+		cContent, _ := syscall.BytePtrFromString(m.Content)
+		pinStr = append(pinStr, cRole, cContent)
+		
+		cChat = append(cChat, llamaChatMessage{
+			role:    uintptr(unsafe.Pointer(cRole)),
+			content: uintptr(unsafe.Pointer(cContent)),
+		})
+	}
+
+	addAss := uintptr(0)
+	if opts.AddGenerationPrompt {
+		addAss = 1
+	}
+
+	var chatPtr uintptr
+	if len(cChat) > 0 {
+		chatPtr = uintptr(unsafe.Pointer(&cChat[0]))
+	}
+
+	n := int32(-1)
+	if tmplStr != "" {
+		cTmpl, err := syscall.BytePtrFromString(tmplStr)
+		if err == nil {
+			buf := make([]byte, 65536) // 64KB
+			nR, _, _ := b.procChatApplyTemplate.Call(
+				uintptr(unsafe.Pointer(cTmpl)),
+				chatPtr,
+				uintptr(len(cChat)),
+				addAss,
+				uintptr(unsafe.Pointer(&buf[0])),
+				uintptr(len(buf)),
+			)
+			n = int32(nR)
+			if n >= 0 && n <= int32(len(buf)) {
+				if n > 0 && buf[n-1] == 0 {
+					n--
+				}
+				runtime.KeepAlive(pinStr)
+				return string(buf[:n]), tmplStr, nil
+			}
+		}
+	}
+	
+	runtime.KeepAlive(pinStr)
+
+	// Fallback mechanism if minja fails or template is missing
+	fallbackTmpl := ""
+	for _, m := range messages {
+		fallbackTmpl += fmt.Sprintf("<|im_start|>%s\n%s<|im_end|>\n", m.Role, m.Content)
+	}
+	if opts.AddGenerationPrompt {
+		fallbackTmpl += "<|im_start|>assistant\n"
+	}
+	return fallbackTmpl, "fallback_chatml", nil
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -546,7 +690,7 @@ func (b *llamaDLLBackend) tokenize(vocabPtr uintptr, prompt string) ([]int32, er
 			uintptr(len(prompt)),
 			uintptr(unsafe.Pointer(&buf[0])),
 			uintptr(nMax),
-			0, // add_special = false
+			1, // add_special = true  (prepend BOS, matching llama.cpp CLI / HF tokenizers)
 			0, // parse_special = false
 		)
 		n := int32(nR)
@@ -595,6 +739,53 @@ func (b *llamaDLLBackend) tokenToPiece(vocabPtr uintptr, token int32) (string, e
 	return string(buf[:n]), nil
 }
 
+func (b *llamaDLLBackend) saveContext(modelID, ctxID string) error {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
+	ctxPtr, ok := b.contexts[modelID]
+	if !ok {
+		return fmt.Errorf("model not loaded: %s", modelID)
+	}
+
+	size, _, _ := b.procStateGetSize.Call(ctxPtr)
+	if size == 0 {
+		return fmt.Errorf("state size is 0")
+	}
+
+	stateData := make([]byte, size)
+	nBytes, _, _ := b.procStateGetData.Call(ctxPtr, uintptr(unsafe.Pointer(&stateData[0])), size)
+	if nBytes != size {
+		return fmt.Errorf("failed to get full state, expected %d got %d", size, nBytes)
+	}
+
+	b.stateBlobs[ctxID] = stateData
+	return nil
+}
+
+func (b *llamaDLLBackend) restoreContext(modelID, ctxID string) error {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
+	stateData, ok := b.stateBlobs[ctxID]
+	if !ok {
+		return fmt.Errorf("context not found: %s", ctxID)
+	}
+
+	ctxPtr, ok := b.contexts[modelID]
+	if !ok {
+		return fmt.Errorf("model not loaded: %s", modelID)
+	}
+
+	size := uintptr(len(stateData))
+	nBytes, _, _ := b.procStateSetData.Call(ctxPtr, uintptr(unsafe.Pointer(&stateData[0])), size)
+	if nBytes != size {
+		return fmt.Errorf("failed to set full state, expected %d got %d", size, nBytes)
+	}
+
+	return nil
+}
+
 // decodeBatch submits a batch of tokens through llama_decode.
 func (b *llamaDLLBackend) decodeBatch(ctxPtr uintptr, tokens []int32) error {
 	if len(tokens) == 0 {
@@ -619,14 +810,33 @@ func (b *llamaDLLBackend) decodeBatch(ctxPtr uintptr, tokens []int32) error {
 	return nil
 }
 
-// buildSampler creates a sampler chain according to LlamaConfig.
-func (b *llamaDLLBackend) buildSampler(cfg LlamaConfig) uintptr {
+// buildSampler creates a sampler chain according to LlamaConfig and Grammar constraints.
+func (b *llamaDLLBackend) buildSampler(cfg LlamaConfig, modelPtr uintptr, grammarStr string) uintptr {
+	// llama_sampler_chain_default_params returns a struct by value.
+	// On Windows x64 ABI a struct return uses a hidden first-pointer argument,
+	// identical to the llama_batch pattern in decodeBatch.  We allocate the
+	// struct and pass its address as arg 0; the DLL writes the result there.
 	var cp llamaSamplerChainParams
-	r, _, _ := b.procSamplerChainDefaultParams.Call()
-	cp.noPerf = uint8(r)
+	b.procSamplerChainDefaultParams.Call(uintptr(unsafe.Pointer(&cp)))
+
+	// llama_sampler_chain_init takes llamaSamplerChainParams by value (1 byte).
+	// Pass as uintptr so the calling convention matches the C ABI.
 	chainPtr, _, _ := b.procSamplerChainInit.Call(uintptr(cp.noPerf))
 	if chainPtr == 0 {
 		return 0
+	}
+
+	if grammarStr != "" && b.procSamplerInitGrammar != nil {
+		cGrammar, _ := syscall.BytePtrFromString(grammarStr)
+		cRoot, _ := syscall.BytePtrFromString("root")
+		grammarPtr, _, _ := b.procSamplerInitGrammar.Call(
+			modelPtr,
+			uintptr(unsafe.Pointer(cGrammar)),
+			uintptr(unsafe.Pointer(cRoot)),
+		)
+		if grammarPtr != 0 {
+			b.procSamplerChainAdd.Call(chainPtr, grammarPtr)
+		}
 	}
 
 	if cfg.GreedySampler {

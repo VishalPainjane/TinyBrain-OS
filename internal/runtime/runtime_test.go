@@ -99,13 +99,13 @@ func TestStubProvider_SaveRestoreContext(t *testing.T) {
 
 	provider := runtime.NewStubProvider()
 
-	if err := provider.SaveContext("ctx-1"); err != nil {
+	if err := provider.SaveContext("m1", "ctx-1"); err != nil {
 		t.Fatalf("SaveContext() error = %v", err)
 	}
-	if err := provider.RestoreContext("ctx-1"); err != nil {
+	if err := provider.RestoreContext("m1", "ctx-1"); err != nil {
 		t.Fatalf("RestoreContext() error = %v", err)
 	}
-	if err := provider.RestoreContext("missing"); !errors.Is(err, runtime.ErrContextNotFound) {
+	if err := provider.RestoreContext("m1", "missing"); !errors.Is(err, runtime.ErrContextNotFound) {
 		t.Fatalf("RestoreContext() error = %v, want ErrContextNotFound", err)
 	}
 }
@@ -268,10 +268,10 @@ func TestModelRuntime_SaveRestoreContext(t *testing.T) {
 
 	rt := runtime.NewModelRuntime(runtime.NewStubProvider(), events.NewChannelBus(8))
 
-	if err := rt.SaveContext("ctx-1"); err != nil {
+	if err := rt.SaveContext("m1", "ctx-1"); err != nil {
 		t.Fatalf("SaveContext() error = %v", err)
 	}
-	if err := rt.RestoreContext("ctx-1"); err != nil {
+	if err := rt.RestoreContext("m1", "ctx-1"); err != nil {
 		t.Fatalf("RestoreContext() error = %v", err)
 	}
 }

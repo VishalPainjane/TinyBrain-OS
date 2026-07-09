@@ -7,6 +7,7 @@ import (
 	"github.com/VishalPainjane/TinyBrain-OS/internal/events"
 	"github.com/VishalPainjane/TinyBrain-OS/internal/process"
 	"github.com/VishalPainjane/TinyBrain-OS/internal/registry"
+	"github.com/VishalPainjane/TinyBrain-OS/internal/tools"
 )
 
 // EventListener bridges ProcessStateChanged to Agent execution.
@@ -81,7 +82,14 @@ func (l *EventListener) handleStateChanged(ev events.Event) {
 
 	input := l.taskInputs[p.TaskID]
 
-	plugin := NewSamplePlugin(def.ID, def.ModelProfile)
+	var plugin Agent
+	if def.ID == "qwen-agent" || def.ID == "react-agent" {
+		reg := tools.NewRegistry()
+		reg.Register(&tools.CalculatorTool{})
+		plugin = NewReActAgent(def.ID, def.ModelProfile, reg)
+	} else {
+		plugin = NewSamplePlugin(def.ID, def.ModelProfile)
+	}
 	req := TaskRequest{
 		TaskID: p.TaskID,
 		PID:    p.PID,

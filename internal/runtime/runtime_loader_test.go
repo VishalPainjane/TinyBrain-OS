@@ -46,12 +46,20 @@ func (p *loadFailProvider) Generate(runtime.GenerateRequest) (runtime.GenerateRe
 	return runtime.GenerateResponse{}, runtime.ErrModelNotLoaded
 }
 
-func (p *loadFailProvider) SaveContext(string) error {
+func (p *loadFailProvider) SaveContext(modelID, ctxID string) error {
 	return nil
 }
 
-func (p *loadFailProvider) RestoreContext(string) error {
+func (p *loadFailProvider) RestoreContext(modelID, ctxID string) error {
 	return nil
+}
+
+func (p *loadFailProvider) FormatChat(modelID string, messages []runtime.ChatMessage, opts runtime.FormatChatOpts) (string, string, error) {
+	return "", "", nil
+}
+
+func (p *loadFailProvider) GetMetadata(modelID string) (runtime.ModelCapabilities, error) {
+	return runtime.ModelCapabilities{ModelID: modelID}, nil
 }
 
 func stubModelPath(t *testing.T, name string) string {

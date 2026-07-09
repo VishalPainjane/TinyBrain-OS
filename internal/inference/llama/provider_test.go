@@ -101,11 +101,12 @@ func TestLlamaProvider_Generate_emptyModelID(t *testing.T) {
 
 func TestLlamaProvider_portStubs(t *testing.T) {
 	p := NewLlamaProvider(staticResolver{}, DefaultConfig())
+	p.models["m1"] = &modelSlot{path: "dummy"}
 
-	if err := p.SaveContext("c1"); !errors.Is(err, ErrNotImplemented) {
-		t.Fatalf("SaveContext() error = %v, want ErrNotImplemented", err)
+	if err := p.SaveContext("m1", "c1"); !errors.Is(err, ErrNotImplemented) && !errors.Is(err, ErrCGODisabled) {
+		t.Fatalf("SaveContext() error = %v, want ErrNotImplemented or ErrCGODisabled", err)
 	}
-	if err := p.RestoreContext("c1"); !errors.Is(err, ErrNotImplemented) {
-		t.Fatalf("RestoreContext() error = %v, want ErrNotImplemented", err)
+	if err := p.RestoreContext("m1", "c1"); !errors.Is(err, ErrNotImplemented) && !errors.Is(err, ErrCGODisabled) {
+		t.Fatalf("RestoreContext() error = %v, want ErrNotImplemented or ErrCGODisabled", err)
 	}
 }
