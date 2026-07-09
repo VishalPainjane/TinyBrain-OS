@@ -12,7 +12,8 @@
 
 Instead of one monolithic model handling every task, **TinyBrain OS** treats AI agents as scheduled processes — loaded when needed, swapped when idle, and coordinated under strict VRAM and RAM budgets. Local AI fails on consumer hardware when treated as a single-model problem. TinyBrain exists to make it practical through dynamic capability allocation, not static model-centric workflows.
 
-*TinyBrain OS is a systems project — a local operating system for AI agents, not a chatbot wrapper.*
+> [!IMPORTANT]
+> *TinyBrain OS is a systems project — a local operating system for AI agents, not a chatbot wrapper.*
 
 ---
 
@@ -69,7 +70,8 @@ Month 4 memory and workflow orchestration foundations (KV, swap, brain-top, agen
 
 ### Installation
 
-For now, the project is built from source. Ensure you have Go 1.22+ installed.
+> [!NOTE]
+> For now, the project is built from source. Ensure you have Go 1.22+ installed.
 
 ```bash
 # Build the core TinyBrain daemon
@@ -112,7 +114,8 @@ Once built, you can run diagnostic checks and manage models/agents:
 
 ## Building from Source
 
-Inference requires CGO and a built `llama.cpp` shared library. 
+> [!CAUTION]
+> Inference requires CGO and a built `llama.cpp` shared library. Be sure to configure CMake correctly for your specific GPU architecture to avoid fallback to CPU inference.
 
 ### Build Requirements
 
@@ -162,7 +165,8 @@ You can deploy the TinyBrain OS operator to a local Kubernetes cluster (like `ki
 ```bash
 kubectl apply -k deploy/k8s/
 ```
-> **Note:** The Kubernetes operator is a parallel track. The local v1.0 demo does not require Kubernetes and runs directly on your host machine.
+> [!WARNING]
+> The Kubernetes operator is a parallel track. The local v1.0 demo does not require Kubernetes and runs directly on your host machine.
 
 ---
 
