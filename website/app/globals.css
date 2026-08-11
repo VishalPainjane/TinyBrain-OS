@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --flame-red: #e63946;
+  --flame-orange: #ff6b35;
+  --flame-yellow: #ffd60a;
+  --flame-cream: #fff8f0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  @apply bg-white text-neutral-900 antialiased;
+  background-color: var(--flame-cream);
+}
+
+::selection {
+  background: rgba(255, 107, 53, 0.25);
+}
+
+.gradient-text {
+  background: linear-gradient(
+    135deg,
+    var(--flame-red) 0%,
+    var(--flame-orange) 45%,
+    var(--flame-yellow) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.gradient-border {
+  background: linear-gradient(
+    135deg,
+    var(--flame-red),
+    var(--flame-orange),
+    var(--flame-yellow)
+  );
+}
+
+.section-padding {
+  @apply px-6 py-24 md:px-12 lg:px-20 lg:py-32;
+}
+
+.card-surface {
+  @apply rounded-2xl border border-neutral-200/80 bg-white/80 backdrop-blur-sm;
+}
+
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame-orange focus-visible:ring-offset-2 focus-visible:ring-offset-flame-cream;
+}
