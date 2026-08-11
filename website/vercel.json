@@ -1,6 +1,5 @@
 {
   "framework": "nextjs",
-  "outputDirectory": "out",
   "git": {
     "deploymentEnabled": {
       "main": true
